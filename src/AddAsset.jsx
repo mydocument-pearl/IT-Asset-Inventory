@@ -25,11 +25,21 @@ export default function AddAsset() {
           </label>
 
           <select className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500">
+            <option>Select</option>
             <option>Laptop</option>
             <option>Monitor</option>
             <option>Printer</option>
             <option>Keyboard</option>
             <option>Mouse</option>
+            <option>Headphone</option>
+            <option>RAM</option>
+            <option>Laptop Stand</option>
+            <option>Laptop Battery</option>
+            <option>Laptop Charger</option>
+            <option>External HD</option>
+            <option>Hardisk</option>
+            <option>HDMI Cable</option>
+            <option>Power Cable</option>
           </select>
         </div>
 
@@ -58,6 +68,30 @@ export default function AddAsset() {
         </div>
 
         <div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Vendor Name
+  </label>
+
+  <input
+    type="text"
+    placeholder="Enter vendor name"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Invoice Number
+  </label>
+
+  <input
+    type="text"
+    placeholder="Enter invoice number"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+  />
+</div>
+
+<div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Purchase Date
           </label>
@@ -67,20 +101,68 @@ export default function AddAsset() {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
           />
         </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Invoice Date
+  </label>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Status
-          </label>
+  <input
+    type="date"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+  />
+</div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Amount
+  </label>
 
-          <select className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500">
-            <option>Available</option>
-            <option>Assigned</option>
-            <option>Under Repair</option>
-          </select>
-        </div>
-      </div>
+  <input
+    type="number"
+    placeholder="Enter amount"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+  />
+</div>
 
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Quantity
+  </label>
+
+  <input
+    type="number"
+    placeholder="Enter quantity"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    PO Number
+  </label>
+
+  <input
+    type="text"
+    placeholder="Enter PO number"
+    className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Organization Name
+  </label>
+
+  <select className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500">
+<option>Select</option>
+
+    <option>On2Cook India Pvt. Ltd.</option>
+
+    <option>InventIndia Innovations Pvt. Ltd.</option>
+
+  </select>
+</div>
+
+</div>
       <button className="mt-8 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition">
         Save Asset
       </button>

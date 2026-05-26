@@ -33,7 +33,7 @@ export default function MobileSimInventory() {
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">
-          Mobile & SIM Inventory
+          Mobile & SIM Allotted
         </h2>
 
         <button className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-medium transition">
