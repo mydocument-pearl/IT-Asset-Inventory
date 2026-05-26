@@ -1,3 +1,5 @@
+import MobileSimInventory from './MobileSimInventory'
+import AddAsset from './AddAsset'
 export default function App() {
   const stats = [
     {
@@ -175,6 +177,10 @@ export default function App() {
             </table>
           </div>
         </div>
+<div className="mt-10">
+  <AddAsset />
+  <MobileSimInventory />
+</div>
       </div>
     </div>
   );
