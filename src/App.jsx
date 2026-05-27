@@ -1,3 +1,4 @@
+import AssignAsset from './AssignAsset'
 import { useState } from 'react'
 
 import {
@@ -26,6 +27,13 @@ import AddMobileAsset from './AddMobileAsset'
 
 function App() {
 const [activeTab, setActiveTab] = useState('dashboard')
+const [assignedAssets, setAssignedAssets] = useState(() => {
+
+  const savedData = localStorage.getItem('assignedAssets')
+
+  return savedData ? JSON.parse(savedData) : []
+
+})
   const stats = [
     
   {
@@ -156,9 +164,21 @@ const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
   Mobile & SIM
 </div>
 
-          <div className="hover:bg-gray-800 rounded-xl px-4 py-3 cursor-pointer transition">
-            Employee Allocation
-          </div>
+          <div
+  onClick={() => setActiveTab('allocation')}
+  className={`rounded-xl px-4 py-3 cursor-pointer transition ${
+    activeTab === 'allocation'
+      ? 'bg-red-600'
+      : 'hover:bg-gray-800'
+  }`}
+>
+
+  <div className="flex items-center gap-3">
+    <Users size={20} />
+    Employee Allocation
+  </div>
+
+</div>
 
           <div className="hover:bg-gray-800 rounded-xl px-4 py-3 cursor-pointer transition">
             Vendors
@@ -196,11 +216,7 @@ const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
 
           </div>
 
-          <button className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-medium transition">
-            + Add Asset
-          </button>
-
-        </div>
+                  </div>
 {activeTab === 'dashboard' && (
   <>
 
@@ -639,13 +655,98 @@ const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
   </>
 )}
 {activeTab === 'mobile' && (
-  <>
 
+  <>
     <AddMobileAsset />
 
     <MobileSimInventory mobileAssets={mobileAssets} />
-
   </>
+
+)}
+
+{activeTab === 'allocation' && (
+<>
+  <AssignAsset
+  addAssignedAsset={(data) => {
+    const updatedAssets = [...assignedAssets, data]
+
+setAssignedAssets(updatedAssets)
+
+localStorage.setItem(
+  'assignedAssets',
+  JSON.stringify(updatedAssets)
+)
+  }}
+/>
+<div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mt-10">
+
+  <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    Assigned Assets
+  </h2>
+
+  <div className="overflow-x-auto">
+
+    <table className="w-full">
+
+      <thead className="bg-gray-50">
+
+        <tr>
+
+          <th className="text-left px-4 py-3">Employee</th>
+          <th className="text-left px-4 py-3">Department</th>
+          <th className="text-left px-4 py-3">Asset</th>
+          <th className="text-left px-4 py-3">Serial</th>
+          <th className="text-left px-4 py-3">Date</th>
+          <th className="text-left px-4 py-3">Status</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        {assignedAssets.map((item, index) => (
+
+          <tr key={index} className="border-t">
+
+            <td className="px-4 py-3">
+              {item.employeeName}
+            </td>
+
+            <td className="px-4 py-3">
+              {item.department}
+            </td>
+
+            <td className="px-4 py-3">
+              {item.assetName}
+            </td>
+
+            <td className="px-4 py-3">
+              {item.serialNumber}
+            </td>
+
+            <td className="px-4 py-3">
+              {item.allocationDate}
+            </td>
+
+            <td className="px-4 py-3">
+              {item.status}
+            </td>
+
+          </tr>
+
+        ))}
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+</>
+
 )}
       </div>
 
