@@ -35,6 +35,13 @@ const [assignedAssets, setAssignedAssets] = useState(() => {
   return savedData ? JSON.parse(savedData) : []
 
 })
+const [assets, setAssets] = useState(() => {
+
+  const savedAssets = localStorage.getItem('assets')
+
+  return savedAssets ? JSON.parse(savedAssets) : []
+
+})
   const stats = [
     
   {
@@ -596,7 +603,10 @@ const exportToExcel = () => {
   <>
 
     <div className="mt-10">
-      <AddAsset />
+      <AddAsset
+  assets={assets}
+  setAssets={setAssets}
+/>
     </div>
         {/* Assets Allotted */}
 

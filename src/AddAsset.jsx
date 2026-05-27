@@ -1,9 +1,12 @@
 import { useState } from 'react'
 
-export default function AddAsset() {
+export default function AddAsset({ assets, setAssets }) {
 
   const [assetType, setAssetType] = useState('')
   const [assetCode, setAssetCode] = useState('')
+  const [assetName, setAssetName] = useState('')
+const [brand, setBrand] = useState('')
+const [serialNumber, setSerialNumber] = useState('')
   return (
     <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -18,8 +21,10 @@ export default function AddAsset() {
           </label>
 
           <input
-            type="text"
-            placeholder="Enter asset name"
+  type="text"
+  value={assetName}
+  onChange={(e) => setAssetName(e.target.value)}
+  placeholder="Enter asset name"
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
           />
         </div>
@@ -103,8 +108,10 @@ export default function AddAsset() {
           </label>
 
           <input
-            type="text"
-            placeholder="Dell / HP / Lenovo"
+  type="text"
+  value={brand}
+  onChange={(e) => setBrand(e.target.value)}
+  placeholder="Dell / HP / Lenovo"
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
           />
         </div>
@@ -115,8 +122,10 @@ export default function AddAsset() {
           </label>
 
           <input
-            type="text"
-            placeholder="Enter serial number"
+  type="text"
+  value={serialNumber}
+  onChange={(e) => setSerialNumber(e.target.value)}
+  placeholder="Enter serial number"
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
           />
         </div>
@@ -220,9 +229,30 @@ export default function AddAsset() {
       <button
   type="button"
   onClick={() => {
+
+    const newAsset = {
+      assetCode,
+      assetType,
+      assetName,
+      brand,
+      serialNumber,
+      status: 'Available',
+    }
+
+    const updatedAssets = [...assets, newAsset]
+
+    setAssets(updatedAssets)
+
+    localStorage.setItem(
+      'assets',
+      JSON.stringify(updatedAssets)
+    )
+
     alert('Asset Saved Successfully')
+
   }}
-  className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl"
+
+  className="mt-8 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition"
 >
   Save Asset
 </button>
