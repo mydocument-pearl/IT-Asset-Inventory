@@ -215,23 +215,25 @@ const [status, setStatus] = useState('Assigned')
 
   onChange={(e) => {
 
-    const selected = assets.find(
+  const selectedAsset = assets.find(
+    (item) => item.assetCode === e.target.value
+  )
 
-      (item) => item.assetName === e.target.value
+  if (selectedAsset) {
 
-    )
+    setAssetName(selectedAsset.assetName)
 
-    setSelectedAsset(selected)
+    setAssetType(selectedAsset.assetType)
 
-    setAssetName(selected.assetName)
+    setSerialNumber(selectedAsset.serialNumber)
 
-    setAssetCode(selected.assetCode)
+    setAssetCode(selectedAsset.assetCode)
 
-    setBrand(selected.brand)
+    setBrand(selectedAsset.brand)
 
-    setSerialNumber(selected.serialNumber)
+  }
 
-  }}
+}}
 
   className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
 
@@ -243,9 +245,9 @@ const [status, setStatus] = useState('Assigned')
 
     <option
       key={index}
-      value={item.assetName}
+      value={item.assetCode}
     >
-      {item.assetCode} - {item.assetName}
+      {item.assetCode} - {item.assetName} - {item.brand}
     </option>
 
   ))}
