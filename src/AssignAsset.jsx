@@ -6,6 +6,7 @@ export default function AssignAsset({ addAssignedAsset }) {
   const [employeePrefix, setEmployeePrefix] = useState('')
 const [employeeId, setEmployeeId] = useState('')
 const [employeeName, setEmployeeName] = useState('')
+const [returnDate, setReturnDate] = useState('')
 const [department, setDepartment] = useState('')
 const [assetType, setAssetType] = useState('')
 const [assetName, setAssetName] = useState('')
@@ -236,9 +237,12 @@ const [status, setStatus] = useState('Assigned')
           </label>
 
           <input
-            type="date"
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
-          />
+  type="date"
+  value={returnDate}
+  onChange={(e) => setReturnDate(e.target.value)}
+  disabled={true}
+  className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-100 cursor-not-allowed"
+/>
 
         </div>
 
