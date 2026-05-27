@@ -256,53 +256,7 @@ const [serialNumber, setSerialNumber] = useState('')
 >
   Save Asset
 </button>
-<div className="mt-10">
 
-  <h2 className="text-xl font-bold mb-4">
-    Saved Assets
-  </h2>
-
-  <div className="overflow-x-auto">
-
-    <table className="w-full border border-gray-200">
-
-      <thead className="bg-gray-100">
-
-        <tr>
-
-          <th className="p-3 text-left">Asset Code</th>
-          <th className="p-3 text-left">Asset Name</th>
-          <th className="p-3 text-left">Brand</th>
-          <th className="p-3 text-left">Serial Number</th>
-          <th className="p-3 text-left">Status</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        {assets.map((item, index) => (
-
-          <tr key={index} className="border-t">
-
-            <td className="p-3">{item.assetCode}</td>
-            <td className="p-3">{item.assetName}</td>
-            <td className="p-3">{item.brand}</td>
-            <td className="p-3">{item.serialNumber}</td>
-            <td className="p-3">{item.status}</td>
-
-          </tr>
-
-        ))}
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
     </div>
   )
 }

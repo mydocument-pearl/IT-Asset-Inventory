@@ -596,90 +596,98 @@ const exportToExcel = () => {
     </div>
         {/* Assets Allotted */}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+<div className="mt-10 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
-          <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+  <div className="p-6 border-b border-gray-200 flex justify-between items-center">
 
-            <h3 className="text-xl font-semibold text-gray-800">
-              Assets Allotted
-            </h3>
+    <h2 className="text-xl font-bold text-gray-800">
+      Saved Assets
+    </h2>
 
-            <input
-              type="text"
-              placeholder="Search Assets"
-              className="border border-gray-300 rounded-xl px-4 py-2 outline-none focus:border-red-500"
-            />
+    <input
+      type="text"
+      placeholder="Search Assets"
+      className="border border-gray-300 rounded-xl px-4 py-2 outline-none focus:border-red-500"
+    />
 
-          </div>
+  </div>
 
-          <div className="overflow-x-auto">
+  <div className="overflow-x-auto">
 
-            <table className="w-full">
+    <table className="w-full text-sm text-left">
 
-              <thead className="bg-gray-50">
+      <thead className="bg-gray-50 border-b border-gray-200">
 
-                <tr>
+        <tr>
 
-                  <th className="text-left px-6 py-4 text-gray-600 font-semibold">
-                    Asset
-                  </th>
+          <th className="p-4 font-semibold text-gray-700">
+            Asset Code
+          </th>
 
-                  <th className="text-left px-6 py-4 text-gray-600 font-semibold">
-                    Employee
-                  </th>
+          <th className="p-4 font-semibold text-gray-700">
+            Asset Name
+          </th>
 
-                  <th className="text-left px-6 py-4 text-gray-600 font-semibold">
-                    Department
-                  </th>
+          <th className="p-4 font-semibold text-gray-700">
+            Brand
+          </th>
 
-                  <th className="text-left px-6 py-4 text-gray-600 font-semibold">
-                    Status
-                  </th>
+          <th className="p-4 font-semibold text-gray-700">
+            Serial Number
+          </th>
 
-                </tr>
+          <th className="p-4 font-semibold text-gray-700">
+            Status
+          </th>
 
-              </thead>
+        </tr>
 
-              <tbody>
+      </thead>
 
-                {assets.map((item, index) => (
+      <tbody>
 
-                  <tr
-                    key={index}
-                    className="border-t border-gray-100 hover:bg-gray-50"
-                  >
+        {assets.map((item, index) => (
 
-                    <td className="px-6 py-4 font-medium text-gray-800">
-                      {item.asset}
-                    </td>
+          <tr
+            key={index}
+            className="border-b border-gray-100 hover:bg-gray-50 transition"
+          >
 
-                    <td className="px-6 py-4 text-gray-600">
-                      {item.employee}
-                    </td>
+            <td className="p-4 font-medium text-gray-800">
+              {item.assetCode}
+            </td>
 
-                    <td className="px-6 py-4 text-gray-600">
-                      {item.department}
-                    </td>
+            <td className="p-4 text-gray-700">
+              {item.assetName}
+            </td>
 
-                    <td className="px-6 py-4">
+            <td className="p-4 text-gray-700">
+              {item.brand}
+            </td>
 
-                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
-                        {item.status}
-                      </span>
+            <td className="p-4 text-gray-700">
+              {item.serialNumber}
+            </td>
 
-                    </td>
+            <td className="p-4">
 
-                  </tr>
+              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                {item.status}
+              </span>
 
-                ))}
+            </td>
 
-              </tbody>
+          </tr>
 
-            </table>
+        ))}
 
-          </div>
+      </tbody>
 
-        </div>
+    </table>
+
+  </div>
+
+</div>
   </>
 )}
 {activeTab === 'mobile' && (
