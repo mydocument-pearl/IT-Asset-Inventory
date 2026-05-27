@@ -95,21 +95,7 @@ const barData = [
 ]
 
 const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
-  const [assets] = useState([
-    {
-      asset: 'Dell Latitude 5440',
-      employee: 'Rahul Sharma',
-      department: 'Accounts',
-      status: 'Assigned',
-    },
-    {
-      asset: 'HP LaserJet Pro',
-      employee: 'Admin Department',
-      department: 'Administration',
-      status: 'Active',
-    },
-  ])
-
+  
   const [mobileAssets] = useState([
     
     {
