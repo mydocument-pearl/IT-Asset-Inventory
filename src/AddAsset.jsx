@@ -56,29 +56,28 @@ const [serialNumber, setSerialNumber] = useState('')
 
     setAssetType(value)
 
-    if (value === 'Laptop') {
-      setAssetCode('LP001')
-    }
+    const prefixMap = {
+  Laptop: 'LP',
+  Monitor: 'MN',
+  CPU: 'CPU',
+  Printer: 'PR',
+  Keyboard: 'KB',
+  Mouse: 'MS',
+  Headphone: 'HP',
+}
 
-    else if (value === 'Monitor') {
-      setAssetCode('MN001')
-    }
+const prefix = prefixMap[value] || 'AS'
 
-    else if (value === 'CPU') {
-      setAssetCode('CPU001')
-    }
+const filteredAssets = assets.filter((item) =>
+  item.assetCode?.startsWith(prefix)
+)
 
-    else if (value === 'Printer') {
-      setAssetCode('PR001')
-    }
+const nextNumber = filteredAssets.length + 1
 
-    else if (value === 'Keyboard') {
-      setAssetCode('KB001')
-    }
+const generatedCode =
+  prefix + String(nextNumber).padStart(3, '0')
 
-    else if (value === 'Mouse') {
-      setAssetCode('MS001')
-    }
+setAssetCode(generatedCode)
 
   }}
 
