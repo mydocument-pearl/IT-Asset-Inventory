@@ -14,6 +14,11 @@ const [returnDate, setReturnDate] = useState('')
 const [department, setDepartment] = useState('')
 const [assetType, setAssetType] = useState('')
 const [assetName, setAssetName] = useState('')
+const [selectedAsset, setSelectedAsset] = useState(null)
+
+const [brand, setBrand] = useState('')
+
+const [assetCode, setAssetCode] = useState('')
 const [serialNumber, setSerialNumber] = useState('')
 const [allocationDate, setAllocationDate] = useState('')
 const [status, setStatus] = useState('Assigned')
@@ -205,26 +210,79 @@ const [status, setStatus] = useState('Assigned')
           </label>
 
           <select
+
   value={assetName}
-  onChange={(e) => setAssetName(e.target.value)}
+
+  onChange={(e) => {
+
+    const selected = assets.find(
+
+      (item) => item.assetName === e.target.value
+
+    )
+
+    setSelectedAsset(selected)
+
+    setAssetName(selected.assetName)
+
+    setAssetCode(selected.assetCode)
+
+    setBrand(selected.brand)
+
+    setSerialNumber(selected.serialNumber)
+
+  }}
+
   className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+
 >
 
   <option value="">Select Asset</option>
 
-{assets.map((item, index) => (
+  {assets.map((item, index) => (
 
-  <option
-    key={index}
-    value={item.assetName}
-  >
-    {item.assetCode} - {item.assetName}
-  </option>
+    <option
+      key={index}
+      value={item.assetName}
+    >
+      {item.assetCode} - {item.assetName}
+    </option>
 
-))}
-  </select>
+  ))}
+
+</select>
 
         </div>
+
+        <div>
+
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Asset Code
+  </label>
+
+  <input
+    type="text"
+    value={assetCode}
+    readOnly
+    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3"
+  />
+
+</div>
+
+<div>
+
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Brand
+  </label>
+
+  <input
+    type="text"
+    value={brand}
+    readOnly
+    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3"
+  />
+
+</div>
 
         {/* Serial Number */}
 
