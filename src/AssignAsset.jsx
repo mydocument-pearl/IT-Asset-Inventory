@@ -210,10 +210,18 @@ const [status, setStatus] = useState('Assigned')
   className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
 >
 
-  <option value="">
-    Select Asset
+  <option value="">Select Asset</option>
+
+{assets.map((item, index) => (
+
+  <option
+    key={index}
+    value={item.assetName}
+  >
+    {item.assetCode} - {item.assetName}
   </option>
 
+))}
   </select>
 
         </div>
