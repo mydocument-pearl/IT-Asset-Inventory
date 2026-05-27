@@ -703,15 +703,19 @@ const exportToExcel = () => {
 {activeTab === 'allocation' && (
 <>
   <AssignAsset
+  assets={assets}
+  setAssets={setAssets}
   addAssignedAsset={(data) => {
+
     const updatedAssets = [...assignedAssets, data]
 
-setAssignedAssets(updatedAssets)
+    setAssignedAssets(updatedAssets)
 
-localStorage.setItem(
-  'assignedAssets',
-  JSON.stringify(updatedAssets)
-)
+    localStorage.setItem(
+      'assignedAssets',
+      JSON.stringify(updatedAssets)
+    )
+
   }}
 />
 <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mt-10">
