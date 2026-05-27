@@ -210,10 +210,8 @@ const [status, setStatus] = useState('Assigned')
           </label>
 
           <select
-
-  value={assetName}
-
-  onChange={(e) => {
+value={assetCode}
+onChange={(e) => {
 
   const selectedAsset = assets.find(
     (item) => item.assetCode === e.target.value
@@ -221,22 +219,20 @@ const [status, setStatus] = useState('Assigned')
 
   if (selectedAsset) {
 
+    setAssetCode(selectedAsset.assetCode)
+
     setAssetName(selectedAsset.assetName)
 
     setAssetType(selectedAsset.assetType)
 
     setSerialNumber(selectedAsset.serialNumber)
 
-    setAssetCode(selectedAsset.assetCode)
-
     setBrand(selectedAsset.brand)
 
   }
 
 }}
-
-  className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
-
+className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
 >
 
   <option value="">Select Asset</option>
