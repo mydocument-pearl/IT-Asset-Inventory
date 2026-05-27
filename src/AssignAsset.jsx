@@ -200,13 +200,30 @@ const [status, setStatus] = useState('Assigned')
             Asset Name
           </label>
 
-          <input
-  type="text"
+          <select
   value={assetName}
   onChange={(e) => setAssetName(e.target.value)}
-  placeholder="Dell Latitude 5440"
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
-          />
+  className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
+>
+
+  <option value="">
+    Select Asset
+  </option>
+
+  {assets
+    .filter((item) => item.status === 'Available')
+    .map((item, index) => (
+
+      <option
+        key={index}
+        value={item.assetName}
+      >
+        {item.assetCode} - {item.assetName}
+      </option>
+
+    ))}
+
+</select>
 
         </div>
 
