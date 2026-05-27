@@ -1,6 +1,10 @@
 import { useState } from 'react'
 
-export default function AssignAsset({ addAssignedAsset }) {
+export default function AssignAsset({
+  addAssignedAsset,
+  assets,
+  setAssets
+}) {
 
   const [organization, setOrganization] = useState('')
   const [employeePrefix, setEmployeePrefix] = useState('')
@@ -210,20 +214,7 @@ const [status, setStatus] = useState('Assigned')
     Select Asset
   </option>
 
-  {assets
-    .filter((item) => item.status === 'Available')
-    .map((item, index) => (
-
-      <option
-        key={index}
-        value={item.assetName}
-      >
-        {item.assetCode} - {item.assetName}
-      </option>
-
-    ))}
-
-</select>
+  </select>
 
         </div>
 
