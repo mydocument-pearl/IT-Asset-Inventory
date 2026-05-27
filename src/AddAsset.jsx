@@ -1,4 +1,9 @@
+import { useState } from 'react'
+
 export default function AddAsset() {
+
+  const [assetType, setAssetType] = useState('')
+  const [assetCode, setAssetCode] = useState('')
   return (
     <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -18,17 +23,66 @@ export default function AddAsset() {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500"
           />
         </div>
+        <div>
+
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Asset Code
+  </label>
+
+  <input
+    type="text"
+    value={assetCode}
+    readOnly
+    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 outline-none"
+  />
+
+</div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Asset Type
           </label>
 
-          <select className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500">
+          <select
+  value={assetType}
+  onChange={(e) => {
+
+    const value = e.target.value
+
+    setAssetType(value)
+
+    if (value === 'Laptop') {
+      setAssetCode('LP001')
+    }
+
+    else if (value === 'Monitor') {
+      setAssetCode('MN001')
+    }
+
+    else if (value === 'CPU') {
+      setAssetCode('CPU001')
+    }
+
+    else if (value === 'Printer') {
+      setAssetCode('PR001')
+    }
+
+    else if (value === 'Keyboard') {
+      setAssetCode('KB001')
+    }
+
+    else if (value === 'Mouse') {
+      setAssetCode('MS001')
+    }
+
+  }}
+
+  className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500">
             <option>Select</option>
             <option>Laptop</option>
             <option>Monitor</option>
             <option>Printer</option>
+            <option>CPU</option>
             <option>Keyboard</option>
             <option>Mouse</option>
             <option>Headphone</option>
