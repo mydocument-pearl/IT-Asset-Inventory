@@ -1,6 +1,7 @@
 import AssignAsset from './AssignAsset'
 import { useState } from 'react'
-
+import * as XLSX from 'xlsx'
+import { saveAs } from 'file-saver'
 import {
   LayoutDashboard,
   Laptop,
@@ -103,6 +104,7 @@ const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
   ])
 
   const [mobileAssets] = useState([
+    
     {
       sr: 1,
       assetType: 'Mobile',
@@ -117,7 +119,34 @@ const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
       vendor: 'Vijay Sales',
     },
   ])
+const exportToExcel = () => {
 
+  const worksheet = XLSX.utils.json_to_sheet(assignedAssets)
+
+  const workbook = XLSX.utils.book_new()
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Assigned Assets'
+  )
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  })
+
+  const data = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+    }
+  )
+
+  saveAs(data, 'AssignedAssets.xlsx')
+
+}
   return (
     <div className="min-h-screen bg-gray-100 flex">
 
@@ -550,9 +579,12 @@ const COLORS = ['#dc2626', '#000000', '#6b7280', '#f59e0b']
   Assign Asset
 </button>
 
-    <button className="bg-white border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-xl p-4 font-semibold transition">
-      Generate Report
-    </button>
+    <button
+  onClick={exportToExcel}
+  className="bg-white border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-xl p-4 font-semibold transition"
+>
+  Generate Excel Report
+</button>
 
   </div>
 
