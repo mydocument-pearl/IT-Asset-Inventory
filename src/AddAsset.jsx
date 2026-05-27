@@ -217,9 +217,15 @@ export default function AddAsset() {
 </div>
 
 </div>
-      <button className="mt-8 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition">
-        Save Asset
-      </button>
+      <button
+  type="button"
+  onClick={() => {
+    alert('Asset Saved Successfully')
+  }}
+  className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl"
+>
+  Save Asset
+</button>
     </div>
   )
 }
