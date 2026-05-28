@@ -365,7 +365,7 @@ className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus
 
       <button
 
-  onClick={() => {
+  onClick={async () => {
 
     const newAssignedAsset = {
 
