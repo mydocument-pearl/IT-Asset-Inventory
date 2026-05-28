@@ -229,6 +229,7 @@ setAssetCode(generatedCode)
       <button
   type="button"
   onClick={async () => {
+    console.log('Button Clicked')
 
     const newAsset = {
   assetCode,
