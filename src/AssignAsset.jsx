@@ -237,7 +237,9 @@ className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus
 
   <option value="">Select Asset</option>
 
-  {assets.map((item, index) => (
+  {assets
+.filter((item) => item.status === 'Available')
+.map((item, index) => (
 
     <option
       key={index}
@@ -357,26 +359,59 @@ className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus
       {/* Button */}
 
       <button
+
   onClick={() => {
 
-    addAssignedAsset({
+    const newAssignedAsset = {
+
       employeeName,
       employeeId: `${employeePrefix}${employeeId}`,
       department,
       assetType,
       assetName,
+      assetCode,
+      brand,
       serialNumber,
       allocationDate,
-      status,
+      returnDate,
+      status
+
+    }
+
+    addAssignedAsset(newAssignedAsset)
+
+    const updatedAssets = assets.map((item) => {
+
+      if (item.assetCode === assetCode) {
+
+        return {
+          ...item,
+          status: 'Assigned'
+        }
+
+      }
+
+      return item
+
     })
+
+    setAssets(updatedAssets)
+
+    localStorage.setItem(
+      'assets',
+      JSON.stringify(updatedAssets)
+    )
 
     alert('Asset Assigned Successfully')
 
   }}
 
   className="mt-8 bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-semibold transition"
+
 >
+
   Assign Asset
+
 </button>
 
     </div>
