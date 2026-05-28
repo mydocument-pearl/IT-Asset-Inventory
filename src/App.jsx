@@ -49,7 +49,7 @@ function App() {
 
 }, [])
 const [activeTab, setActiveTab] = useState('dashboard')
-const [assignedAssets, setAssignedAssets] = useState([])
+
 const [assets, setAssets] = useState(() => {
 
   const savedAssets = localStorage.getItem('assets')
