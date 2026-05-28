@@ -57,6 +57,7 @@ const [assets, setAssets] = useState(() => {
   return savedAssets ? JSON.parse(savedAssets) : []
 
 })
+console.log(assets)
   const stats = [
     
   {
