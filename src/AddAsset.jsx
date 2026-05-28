@@ -1,8 +1,42 @@
+import { useEffect } from 'react'
 import { useState } from 'react'
 import { db } from './firebase'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, addDoc, getDocs } from 'firebase/firestore'
 export default function AddAsset({ assets, setAssets }) {
+useEffect(() => {
 
+  const migrateOldAssets = async () => {
+
+    try {
+
+      const firebaseData = await getDocs(collection(db, 'assets'))
+
+      if (!firebaseData.empty) {
+        return
+      }
+
+      const oldAssets =
+        JSON.parse(localStorage.getItem('assets')) || []
+
+      for (const item of oldAssets) {
+
+        await addDoc(collection(db, 'assets'), item)
+
+      }
+
+      console.log('Old assets migrated successfully')
+
+    } catch (error) {
+
+      console.log(error)
+
+    }
+
+  }
+
+  migrateOldAssets()
+
+}, [])
   const [assetType, setAssetType] = useState('')
   const [assetCode, setAssetCode] = useState('')
   const [assetName, setAssetName] = useState('')
