@@ -774,7 +774,7 @@ const exportToExcel = () => {
             </td>
 
             <td className="px-4 py-3">
-              {item.assetName}
+              {item.assetName || item.asset || 'Laptop'}
             </td>
 
             <td className="px-4 py-3">
