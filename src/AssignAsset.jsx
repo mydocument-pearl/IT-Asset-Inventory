@@ -1,5 +1,10 @@
 import { useState } from 'react'
+import { db } from './firebase'
 
+import {
+  collection,
+  addDoc
+} from 'firebase/firestore'
 export default function AssignAsset({
   addAssignedAsset,
   assets,
@@ -377,7 +382,10 @@ className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus
       status
 
     }
-
+await addDoc(
+  collection(db, 'assignedAssets'),
+  newAssignedAsset
+)
     addAssignedAsset(newAssignedAsset)
 
     const updatedAssets = assets.map((item) => {
