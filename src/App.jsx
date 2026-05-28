@@ -687,9 +687,15 @@ const exportToExcel = () => {
 
             <td className="p-4">
 
-              <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
-                {item.status}
-              </span>
+              <span
+  className={`px-3 py-1 rounded-full text-sm font-medium ${
+    item.status === 'Assigned'
+      ? 'bg-red-100 text-red-700'
+      : 'bg-green-100 text-green-700'
+  }`}
+>
+  {item.status}
+</span>
 
             </td>
 
