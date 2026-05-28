@@ -35,21 +35,16 @@ import AddMobileAsset from './AddMobileAsset'
 function App() {
   useEffect(() => {
 
-  const fetchAssignedAssets = async () => {
+  const savedAssignedAssets =
+    localStorage.getItem('assignedAssets')
 
-    const querySnapshot = await getDocs(
-      collection(db, 'assignedAssets')
+  if (savedAssignedAssets) {
+
+    setAssignedAssets(
+      JSON.parse(savedAssignedAssets)
     )
 
-    const assignedData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }))
-
-    setAssignedAssets(assignedData)
   }
-
-  fetchAssignedAssets()
 
 }, [])
 const [activeTab, setActiveTab] = useState('dashboard')
