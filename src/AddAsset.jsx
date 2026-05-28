@@ -279,7 +279,7 @@ try {
   await addDoc(collection(db, 'assets'), newAsset)
 
   const updatedAssets = [...assets, newAsset]
-
+ 
   setAssets(updatedAssets)
 
   localStorage.setItem(

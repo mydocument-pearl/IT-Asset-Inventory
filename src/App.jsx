@@ -1,5 +1,11 @@
+import { db } from './firebase'
+
+import {
+  collection,
+  getDocs
+} from 'firebase/firestore'
 import AssignAsset from './AssignAsset'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 import {
@@ -27,14 +33,27 @@ import MobileSimInventory from './MobileSimInventory'
 import AddMobileAsset from './AddMobileAsset'
 
 function App() {
+  useEffect(() => {
+
+  const fetchAssignedAssets = async () => {
+
+    const querySnapshot = await getDocs(
+      collection(db, 'assignedAssets')
+    )
+
+    const assignedData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+
+    setAssignedAssets(assignedData)
+  }
+
+  fetchAssignedAssets()
+
+}, [])
 const [activeTab, setActiveTab] = useState('dashboard')
-const [assignedAssets, setAssignedAssets] = useState(() => {
-
-  const savedData = localStorage.getItem('assignedAssets')
-
-  return savedData ? JSON.parse(savedData) : []
-
-})
+const [assignedAssets, setAssignedAssets] = useState([])
 const [assets, setAssets] = useState(() => {
 
   const savedAssets = localStorage.getItem('assets')
