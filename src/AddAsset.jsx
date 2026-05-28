@@ -1,5 +1,6 @@
 import { useState } from 'react'
-
+import { db } from './firebase'
+import { collection, addDoc } from 'firebase/firestore'
 export default function AddAsset({ assets, setAssets }) {
 
   const [assetType, setAssetType] = useState('')
@@ -227,27 +228,39 @@ setAssetCode(generatedCode)
 </div>
       <button
   type="button"
-  onClick={() => {
+  onClick={async () => {
 
     const newAsset = {
-      assetCode,
-      assetType,
-      assetName,
-      brand,
-      serialNumber,
-      status: 'Available',
-    }
+  assetCode,
+  assetType,
+  assetName,
+  brand,
+  serialNumber,
+  status: 'Available',
+}
 
-    const updatedAssets = [...assets, newAsset]
+try {
 
-    setAssets(updatedAssets)
+  await addDoc(collection(db, 'assets'), newAsset)
 
-    localStorage.setItem(
-      'assets',
-      JSON.stringify(updatedAssets)
-    )
+  const updatedAssets = [...assets, newAsset]
 
-    alert('Asset Saved Successfully')
+  setAssets(updatedAssets)
+
+  localStorage.setItem(
+    'assets',
+    JSON.stringify(updatedAssets)
+  )
+
+  alert('Asset Saved Successfully')
+
+} catch (error) {
+
+  console.log(error)
+
+  alert('Error saving asset')
+
+}
 
   }}
 
