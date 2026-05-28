@@ -33,6 +33,7 @@ import MobileSimInventory from './MobileSimInventory'
 import AddMobileAsset from './AddMobileAsset'
 
 function App() {
+  const [assignedAssets, setAssignedAssets] = useState([])
   useEffect(() => {
 
   const savedAssignedAssets =
