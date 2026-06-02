@@ -49,6 +49,15 @@ function App() {
 
 }, [])
 const [activeTab, setActiveTab] = useState('dashboard')
+const [showReturnModal, setShowReturnModal] = useState(false)
+
+const [selectedAsset, setSelectedAsset] = useState(null)
+
+const [returnForm, setReturnForm] = useState({
+  leavingDate: '',
+  returnDate: '',
+  remarks: ''
+})
 
 const [assets, setAssets] = useState(() => {
 
@@ -803,10 +812,14 @@ const exportToExcel = () => {
 
             <td className="px-4 py-3">
   <button
-    className="bg-red-500 text-white px-3 py-1 rounded"
-  >
-    Return
-  </button>
+  onClick={() => {
+    setSelectedAsset(item)
+    setShowReturnModal(true)
+  }}
+  className="bg-red-500 text-white px-3 py-1 rounded"
+>
+  Return
+</button>
 </td>
 
           </tr>
