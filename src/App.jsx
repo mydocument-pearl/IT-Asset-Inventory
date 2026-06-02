@@ -757,6 +757,7 @@ const exportToExcel = () => {
           <th className="text-left px-4 py-3">Employee</th>
           <th className="text-left px-4 py-3">Department</th>
           <th className="text-left px-4 py-3">Asset</th>
+          <th className="text-left px-4 py-3">Asset Code</th>
           <th className="text-left px-4 py-3">Serial</th>
           <th className="text-left px-4 py-3">Date</th>
           <th className="text-left px-4 py-3">Status</th>
@@ -782,6 +783,10 @@ const exportToExcel = () => {
             <td className="px-4 py-3">
               {item.assetName || item.asset || 'Laptop'}
             </td>
+
+            <td className="px-4 py-3">
+  {item.assetCode}
+</td>
 
             <td className="px-4 py-3">
               {item.serialNumber}
