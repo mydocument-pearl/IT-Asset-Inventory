@@ -761,6 +761,7 @@ const exportToExcel = () => {
           <th className="text-left px-4 py-3">Serial</th>
           <th className="text-left px-4 py-3">Date</th>
           <th className="text-left px-4 py-3">Status</th>
+          <th className="text-left px-4 py-3">Action</th>
 
         </tr>
 
@@ -799,6 +800,14 @@ const exportToExcel = () => {
             <td className="px-4 py-3">
               {item.status}
             </td>
+
+            <td className="px-4 py-3">
+  <button
+    className="bg-red-500 text-white px-3 py-1 rounded"
+  >
+    Return
+  </button>
+</td>
 
           </tr>
 
