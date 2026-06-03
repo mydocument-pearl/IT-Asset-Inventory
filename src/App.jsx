@@ -59,6 +59,10 @@ const [returnForm, setReturnForm] = useState({
   remarks: ''
 })
 const [assetHistory, setAssetHistory] = useState(() => {
+  const [searchAssetCode, setSearchAssetCode] = useState('')
+const [searchSerial, setSearchSerial] = useState('')
+const [searchEmployee, setSearchEmployee] = useState('')
+const [searchAssetType, setSearchAssetType] = useState('')
 
   const savedHistory =
     localStorage.getItem('assetHistory')
@@ -864,28 +868,44 @@ const exportToExcel = () => {
   <div className="grid grid-cols-4 gap-4 mb-6">
 
     <input
-      type="text"
-      placeholder="Asset Code"
-      className="border rounded-xl px-4 py-2"
-    />
+  type="text"
+  placeholder="Asset Code"
+  value={searchAssetCode}
+  onChange={(e) =>
+    setSearchAssetCode(e.target.value)
+  }
+  className="border rounded-xl px-4 py-2"
+/>
 
     <input
-      type="text"
-      placeholder="Serial Number"
-      className="border rounded-xl px-4 py-2"
-    />
+  type="text"
+  placeholder="Serial Number"
+  value={searchSerial}
+  onChange={(e) =>
+    setSearchSerial(e.target.value)
+  }
+  className="border rounded-xl px-4 py-2"
+/>
 
     <input
-      type="text"
-      placeholder="Employee Name"
-      className="border rounded-xl px-4 py-2"
-    />
+  type="text"
+  placeholder="Employee Name"
+  value={searchEmployee}
+  onChange={(e) =>
+    setSearchEmployee(e.target.value)
+  }
+  className="border rounded-xl px-4 py-2"
+/>
 
     <input
-      type="text"
-      placeholder="Asset Type"
-      className="border rounded-xl px-4 py-2"
-    />
+  type="text"
+  placeholder="Asset Type"
+  value={searchAssetType}
+  onChange={(e) =>
+    setSearchAssetType(e.target.value)
+  }
+  className="border rounded-xl px-4 py-2"
+/>
 
   </div>
 
@@ -923,7 +943,33 @@ const exportToExcel = () => {
 
     <tbody>
 
-      {assetHistory.map((item, index) => (
+      {assetHistory
+.filter(item =>
+
+  item.assetCode
+    ?.toLowerCase()
+    .includes(searchAssetCode.toLowerCase())
+
+  &&
+
+  String(item.serialNumber)
+    .toLowerCase()
+    .includes(searchSerial.toLowerCase())
+
+  &&
+
+  item.employeeName
+    ?.toLowerCase()
+    .includes(searchEmployee.toLowerCase())
+
+  &&
+
+  item.assetType
+    ?.toLowerCase()
+    .includes(searchAssetType.toLowerCase())
+
+)
+.map((item, index) => (
 
         <tr key={index} className="border-t">
 
