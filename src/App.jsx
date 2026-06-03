@@ -837,6 +837,41 @@ const exportToExcel = () => {
 </>
 
 )}
+{showReturnModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+    <div className="bg-white p-6 rounded-xl w-[500px]">
+
+      <h2 className="text-xl font-bold mb-4">
+        Return Asset
+      </h2>
+
+      <input
+        type="date"
+        className="w-full border p-2 rounded mb-3"
+      />
+
+      <input
+        type="date"
+        className="w-full border p-2 rounded mb-3"
+      />
+
+      <textarea
+        placeholder="Remarks"
+        className="w-full border p-2 rounded mb-3"
+      />
+
+      <button
+        onClick={() => setShowReturnModal(false)}
+        className="bg-red-500 text-white px-4 py-2 rounded"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+)}
       </div>
 
     </div>
