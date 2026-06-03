@@ -999,15 +999,24 @@ const exportToExcel = () => {
   </td>
 
   <td className="px-4 py-3">
-    {item.assignedDate}
+    {item.assignedDate
+  ? new Date(item.assignedDate)
+      .toLocaleDateString('en-GB')
+  : ''}
   </td>
 
   <td className="px-4 py-3">
-    {item.returnDate}
+    {item.returnDate
+  ? new Date(item.returnDate)
+      .toLocaleDateString('en-GB')
+  : ''}
   </td>
 
   <td className="px-4 py-3">
-    {item.leavingDate}
+    {item.leavingDate
+  ? new Date(item.leavingDate)
+      .toLocaleDateString('en-GB')
+  : ''}
   </td>
 
   <td className="px-4 py-3">
