@@ -895,27 +895,29 @@ const exportToExcel = () => {
 
       <tr>
 
-        <th className="px-4 py-3 text-left">
-          Asset Code
-        </th>
+  <th className="px-4 py-3 text-left">Asset Code</th>
 
-        <th className="px-4 py-3 text-left">
-          Employee
-        </th>
+  <th className="px-4 py-3 text-left">Asset Type</th>
 
-        <th className="px-4 py-3 text-left">
-          Assign Date
-        </th>
+  <th className="px-4 py-3 text-left">Asset Name</th>
 
-        <th className="px-4 py-3 text-left">
-          Return Date
-        </th>
+  <th className="px-4 py-3 text-left">Serial Number</th>
 
-        <th className="px-4 py-3 text-left">
-          Status
-        </th>
+  <th className="px-4 py-3 text-left">Employee</th>
 
-      </tr>
+  <th className="px-4 py-3 text-left">Department</th>
+
+  <th className="px-4 py-3 text-left">Assign Date</th>
+
+  <th className="px-4 py-3 text-left">Return Date</th>
+
+  <th className="px-4 py-3 text-left">Date Of Leaving</th>
+
+  <th className="px-4 py-3 text-left">Remarks</th>
+
+  <th className="px-4 py-3 text-left">Status</th>
+
+</tr>
 
     </thead>
 
@@ -925,27 +927,51 @@ const exportToExcel = () => {
 
         <tr key={index} className="border-t">
 
-          <td className="px-4 py-3">
-            {item.assetCode}
-          </td>
+  <td className="px-4 py-3">
+    {item.assetCode}
+  </td>
 
-          <td className="px-4 py-3">
-            {item.employeeName}
-          </td>
+  <td className="px-4 py-3">
+    {item.assetType}
+  </td>
 
-          <td className="px-4 py-3">
-            {item.assignedDate}
-          </td>
+  <td className="px-4 py-3">
+    {item.assetName}
+  </td>
 
-          <td className="px-4 py-3">
-            {item.returnDate}
-          </td>
+  <td className="px-4 py-3">
+    {item.serialNumber}
+  </td>
 
-          <td className="px-4 py-3">
-            Returned
-          </td>
+  <td className="px-4 py-3">
+    {item.employeeName}
+  </td>
 
-        </tr>
+  <td className="px-4 py-3">
+    {item.department}
+  </td>
+
+  <td className="px-4 py-3">
+    {item.assignedDate}
+  </td>
+
+  <td className="px-4 py-3">
+    {item.returnDate}
+  </td>
+
+  <td className="px-4 py-3">
+    {item.leavingDate}
+  </td>
+
+  <td className="px-4 py-3">
+    {item.remarks}
+  </td>
+
+  <td className="px-4 py-3">
+    {item.status || 'Returned'}
+  </td>
+
+</tr>
 
       ))}
 
@@ -1033,6 +1059,18 @@ const exportToExcel = () => {
 const historyRecord = {
   ...selectedAsset,
 
+  assetCode: selectedAsset.assetCode,
+
+  assetType: selectedAsset.assetType,
+
+  assetName: selectedAsset.assetName,
+
+  serialNumber: selectedAsset.serialNumber,
+
+  employeeName: selectedAsset.employeeName,
+
+  department: selectedAsset.department,
+
   assignedDate: selectedAsset.allocationDate,
 
   returnDate: returnForm.returnDate,
@@ -1040,6 +1078,8 @@ const historyRecord = {
   leavingDate: returnForm.leavingDate,
 
   remarks: returnForm.remarks,
+
+  status: 'Returned',
 
   returnedOn: new Date().toISOString()
 }
