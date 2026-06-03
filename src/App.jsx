@@ -867,6 +867,16 @@ const exportToExcel = () => {
       >
         Close
       </button>
+      <button
+  onClick={() => {
+
+    alert("Return Submitted")
+
+  }}
+  className="bg-green-600 text-white px-4 py-2 rounded ml-2"
+>
+  Submit Return
+</button>
 
     </div>
 
