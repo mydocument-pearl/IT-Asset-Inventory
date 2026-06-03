@@ -240,9 +240,16 @@ const exportToExcel = () => {
             Vendors
           </div>
 
-          <div className="hover:bg-gray-800 rounded-xl px-4 py-3 cursor-pointer transition">
-            Reports
-          </div>
+          <div
+  onClick={() => setActiveTab('reports')}
+  className={`rounded-xl px-4 py-3 cursor-pointer transition ${
+    activeTab === 'reports'
+      ? 'bg-red-600'
+      : 'hover:bg-gray-800'
+  }`}
+>
+  Reports
+</div>
 
           <div className="hover:bg-gray-800 rounded-xl px-4 py-3 cursor-pointer transition">
             Settings
@@ -844,6 +851,109 @@ const exportToExcel = () => {
 </div>
 
 </>
+
+)}
+{activeTab === 'reports' && (
+
+<div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+
+  <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    Asset History Report
+  </h2>
+
+  <div className="grid grid-cols-4 gap-4 mb-6">
+
+    <input
+      type="text"
+      placeholder="Asset Code"
+      className="border rounded-xl px-4 py-2"
+    />
+
+    <input
+      type="text"
+      placeholder="Serial Number"
+      className="border rounded-xl px-4 py-2"
+    />
+
+    <input
+      type="text"
+      placeholder="Employee Name"
+      className="border rounded-xl px-4 py-2"
+    />
+
+    <input
+      type="text"
+      placeholder="Asset Type"
+      className="border rounded-xl px-4 py-2"
+    />
+
+  </div>
+
+  <table className="w-full">
+
+    <thead className="bg-gray-50">
+
+      <tr>
+
+        <th className="px-4 py-3 text-left">
+          Asset Code
+        </th>
+
+        <th className="px-4 py-3 text-left">
+          Employee
+        </th>
+
+        <th className="px-4 py-3 text-left">
+          Assign Date
+        </th>
+
+        <th className="px-4 py-3 text-left">
+          Return Date
+        </th>
+
+        <th className="px-4 py-3 text-left">
+          Status
+        </th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      {assetHistory.map((item, index) => (
+
+        <tr key={index} className="border-t">
+
+          <td className="px-4 py-3">
+            {item.assetCode}
+          </td>
+
+          <td className="px-4 py-3">
+            {item.employeeName}
+          </td>
+
+          <td className="px-4 py-3">
+            {item.assignedDate}
+          </td>
+
+          <td className="px-4 py-3">
+            {item.returnDate}
+          </td>
+
+          <td className="px-4 py-3">
+            Returned
+          </td>
+
+        </tr>
+
+      ))}
+
+    </tbody>
+
+  </table>
+
+</div>
 
 )}
 {showReturnModal && (
