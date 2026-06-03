@@ -59,10 +59,6 @@ const [returnForm, setReturnForm] = useState({
   remarks: ''
 })
 const [assetHistory, setAssetHistory] = useState(() => {
-  const [searchAssetCode, setSearchAssetCode] = useState('')
-const [searchSerial, setSearchSerial] = useState('')
-const [searchEmployee, setSearchEmployee] = useState('')
-const [searchAssetType, setSearchAssetType] = useState('')
 
   const savedHistory =
     localStorage.getItem('assetHistory')
@@ -72,6 +68,11 @@ const [searchAssetType, setSearchAssetType] = useState('')
     : []
 
 })
+
+const [searchAssetCode, setSearchAssetCode] = useState('')
+const [searchSerial, setSearchSerial] = useState('')
+const [searchEmployee, setSearchEmployee] = useState('')
+const [searchAssetType, setSearchAssetType] = useState('')
 const [assets, setAssets] = useState(() => {
 
   const savedAssets = localStorage.getItem('assets')

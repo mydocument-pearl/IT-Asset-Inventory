@@ -411,6 +411,20 @@ await addDoc(
     )
 
     alert('Asset Assigned Successfully')
+    setOrganization('')
+setEmployeePrefix('')
+setEmployeeId('')
+setEmployeeName('')
+setReturnDate('')
+setDepartment('')
+setAssetType('')
+setAssetName('')
+setSelectedAsset(null)
+setBrand('')
+setAssetCode('')
+setSerialNumber('')
+setAllocationDate('')
+setStatus('Assigned')
 
   }}
 
