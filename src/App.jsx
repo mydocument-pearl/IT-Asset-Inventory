@@ -58,7 +58,16 @@ const [returnForm, setReturnForm] = useState({
   returnDate: '',
   remarks: ''
 })
+const [assetHistory, setAssetHistory] = useState(() => {
 
+  const savedHistory =
+    localStorage.getItem('assetHistory')
+
+  return savedHistory
+    ? JSON.parse(savedHistory)
+    : []
+
+})
 const [assets, setAssets] = useState(() => {
 
   const savedAssets = localStorage.getItem('assets')
@@ -911,9 +920,39 @@ const exportToExcel = () => {
     'assets',
     JSON.stringify(updatedAssets)
   )
+const historyRecord = {
+  ...selectedAsset,
 
+  assignedDate: selectedAsset.allocationDate,
+
+  returnDate: returnForm.returnDate,
+
+  leavingDate: returnForm.leavingDate,
+
+  remarks: returnForm.remarks,
+
+  returnedOn: new Date().toISOString()
+}
+
+const updatedHistory = [
+  ...assetHistory,
+  historyRecord
+]
+
+setAssetHistory(updatedHistory)
+
+localStorage.setItem(
+  'assetHistory',
+  JSON.stringify(updatedHistory)
+)
   setShowReturnModal(false)
+setSelectedAsset(null)
 
+setReturnForm({
+  leavingDate: '',
+  returnDate: '',
+  remarks: ''
+})
 }}
   className="bg-green-600 text-white px-4 py-2 rounded ml-2"
 >
