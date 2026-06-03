@@ -846,16 +846,25 @@ const exportToExcel = () => {
         Return Asset
       </h2>
 
+<label className="block mb-1 font-medium">
+  Date of Leaving
+</label>
       <input
         type="date"
         className="w-full border p-2 rounded mb-3"
       />
 
+<label className="block mb-1 font-medium">
+  Return Date
+</label>
       <input
         type="date"
         className="w-full border p-2 rounded mb-3"
       />
 
+<label className="block mb-1 font-medium">
+  Remarks
+</label>
       <textarea
         placeholder="Remarks"
         className="w-full border p-2 rounded mb-3"
