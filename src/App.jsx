@@ -995,25 +995,46 @@ const exportToExcel = () => {
   Date of Leaving
 </label>
       <input
-        type="date"
-        className="w-full border p-2 rounded mb-3"
-      />
+  type="date"
+  value={returnForm.leavingDate}
+  onChange={(e) =>
+    setReturnForm({
+      ...returnForm,
+      leavingDate: e.target.value
+    })
+  }
+  className="w-full border p-2 rounded mb-3"
+/>
 
 <label className="block mb-1 font-medium">
   Return Date
 </label>
       <input
-        type="date"
-        className="w-full border p-2 rounded mb-3"
-      />
+  type="date"
+  value={returnForm.returnDate}
+  onChange={(e) =>
+    setReturnForm({
+      ...returnForm,
+      returnDate: e.target.value
+    })
+  }
+  className="w-full border p-2 rounded mb-3"
+/>
 
 <label className="block mb-1 font-medium">
   Remarks
 </label>
       <textarea
-        placeholder="Remarks"
-        className="w-full border p-2 rounded mb-3"
-      />
+  placeholder="Remarks"
+  value={returnForm.remarks}
+  onChange={(e) =>
+    setReturnForm({
+      ...returnForm,
+      remarks: e.target.value
+    })
+  }
+  className="w-full border p-2 rounded mb-3"
+/>
 
       <button
         onClick={() => setShowReturnModal(false)}
