@@ -870,9 +870,42 @@ const exportToExcel = () => {
       <button
   onClick={() => {
 
-    alert("Return Submitted")
+  const updatedAssignedAssets =
+    assignedAssets.filter(
+      asset =>
+        asset.assetCode !== selectedAsset.assetCode
+    )
 
-  }}
+  setAssignedAssets(updatedAssignedAssets)
+
+  localStorage.setItem(
+    'assignedAssets',
+    JSON.stringify(updatedAssignedAssets)
+  )
+
+  const updatedAssets = assets.map(asset =>
+
+    asset.assetCode === selectedAsset.assetCode
+
+      ? {
+          ...asset,
+          status: 'Available'
+        }
+
+      : asset
+
+  )
+
+  setAssets(updatedAssets)
+
+  localStorage.setItem(
+    'assets',
+    JSON.stringify(updatedAssets)
+  )
+
+  setShowReturnModal(false)
+
+}}
   className="bg-green-600 text-white px-4 py-2 rounded ml-2"
 >
   Submit Return
