@@ -83,7 +83,8 @@ function App() {
   const [returnForm, setReturnForm] = useState({
     leavingDate: '',
     returnDate: '',
-    remarks: ''
+    remarks: '',
+    damages: ''
   })
   
   // Return OTP Authentication
@@ -338,7 +339,7 @@ function App() {
       'Brand': asset.brand,
       'Serial Number': asset.serialNumber,
       'Allocation Date': asset.allocationDate,
-      'Expected Return Date': asset.returnDate,
+      'Return Date': asset.returnDate,
       'Status': asset.status,
       'Remarks': asset.remarks || ''
     })));
@@ -465,6 +466,7 @@ function App() {
         returnDate: returnForm.returnDate,
         leavingDate: returnForm.leavingDate,
         remarks: returnForm.remarks,
+        damages: returnForm.damages || 'None',
         status: 'Returned',
         returnedOn: new Date().toISOString()
       };
@@ -483,7 +485,7 @@ function App() {
       showNotification(`Asset ${selectedAsset.assetCode} returned successfully.`, "success");
       setShowReturnModal(false);
       setSelectedAsset(null);
-      setReturnForm({ leavingDate: '', returnDate: '', remarks: '' });
+      setReturnForm({ leavingDate: '', returnDate: '', remarks: '', damages: '' });
     } catch (err) {
       console.error(err);
       showNotification("Failed to process asset return.", "error");
@@ -1069,6 +1071,7 @@ function App() {
                   setAssets={setAssets}
                   mobileAssets={mobileAssets}
                   setMobileAssets={setMobileAssets}
+                  assignedAssets={assignedAssets}
                   showNotification={showNotification}
                   addAssignedAsset={(data) => {
                     const updated = [...assignedAssets, data];
@@ -1288,6 +1291,7 @@ function App() {
                           <th className="px-4 py-3 font-bold">Assign Date</th>
                           <th className="px-4 py-3 font-bold">Return Date</th>
                           <th className="px-4 py-3 font-bold">Remarks</th>
+                          <th className="px-4 py-3 font-bold">Damages</th>
                           <th className="px-4 py-3 font-bold">Status</th>
                         </tr>
                       </thead>
@@ -1315,6 +1319,7 @@ function App() {
                                 {item.returnDate ? new Date(item.returnDate).toLocaleDateString('en-GB') : ''}
                               </td>
                               <td className="px-4 py-3.5 text-slate-500 italic max-w-xs truncate">{item.remarks}</td>
+                              <td className="px-4 py-3.5 text-rose-600 font-semibold max-w-xs truncate">{item.damages || 'None'}</td>
                               <td className="px-4 py-3.5">
                                 <span className="inline-flex px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700">
                                   {item.status || 'Returned'}
@@ -1569,6 +1574,17 @@ function App() {
                 />
               </div>
 
+              <div>
+                <label className="block mb-1 text-xs font-bold text-slate-500 uppercase">Damages / Defect Notes (If any)</label>
+                <textarea
+                  rows="2"
+                  placeholder="E.g. cracked screen, missing charger, or type 'None'..."
+                  value={returnForm.damages}
+                  onChange={(e) => setReturnForm({ ...returnForm, damages: e.target.value })}
+                  className="w-full glass-input p-3 rounded-xl text-sm outline-none"
+                />
+              </div>
+
               {/* OTP Authentication Layer */}
               <div className="pt-4 border-t border-slate-100 space-y-3">
                 <label className="block text-xs font-bold text-slate-500 uppercase">Employee Authentication *</label>
@@ -1585,6 +1601,11 @@ function App() {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-[10px] text-slate-400">OTP code dispatched. Enter code to authorize return.</p>
+                    
+                    <div className="bg-amber-50 border border-amber-100 p-2.5 rounded-xl text-center text-xs font-semibold font-mono text-amber-700 mb-2 animate-pulse">
+                      TESTING OTP: {returnOtpCode}
+                    </div>
+
                     <div className="flex gap-2">
                       <input
                         type="text"

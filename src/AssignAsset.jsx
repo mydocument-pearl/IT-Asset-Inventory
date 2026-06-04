@@ -9,6 +9,7 @@ export default function AssignAsset({
   setAssets,
   mobileAssets = [],
   setMobileAssets,
+  assignedAssets = [],
   showNotification
 }) {
   const [organization, setOrganization] = useState('')
@@ -16,7 +17,6 @@ export default function AssignAsset({
   const [employeeId, setEmployeeId] = useState('')
   const [employeeName, setEmployeeName] = useState('')
   const [employeePhone, setEmployeePhone] = useState('')
-  const [returnDate, setReturnDate] = useState('')
   const [department, setDepartment] = useState('')
   const [assetType, setAssetType] = useState('')
   const [brand, setBrand] = useState('')
@@ -46,6 +46,12 @@ export default function AssignAsset({
   const filteredAvailableAssets = combinedAssets.filter((item) => {
     const isAvailable = item.status === 'Available';
     if (!isAvailable) return false;
+
+    // Do not show assets that are currently assigned
+    const isCurrentlyAssigned = assignedAssets.some(
+      (assigned) => assigned.assetCode === item.assetCode
+    );
+    if (isCurrentlyAssigned) return false;
     
     if (!assetType) return true;
     
@@ -57,6 +63,11 @@ export default function AssignAsset({
       (queryType === 'sim card' && itemType === 'sim card');
   });
 
+  // Sort available assets alphabetically by assetCode in natural order
+  const sortedFilteredAvailableAssets = [...filteredAvailableAssets].sort((a, b) => 
+    (a.assetCode || '').localeCompare(b.assetCode || '', undefined, { numeric: true, sensitivity: 'base' })
+  );
+
   const handleStartAssign = () => {
     if (!employeeName || !employeeId || !employeePhone || !assetCode || !allocationDate) {
       if (showNotification) {
@@ -67,7 +78,6 @@ export default function AssignAsset({
       return
     }
 
-    // Phone number simple format check (e.g. 10 digits)
     if (!/^\+?[0-9]{10,14}$/.test(employeePhone.replace(/\s+/g, ''))) {
       showNotification('Please enter a valid mobile number (10-12 digits).', 'error')
       return
@@ -80,7 +90,7 @@ export default function AssignAsset({
     setOtpError('')
     setShowOtpModal(true)
 
-    // Simulate SMS dispatch to employee phone
+    // Simulate SMS dispatch
     if (showNotification) {
       showNotification(`[SMS Sim] Sent OTP code: ${otp} to +91 ${employeePhone}`, 'success')
     }
@@ -113,7 +123,7 @@ export default function AssignAsset({
       brand: selectedItem.brand || '-',
       serialNumber: selectedItem.serialNumber || selectedItem.imei || selectedItem.simNumber || '-',
       allocationDate,
-      returnDate: returnDate || '',
+      returnDate: '', // Filled only during return transaction
       status: status === 'Assigned' && selectedItem.source === 'mobile' ? 'Allocated' : status,
       remarks,
       createdBy: currentUser.name,
@@ -121,11 +131,9 @@ export default function AssignAsset({
     }
 
     try {
-      // Save assignment
       await dbService.saveAssignedAsset(newAssignedAsset)
       addAssignedAsset(newAssignedAsset)
 
-      // Update source status
       if (selectedItem.source === 'hardware') {
         const updatedAssets = await dbService.updateAssetStatus(assetCode, status)
         setAssets(updatedAssets)
@@ -159,7 +167,6 @@ export default function AssignAsset({
       setEmployeeId('')
       setEmployeeName('')
       setEmployeePhone('')
-      setReturnDate('')
       setDepartment('')
       setAssetType('')
       setBrand('')
@@ -328,7 +335,7 @@ export default function AssignAsset({
           </select>
         </div>
 
-        {/* Specific Asset Name */}
+        {/* Specific Asset Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Asset Selection *
@@ -349,7 +356,7 @@ export default function AssignAsset({
             className="w-full glass-input rounded-xl px-4 py-3 outline-none"
           >
             <option value="">Select Asset</option>
-            {filteredAvailableAssets.map((item, index) => (
+            {sortedFilteredAvailableAssets.map((item, index) => (
               <option key={index} value={item.assetCode}>
                 [{item.assetCode}] {item.assetName}
               </option>
@@ -392,19 +399,6 @@ export default function AssignAsset({
             readOnly
             placeholder="Auto-filled from asset"
             className="w-full bg-gray-100/50 text-gray-500 border border-gray-200 rounded-xl px-4 py-3 outline-none"
-          />
-        </div>
-
-        {/* Return Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Expected Return Date
-          </label>
-          <input
-            type="date"
-            value={returnDate}
-            onChange={(e) => setReturnDate(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
           />
         </div>
 
@@ -458,6 +452,10 @@ export default function AssignAsset({
             <p className="text-xs text-slate-500 leading-relaxed mb-4">
               Enter the 6-digit verification code sent to <strong>{employeeName}</strong> (+91 {employeePhone}).
             </p>
+
+            <div className="bg-red-50 border border-red-100 p-2.5 rounded-xl text-center text-xs font-semibold font-mono text-red-600 mb-4 animate-pulse">
+              TESTING OTP: {generatedOtp}
+            </div>
 
             {otpError && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex items-center gap-2">
