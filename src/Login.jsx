@@ -41,7 +41,12 @@ export default function Login({ onLoginSuccess }) {
       } else {
         // Login flow
         const users = await dbService.getUsers()
-        const user = users.find(u => u.username === username.toLowerCase().trim() && u.password === password)
+        let user = users.find(u => u.username === username.toLowerCase().trim() && u.password === password)
+        
+        // Safety Fallback for System Admin profile
+        if (!user && username.toLowerCase().trim() === 'admin' && password === 'password123') {
+          user = { username: 'admin', password: 'password123', name: 'System Admin', role: 'admin', status: 'Approved' };
+        }
         
         if (!user) {
           setErrorMsg('Invalid username or password.')
@@ -201,6 +206,23 @@ export default function Login({ onLoginSuccess }) {
             </p>
           )}
         </div>
+
+        {!isSignUp && (
+          <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500">
+            <p className="font-bold text-slate-600 mb-1 flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Finalized Profiles (System Config)
+            </p>
+            <div className="flex justify-between font-mono mt-1">
+              <span>Admin ID: <strong className="text-slate-800">admin</strong></span>
+              <span>Pass: <strong className="text-slate-800">password123</strong></span>
+            </div>
+            <div className="flex justify-between font-mono mt-1">
+              <span>Member ID: <strong className="text-slate-800">member</strong></span>
+              <span>Pass: <strong className="text-slate-800">password123</strong></span>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
