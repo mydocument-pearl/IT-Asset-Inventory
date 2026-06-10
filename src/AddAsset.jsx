@@ -30,29 +30,27 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
   const handleDownloadTemplate = () => {
     const sampleData = [
       {
-        'Asset Code': 'LP003',
         'Asset Type': 'Laptop',
         'Asset Name': 'MacBook Pro 14',
         'Brand': 'Apple',
         'Serial Number': 'C02F1234Q05D',
         'Vendor Name': 'Vijay Sales',
         'Invoice Number': 'VS-9988-26',
-        'Purchase Date': '2026-06-01',
-        'Invoice Date': '2026-06-01',
+        'Purchase Date': '01-06-2026',
+        'Invoice Date': '01-06-2026',
         'Amount': 125000,
         'PO Number': 'PO-O2C-2026-88',
         'Organization Name': 'On2Cook India Pvt. Ltd.'
       },
       {
-        'Asset Code': 'MN004',
         'Asset Type': 'Monitor',
         'Asset Name': 'UltraSharp U2723QE',
         'Brand': 'Dell',
         'Serial Number': 'CN-0ABCDE-12345-678-90AB',
         'Vendor Name': 'Reliance Digital',
         'Invoice Number': 'RD-5566-26',
-        'Purchase Date': '2026-06-02',
-        'Invoice Date': '2026-06-02',
+        'Purchase Date': '02-06-2026',
+        'Invoice Date': '02-06-2026',
         'Amount': 38000,
         'PO Number': 'PO-II-2026-44',
         'Organization Name': 'InventIndia Innovations Pvt. Ltd.'
@@ -132,20 +130,55 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
           const po = getVal(['PO Number', 'poNumber', 'PO'])
           const org = getVal(['Organization Name', 'organizationName', 'Organization', 'Org'])
 
-          if (!rawCode || !type || !name) {
-            skippedRows.push({ index: i + 2, reason: 'Missing Code, Type, or Name' })
+          if (!type || !name) {
+            skippedRows.push({ index: i + 2, reason: 'Missing Type or Name' })
             continue
           }
 
-          const cleanCode = rawCode.toUpperCase()
-          if (existingCodes.has(cleanCode.toLowerCase())) {
-            skippedRows.push({ index: i + 2, reason: `Duplicate Code: ${cleanCode}` })
-            continue
-          }
+          let cleanCode = rawCode ? rawCode.toUpperCase().trim() : '';
 
-          if (newAssetsList.some(a => a.assetCode === cleanCode)) {
-            skippedRows.push({ index: i + 2, reason: `Duplicate Code in sheet: ${cleanCode}` })
-            continue
+          if (!cleanCode) {
+            const prefixMap = {
+              Laptop: 'LP',
+              Monitor: 'MN',
+              CPU: 'CPU',
+              Printer: 'PR',
+              Keyboard: 'KB',
+              Mouse: 'MS',
+              Headphone: 'HP',
+              RAM: 'RM',
+              'Laptop Stand': 'LS',
+              'Laptop Battery': 'LB',
+              'Laptop Charger': 'LC',
+              'External HD': 'EH',
+              Hardisk: 'HD',
+              'HDMI Cable': 'HC',
+              'Power Cable': 'PC',
+            }
+            const prefix = prefixMap[type] || 'AS'
+            const allCodes = [
+              ...assets.map(a => a.assetCode || ''),
+              ...newAssetsList.map(a => a.assetCode || '')
+            ].filter(code => code.startsWith(prefix))
+
+            let maxNum = 0
+            allCodes.forEach(code => {
+              const numPart = code.substring(prefix.length)
+              const parsed = parseInt(numPart, 10)
+              if (!isNaN(parsed) && parsed > maxNum) {
+                maxNum = parsed
+              }
+            })
+            cleanCode = prefix + String(maxNum + 1).padStart(3, '0')
+          } else {
+            if (existingCodes.has(cleanCode.toLowerCase())) {
+              skippedRows.push({ index: i + 2, reason: `Duplicate Code in database: ${cleanCode}` })
+              continue
+            }
+            if (newAssetsList.some(a => a.assetCode === cleanCode)) {
+              skippedRows.push({ index: i + 2, reason: `Duplicate Code in sheet: ${cleanCode}` })
+              continue
+            }
           }
 
           const payload = {

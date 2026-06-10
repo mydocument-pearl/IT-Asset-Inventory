@@ -37,7 +37,6 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
   const handleDownloadTemplate = () => {
     const sampleData = [
       {
-        'Asset Code': 'MB003',
         'Asset Type': 'Mobile',
         'Brand': 'Samsung',
         'Model': 'Galaxy S23',
@@ -48,13 +47,12 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
         'SIM IMEI': '',
         'Vendor Name': 'Vijay Sales',
         'Invoice Number': 'VS-4491-26',
-        'Purchase Date': '2026-06-01',
-        'Invoice Date': '2026-06-01',
+        'Purchase Date': '01-06-2026',
+        'Invoice Date': '01-06-2026',
         'Amount': 75000,
         'Organization Name': 'On2Cook India Pvt. Ltd.'
       },
       {
-        'Asset Code': 'SM002',
         'Asset Type': 'SIM Card',
         'Brand': '',
         'Model': '',
@@ -65,8 +63,8 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
         'SIM IMEI': '89911234567890123456',
         'Vendor Name': 'Reliance Digital',
         'Invoice Number': 'RD-9988-26',
-        'Purchase Date': '2026-06-02',
-        'Invoice Date': '2026-06-02',
+        'Purchase Date': '02-06-2026',
+        'Invoice Date': '02-06-2026',
         'Amount': 250,
         'Organization Name': 'InventIndia Innovations Pvt. Ltd.'
       }
@@ -148,8 +146,8 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
           const amt = getVal(['Amount', 'Price', 'Cost'])
           const org = getVal(['Organization Name', 'organizationName', 'Organization'])
 
-          if (!rawCode || !rawType) {
-            skippedRows.push({ index: i + 2, reason: 'Missing Asset Code or Type' })
+          if (!rawType) {
+            skippedRows.push({ index: i + 2, reason: 'Missing Asset Type' })
             continue
           }
 
@@ -162,15 +160,33 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
             continue
           }
 
-          const cleanCode = rawCode.toUpperCase()
-          if (existingCodes.has(cleanCode.toLowerCase())) {
-            skippedRows.push({ index: i + 2, reason: `Duplicate Code: ${cleanCode}` })
-            continue
-          }
+          let cleanCode = rawCode ? rawCode.toUpperCase().trim() : '';
 
-          if (newItems.some(a => a.assetCode === cleanCode)) {
-            skippedRows.push({ index: i + 2, reason: `Duplicate Code in sheet: ${cleanCode}` })
-            continue
+          if (!cleanCode) {
+            const prefix = isMobile ? 'MB' : 'SM'
+            const allCodes = [
+              ...mobileAssets.map(a => a.assetCode || ''),
+              ...newItems.map(a => a.assetCode || '')
+            ].filter(code => code.startsWith(prefix))
+
+            let maxNum = 0
+            allCodes.forEach(code => {
+              const numPart = code.substring(prefix.length)
+              const parsed = parseInt(numPart, 10)
+              if (!isNaN(parsed) && parsed > maxNum) {
+                maxNum = parsed
+              }
+            })
+            cleanCode = prefix + String(maxNum + 1).padStart(3, '0')
+          } else {
+            if (existingCodes.has(cleanCode.toLowerCase())) {
+              skippedRows.push({ index: i + 2, reason: `Duplicate Code in database: ${cleanCode}` })
+              continue
+            }
+            if (newItems.some(a => a.assetCode === cleanCode)) {
+              skippedRows.push({ index: i + 2, reason: `Duplicate Code in sheet: ${cleanCode}` })
+              continue
+            }
           }
 
           const payload = {
