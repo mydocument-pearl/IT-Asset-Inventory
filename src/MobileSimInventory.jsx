@@ -2,7 +2,15 @@ import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import { dbService } from './dbService'
 
-export default function MobileSimInventory({ mobileAssets = [], setMobileAssets, showNotification, isUserAdmin, currentUser }) {
+export default function MobileSimInventory({
+  mobileAssets = [],
+  setMobileAssets,
+  setAssignedAssets,
+  setAssetHistory,
+  showNotification,
+  isUserAdmin,
+  currentUser
+}) {
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -27,20 +35,20 @@ export default function MobileSimInventory({ mobileAssets = [], setMobileAssets,
 
   const handleDelete = async (assetCode) => {
     if (!isUserAdmin) return;
-    if (window.confirm(`Are you sure you want to delete mobile/SIM asset ${assetCode}?`)) {
+    if (window.confirm(`Are you sure you want to delete mobile/SIM asset ${assetCode}? This will also delete any active assignments and lifecycle history logs associated with it.`)) {
       try {
-        const updated = await dbService.deleteMobileAsset(assetCode);
-        if (setMobileAssets) {
-          setMobileAssets(updated);
-        }
+        const result = await dbService.deleteMobileAsset(assetCode);
+        if (setMobileAssets) setMobileAssets(result.mobileAssets);
+        if (setAssignedAssets) setAssignedAssets(result.assignedAssets);
+        if (setAssetHistory) setAssetHistory(result.assetHistory);
         if (showNotification) {
-          showNotification(`Asset ${assetCode} deleted successfully.`, "success");
+          showNotification(`Asset ${assetCode} and its logs deleted successfully.`, "success");
         }
         
         await dbService.saveActivityLog({
           member: `${currentUser.name} (${currentUser.role})`,
-          action: 'Deleted Mobile/SIM',
-          details: `Deleted Mobile/SIM asset ${assetCode}.`
+          action: 'Deleted Mobile/SIM (Cascaded)',
+          details: `Deleted Mobile/SIM asset ${assetCode} along with active assignments and history.`
         });
       } catch (err) {
         console.error(err);

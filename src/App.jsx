@@ -274,16 +274,18 @@ function App() {
 
   const handleDeleteAsset = async (assetCode) => {
     if (!isUserAdmin) return;
-    if (window.confirm(`Are you sure you want to delete asset ${assetCode}?`)) {
+    if (window.confirm(`Are you sure you want to delete asset ${assetCode}? This will also delete any active assignments and lifecycle history logs associated with it.`)) {
       try {
-        const updated = await dbService.deleteAsset(assetCode);
-        setAssets(updated);
-        showNotification(`Asset ${assetCode} deleted successfully.`, "success");
+        const result = await dbService.deleteAsset(assetCode);
+        setAssets(result.assets);
+        setAssignedAssets(result.assignedAssets);
+        setAssetHistory(result.assetHistory);
+        showNotification(`Asset ${assetCode} and its logs deleted successfully.`, "success");
         
         await dbService.saveActivityLog({
           member: `${currentUser.name} (${currentUser.role})`,
-          action: 'Deleted Asset',
-          details: `Deleted IT hardware asset ${assetCode}.`
+          action: 'Deleted Asset (Cascaded)',
+          details: `Deleted IT hardware asset ${assetCode} along with active assignments and history.`
         });
       } catch (err) {
         console.error(err);
@@ -1213,6 +1215,8 @@ function App() {
                 <MobileSimInventory
                   mobileAssets={mobileAssets}
                   setMobileAssets={setMobileAssets}
+                  setAssignedAssets={setAssignedAssets}
+                  setAssetHistory={setAssetHistory}
                   showNotification={showNotification}
                   isUserAdmin={isUserAdmin}
                   currentUser={currentUser}

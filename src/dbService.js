@@ -96,23 +96,52 @@ export const dbService = {
   },
 
   async deleteAsset(assetCode) {
-    const local = JSON.parse(localStorage.getItem('assets')) || [];
-    const updated = local.filter(asset => asset.assetCode !== assetCode);
-    localStorage.setItem('assets', JSON.stringify(updated));
+    // 1. Delete from assets
+    const localAssets = JSON.parse(localStorage.getItem('assets')) || [];
+    const updatedAssets = localAssets.filter(asset => asset.assetCode !== assetCode);
+    localStorage.setItem('assets', JSON.stringify(updatedAssets));
+
+    // 2. Delete from assignedAssets
+    const localAssigned = JSON.parse(localStorage.getItem('assignedAssets')) || [];
+    const updatedAssigned = localAssigned.filter(item => item.assetCode !== assetCode);
+    localStorage.setItem('assignedAssets', JSON.stringify(updatedAssigned));
+
+    // 3. Delete from assetHistory
+    const localHistory = JSON.parse(localStorage.getItem('assetHistory')) || [];
+    const updatedHistory = localHistory.filter(item => item.assetCode !== assetCode);
+    localStorage.setItem('assetHistory', JSON.stringify(updatedHistory));
 
     if (isFirebaseEnabled()) {
       try {
-        const q = query(collection(db, 'assets'), where('assetCode', '==', assetCode));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(async (document) => {
-          const docRef = doc(db, 'assets', document.id);
-          await deleteDoc(docRef);
+        // Delete from 'assets' in Firestore
+        const q1 = query(collection(db, 'assets'), where('assetCode', '==', assetCode));
+        const s1 = await getDocs(q1);
+        s1.forEach(async (document) => {
+          await deleteDoc(doc(db, 'assets', document.id));
+        });
+
+        // Delete from 'assignedAssets' in Firestore
+        const q2 = query(collection(db, 'assignedAssets'), where('assetCode', '==', assetCode));
+        const s2 = await getDocs(q2);
+        s2.forEach(async (document) => {
+          await deleteDoc(doc(db, 'assignedAssets', document.id));
+        });
+
+        // Delete from 'assetHistory' in Firestore
+        const q3 = query(collection(db, 'assetHistory'), where('assetCode', '==', assetCode));
+        const s3 = await getDocs(q3);
+        s3.forEach(async (document) => {
+          await deleteDoc(doc(db, 'assetHistory', document.id));
         });
       } catch (error) {
-        console.error("Firestore delete failed, updated locally:", error);
+        console.error("Firestore cascaded delete failed:", error);
       }
     }
-    return updated;
+    return {
+      assets: updatedAssets,
+      assignedAssets: updatedAssigned,
+      assetHistory: updatedHistory
+    };
   },
 
   // ------------------ ASSIGNED ASSETS ------------------
@@ -351,23 +380,52 @@ export const dbService = {
   },
 
   async deleteMobileAsset(assetCode) {
-    const local = JSON.parse(localStorage.getItem('mobileAssets')) || [];
-    const updated = local.filter(item => item.assetCode !== assetCode);
-    localStorage.setItem('mobileAssets', JSON.stringify(updated));
+    // 1. Delete from mobileAssets
+    const localMobile = JSON.parse(localStorage.getItem('mobileAssets')) || [];
+    const updatedMobile = localMobile.filter(item => item.assetCode !== assetCode);
+    localStorage.setItem('mobileAssets', JSON.stringify(updatedMobile));
+
+    // 2. Delete from assignedAssets
+    const localAssigned = JSON.parse(localStorage.getItem('assignedAssets')) || [];
+    const updatedAssigned = localAssigned.filter(item => item.assetCode !== assetCode);
+    localStorage.setItem('assignedAssets', JSON.stringify(updatedAssigned));
+
+    // 3. Delete from assetHistory
+    const localHistory = JSON.parse(localStorage.getItem('assetHistory')) || [];
+    const updatedHistory = localHistory.filter(item => item.assetCode !== assetCode);
+    localStorage.setItem('assetHistory', JSON.stringify(updatedHistory));
 
     if (isFirebaseEnabled()) {
       try {
-        const q = query(collection(db, 'mobileAssets'), where('assetCode', '==', assetCode));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(async (document) => {
-          const docRef = doc(db, 'mobileAssets', document.id);
-          await deleteDoc(docRef);
+        // Delete from 'mobileAssets' in Firestore
+        const q1 = query(collection(db, 'mobileAssets'), where('assetCode', '==', assetCode));
+        const s1 = await getDocs(q1);
+        s1.forEach(async (document) => {
+          await deleteDoc(doc(db, 'mobileAssets', document.id));
+        });
+
+        // Delete from 'assignedAssets' in Firestore
+        const q2 = query(collection(db, 'assignedAssets'), where('assetCode', '==', assetCode));
+        const s2 = await getDocs(q2);
+        s2.forEach(async (document) => {
+          await deleteDoc(doc(db, 'assignedAssets', document.id));
+        });
+
+        // Delete from 'assetHistory' in Firestore
+        const q3 = query(collection(db, 'assetHistory'), where('assetCode', '==', assetCode));
+        const s3 = await getDocs(q3);
+        s3.forEach(async (document) => {
+          await deleteDoc(doc(db, 'assetHistory', document.id));
         });
       } catch (error) {
-        console.error("Firestore mobile delete failed, updated locally:", error);
+        console.error("Firestore mobile cascaded delete failed:", error);
       }
     }
-    return updated;
+    return {
+      mobileAssets: updatedMobile,
+      assignedAssets: updatedAssigned,
+      assetHistory: updatedHistory
+    };
   },
 
   // ------------------ USERS ------------------
