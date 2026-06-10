@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { dbService } from './dbService'
-import { compressImage } from './utils'
+import { compressImage, excelDateToDateString } from './utils'
 import { FileImage, Upload, Download, FileSpreadsheet } from 'lucide-react'
 import * as XLSX from 'xlsx'
 
@@ -124,8 +124,8 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
           const serial = getVal(['Serial Number', 'serialNumber', 'SerialNumber', 'Serial'])
           const vendor = getVal(['Vendor Name', 'vendorName', 'Vendor'])
           const invoiceNum = getVal(['Invoice Number', 'invoiceNumber', 'InvoiceNum', 'Invoice'])
-          const pDate = getVal(['Purchase Date', 'purchaseDate', 'Purchase'])
-          const iDate = getVal(['Invoice Date', 'invoiceDate', 'InvoiceDate'])
+          const pDate = excelDateToDateString(getVal(['Purchase Date', 'purchaseDate', 'Purchase']))
+          const iDate = excelDateToDateString(getVal(['Invoice Date', 'invoiceDate', 'InvoiceDate']))
           const amt = getVal(['Amount', 'Price', 'Value'])
           const po = getVal(['PO Number', 'poNumber', 'PO'])
           const org = getVal(['Organization Name', 'organizationName', 'Organization', 'Org'])
