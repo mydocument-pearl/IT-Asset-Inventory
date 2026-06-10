@@ -20,7 +20,18 @@ export const dbService = {
 
   // ------------------ ASSETS ------------------
   async getAssets() {
-    const local = JSON.parse(localStorage.getItem('assets')) || [];
+    const localRaw = JSON.parse(localStorage.getItem('assets')) || [];
+    const localSeen = new Set();
+    const local = [];
+    localRaw.forEach(item => {
+      const code = (item.assetCode || '').toLowerCase().trim();
+      if (code && !localSeen.has(code)) {
+        localSeen.add(code);
+        local.push(item);
+      }
+    });
+    localStorage.setItem('assets', JSON.stringify(local));
+
     if (!isFirebaseEnabled()) return local;
 
     try {
@@ -32,8 +43,35 @@ export const dbService = {
       
       // Sync local storage with latest Firestore if Firestore has data
       if (fbAssets.length > 0) {
-        localStorage.setItem('assets', JSON.stringify(fbAssets));
-        return fbAssets;
+        const seenCodes = new Set();
+        const uniqueFbAssets = [];
+        const duplicateDocs = [];
+
+        fbAssets.forEach(item => {
+          const code = (item.assetCode || '').toLowerCase().trim();
+          if (code && !seenCodes.has(code)) {
+            seenCodes.add(code);
+            uniqueFbAssets.push(item);
+          } else {
+            duplicateDocs.push(item);
+          }
+        });
+
+        // Background clean up of duplicate documents in firestore
+        if (duplicateDocs.length > 0) {
+          duplicateDocs.forEach(async (dup) => {
+            if (dup.id) {
+              try {
+                await deleteDoc(doc(db, 'assets', dup.id));
+              } catch (delErr) {
+                console.error("Firestore asset duplicate delete failed:", delErr);
+              }
+            }
+          });
+        }
+
+        localStorage.setItem('assets', JSON.stringify(uniqueFbAssets));
+        return uniqueFbAssets;
       }
       return local;
     } catch (error) {
@@ -59,12 +97,22 @@ export const dbService = {
 
   async saveBulkAssets(newAssets) {
     const local = JSON.parse(localStorage.getItem('assets')) || [];
-    const updated = [...local, ...newAssets];
+    const existingCodes = new Set(local.map(item => (item.assetCode || '').toLowerCase().trim()));
+    const dedupedNew = newAssets.filter(item => {
+      const code = (item.assetCode || '').toLowerCase().trim();
+      if (!existingCodes.has(code)) {
+        existingCodes.add(code);
+        return true;
+      }
+      return false;
+    });
+
+    const updated = [...local, ...dedupedNew];
     localStorage.setItem('assets', JSON.stringify(updated));
 
-    if (isFirebaseEnabled()) {
+    if (isFirebaseEnabled() && dedupedNew.length > 0) {
       try {
-        const promises = newAssets.map(asset => addDoc(collection(db, 'assets'), asset));
+        const promises = dedupedNew.map(asset => addDoc(collection(db, 'assets'), asset));
         await Promise.all(promises);
       } catch (error) {
         console.error("Firestore bulk write failed, saved locally:", error);
@@ -242,7 +290,7 @@ export const dbService = {
 
   // ------------------ MOBILE ASSETS ------------------
   async getMobileAssets() {
-    const local = JSON.parse(localStorage.getItem('mobileAssets')) || [
+    const localRaw = JSON.parse(localStorage.getItem('mobileAssets')) || [
       {
         sr: 1,
         assetCode: 'MB001',
@@ -285,6 +333,17 @@ export const dbService = {
       }
     ];
 
+    const localSeen = new Set();
+    const local = [];
+    localRaw.forEach(item => {
+      const code = (item.assetCode || '').toLowerCase().trim();
+      if (code && !localSeen.has(code)) {
+        localSeen.add(code);
+        local.push(item);
+      }
+    });
+    localStorage.setItem('mobileAssets', JSON.stringify(local));
+
     if (!isFirebaseEnabled()) return local;
 
     try {
@@ -295,8 +354,35 @@ export const dbService = {
       });
 
       if (fbMobile.length > 0) {
-        localStorage.setItem('mobileAssets', JSON.stringify(fbMobile));
-        return fbMobile;
+        const seenCodes = new Set();
+        const uniqueFbMobile = [];
+        const duplicateDocs = [];
+
+        fbMobile.forEach(item => {
+          const code = (item.assetCode || '').toLowerCase().trim();
+          if (code && !seenCodes.has(code)) {
+            seenCodes.add(code);
+            uniqueFbMobile.push(item);
+          } else {
+            duplicateDocs.push(item);
+          }
+        });
+
+        // Background clean up of duplicate documents in firestore
+        if (duplicateDocs.length > 0) {
+          duplicateDocs.forEach(async (dup) => {
+            if (dup.id) {
+              try {
+                await deleteDoc(doc(db, 'mobileAssets', dup.id));
+              } catch (delErr) {
+                console.error("Firestore duplicate delete failed:", delErr);
+              }
+            }
+          });
+        }
+
+        localStorage.setItem('mobileAssets', JSON.stringify(uniqueFbMobile));
+        return uniqueFbMobile;
       } else {
         // If Firestore is empty, seed it with default data
         for (const item of local) {
@@ -329,15 +415,25 @@ export const dbService = {
 
   async saveBulkMobileAssets(newItems) {
     const local = JSON.parse(localStorage.getItem('mobileAssets')) || [];
+    const existingCodes = new Set(local.map(item => (item.assetCode || '').toLowerCase().trim()));
+    const dedupedNew = newItems.filter(item => {
+      const code = (item.assetCode || '').toLowerCase().trim();
+      if (!existingCodes.has(code)) {
+        existingCodes.add(code);
+        return true;
+      }
+      return false;
+    });
+
     let currentLength = local.length;
-    const itemsWithSr = newItems.map((item, index) => ({
+    const itemsWithSr = dedupedNew.map((item, index) => ({
       ...item,
       sr: currentLength + index + 1
     }));
     const updated = [...local, ...itemsWithSr];
     localStorage.setItem('mobileAssets', JSON.stringify(updated));
 
-    if (isFirebaseEnabled()) {
+    if (isFirebaseEnabled() && itemsWithSr.length > 0) {
       try {
         const promises = itemsWithSr.map(item => addDoc(collection(db, 'mobileAssets'), item));
         await Promise.all(promises);
