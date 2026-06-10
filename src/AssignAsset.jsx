@@ -65,21 +65,12 @@ export default function AssignAsset({
   // Sort unique employees alphabetically by name
   uniqueEmployees.sort((a, b) => a.name.localeCompare(b.name))
 
-  const handleSelectExistingEmployee = (empKey) => {
-    if (!empKey) {
-      // Clear form fields
-      setEmployeeName('')
-      setEmployeePhone('')
-      setDepartment('')
-      setOrganization('')
-      setEmployeePrefix('')
-      setEmployeeId('')
-      return
-    }
-
-    const emp = uniqueEmployees.find(e => `${e.name}_${e.id}` === empKey)
+  const handleEmployeeNameChange = (val) => {
+    setEmployeeName(val)
+    
+    // Check if the typed value exactly matches one of the unique employees
+    const emp = uniqueEmployees.find(e => e.name.toLowerCase().trim() === val.toLowerCase().trim())
     if (emp) {
-      setEmployeeName(emp.name)
       setEmployeePhone(emp.phone || '')
       setDepartment(emp.department || '')
       
@@ -252,24 +243,6 @@ export default function AssignAsset({
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Quick Autofill */}
-        <div>
-          <label className="block text-sm font-semibold text-red-600 mb-2 flex items-center gap-1">
-            <span className="animate-pulse">⚡</span> Quick Autofill Employee
-          </label>
-          <select
-            onChange={(e) => handleSelectExistingEmployee(e.target.value)}
-            className="w-full bg-red-50/40 border border-red-200 text-red-700 rounded-xl px-4 py-3 outline-none font-medium cursor-pointer transition hover:bg-red-50/80"
-          >
-            <option value="">-- New Employee (Type Below) --</option>
-            {uniqueEmployees.map((emp, idx) => (
-              <option key={idx} value={`${emp.name}_${emp.id}`}>
-                {emp.name} ({emp.id || 'No ID'})
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Employee Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -278,10 +251,16 @@ export default function AssignAsset({
           <input
             type="text"
             value={employeeName}
-            onChange={(e) => setEmployeeName(e.target.value)}
+            onChange={(e) => handleEmployeeNameChange(e.target.value)}
             placeholder="Enter employee name"
+            list="employee-names-list"
             className="w-full glass-input rounded-xl px-4 py-3 outline-none"
           />
+          <datalist id="employee-names-list">
+            {uniqueEmployees.map((emp, idx) => (
+              <option key={idx} value={emp.name} />
+            ))}
+          </datalist>
         </div>
 
         {/* Employee Phone */}
