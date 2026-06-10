@@ -42,6 +42,64 @@ export default function AssignAsset({
     }))
   ]
 
+  // Extract unique employee records from assigned assets
+  const uniqueEmployees = []
+  const seenEmployees = new Set()
+  assignedAssets.forEach(item => {
+    if (item.employeeName) {
+      const nameNorm = item.employeeName.trim()
+      const idNorm = (item.employeeId || '').trim()
+      const key = `${nameNorm.toLowerCase()}_${idNorm.toLowerCase()}`
+      if (!seenEmployees.has(key)) {
+        seenEmployees.add(key)
+        uniqueEmployees.push({
+          name: nameNorm,
+          id: idNorm,
+          phone: item.employeePhone,
+          department: item.department
+        })
+      }
+    }
+  })
+
+  // Sort unique employees alphabetically by name
+  uniqueEmployees.sort((a, b) => a.name.localeCompare(b.name))
+
+  const handleSelectExistingEmployee = (empKey) => {
+    if (!empKey) {
+      // Clear form fields
+      setEmployeeName('')
+      setEmployeePhone('')
+      setDepartment('')
+      setOrganization('')
+      setEmployeePrefix('')
+      setEmployeeId('')
+      return
+    }
+
+    const emp = uniqueEmployees.find(e => `${e.name}_${e.id}` === empKey)
+    if (emp) {
+      setEmployeeName(emp.name)
+      setEmployeePhone(emp.phone || '')
+      setDepartment(emp.department || '')
+      
+      const fullId = emp.id || ''
+      if (fullId.startsWith('O2C-')) {
+        setOrganization('On2Cook India Pvt. Ltd.')
+        setEmployeePrefix('O2C-')
+        setEmployeeId(fullId.replace('O2C-', ''))
+      } else if (fullId.startsWith('II-')) {
+        setOrganization('InventIndia Innovations Pvt. Ltd.')
+        setEmployeePrefix('II-')
+        setEmployeeId(fullId.replace('II-', ''))
+      } else {
+        setOrganization('')
+        setEmployeePrefix('')
+        setEmployeeId(fullId)
+      }
+    }
+  }
+
   // Filter available combined assets based on selected asset type
   const filteredAvailableAssets = combinedAssets.filter((item) => {
     const isAvailable = item.status === 'Available';
@@ -194,6 +252,24 @@ export default function AssignAsset({
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* Quick Autofill */}
+        <div>
+          <label className="block text-sm font-semibold text-red-600 mb-2 flex items-center gap-1">
+            <span className="animate-pulse">⚡</span> Quick Autofill Employee
+          </label>
+          <select
+            onChange={(e) => handleSelectExistingEmployee(e.target.value)}
+            className="w-full bg-red-50/40 border border-red-200 text-red-700 rounded-xl px-4 py-3 outline-none font-medium cursor-pointer transition hover:bg-red-50/80"
+          >
+            <option value="">-- New Employee (Type Below) --</option>
+            {uniqueEmployees.map((emp, idx) => (
+              <option key={idx} value={`${emp.name}_${emp.id}`}>
+                {emp.name} ({emp.id || 'No ID'})
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Employee Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
