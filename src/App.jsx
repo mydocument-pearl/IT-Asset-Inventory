@@ -61,6 +61,7 @@ function App() {
   const [assetHistory, setAssetHistory] = useState([])
   const [activityLogs, setActivityLogs] = useState([])
   const [systemUsers, setSystemUsers] = useState([])
+  const [employees, setEmployees] = useState([])
   
   // App UI States
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -122,13 +123,14 @@ function App() {
         const online = await dbService.checkConnection();
         setIsFirebaseOnline(online);
 
-        const [loadedAssets, loadedMobile, loadedAssigned, loadedHistory, loadedLogs, loadedUsers] = await Promise.all([
+        const [loadedAssets, loadedMobile, loadedAssigned, loadedHistory, loadedLogs, loadedUsers, loadedEmployees] = await Promise.all([
           dbService.getAssets(),
           dbService.getMobileAssets(),
           dbService.getAssignedAssets(),
           dbService.getAssetHistory(),
           dbService.getActivityLogs(),
-          dbService.getUsers()
+          dbService.getUsers(),
+          dbService.getEmployees()
         ]);
 
         setAssets(loadedAssets);
@@ -137,6 +139,7 @@ function App() {
         setAssetHistory(loadedHistory);
         setActivityLogs(loadedLogs);
         setSystemUsers(loadedUsers);
+        setEmployees(loadedEmployees || []);
       } catch (err) {
         console.error("Failed to load inventory:", err);
         showNotification("Failed to connect to database. Falling back to local storage.", "error");
@@ -258,11 +261,13 @@ function App() {
       localStorage.removeItem('assetHistory');
       localStorage.removeItem('mobileAssets');
       localStorage.removeItem('activityLogs');
+      localStorage.removeItem('employees');
       setAssets([]);
       setAssignedAssets([]);
       setAssetHistory([]);
       setMobileAssets([]);
       setActivityLogs([]);
+      setEmployees([]);
       showNotification("Local database cleared.", "success");
     }
   }
@@ -285,6 +290,117 @@ function App() {
         showNotification("Failed to delete asset.", "error");
       }
     }
+  };
+
+  const handleDownloadEmployeeTemplate = () => {
+    const sampleData = [
+      {
+        'Employee Name': 'Rahul Sharma',
+        'Employee ID': 'O2C-101',
+        'Phone Number': '9876543210',
+        'Department': 'Accounts',
+        'Organization Name': 'On2Cook India Pvt. Ltd.'
+      },
+      {
+        'Employee Name': 'Priya Mehta',
+        'Employee ID': 'II-205',
+        'Phone Number': '9123456780',
+        'Department': 'HR',
+        'Organization Name': 'InventIndia Innovations Pvt. Ltd.'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Employees Template');
+
+    // Autofit columns
+    const maxLens = sampleData.reduce((acc, row) => {
+      Object.keys(row).forEach((key) => {
+        const valLen = String(row[key] || '').length;
+        const keyLen = key.length;
+        acc[key] = Math.max(acc[key] || 0, valLen, keyLen);
+      });
+      return acc;
+    }, {});
+    worksheet['!cols'] = Object.keys(maxLens).map(key => ({ wch: maxLens[key] + 3 }));
+
+    XLSX.writeFile(workbook, 'Employee_Directory_Template.xlsx');
+    showNotification('Employee template spreadsheet downloaded!', 'success');
+  };
+
+  const handleUploadEmployeeExcel = async (file) => {
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target.result;
+        const workbook = XLSX.read(bstr, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rawRows = XLSX.utils.sheet_to_json(worksheet);
+
+        if (rawRows.length === 0) {
+          showNotification('The spreadsheet is empty.', 'error');
+          return;
+        }
+
+        const newEmployees = [];
+        for (let i = 0; i < rawRows.length; i++) {
+          const row = rawRows[i];
+          const getVal = (possibleKeys) => {
+            for (const key of possibleKeys) {
+              const exactKey = Object.keys(row).find(k => k.toLowerCase().replace(/[\s_-]/g, '') === key.toLowerCase().replace(/[\s_-]/g, ''));
+              if (exactKey !== undefined && row[exactKey] !== undefined) {
+                return String(row[exactKey]).trim();
+              }
+            }
+            return '';
+          };
+
+          const name = getVal(['Employee Name', 'Name', 'EmployeeName']);
+          const id = getVal(['Employee ID', 'EmployeeCode', 'ID', 'Code']);
+          const phone = getVal(['Phone Number', 'Phone', 'Mobile']);
+          const dept = getVal(['Department', 'Dept']);
+          const org = getVal(['Organization Name', 'Organization', 'Company', 'Org']);
+
+          if (!name) continue; // Skip rows without names
+
+          newEmployees.push({
+            name,
+            id: id || '-',
+            phone: phone || '-',
+            department: dept || '-',
+            organization: org || '-'
+          });
+        }
+
+        if (newEmployees.length === 0) {
+          showNotification('Failed to import: No valid employee names found.', 'error');
+          return;
+        }
+
+        const updatedEmployees = await dbService.saveBulkEmployees(newEmployees);
+        setEmployees(updatedEmployees);
+
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Bulk Employee Import',
+          details: `Imported ${newEmployees.length} employees into directory.`
+        });
+
+        showNotification(`Successfully imported ${newEmployees.length} employees!`, 'success');
+        
+        // Reset file input
+        const fileInput = document.getElementById('bulk-employee-excel-input');
+        if (fileInput) fileInput.value = '';
+      } catch (err) {
+        console.error(err);
+        showNotification('Failed to parse employee spreadsheet.', 'error');
+      }
+    };
+    reader.readAsBinaryString(file);
   };
 
   const handleLogout = async () => {
@@ -1113,6 +1229,7 @@ function App() {
                   mobileAssets={mobileAssets}
                   setMobileAssets={setMobileAssets}
                   assignedAssets={assignedAssets}
+                  employees={employees}
                   showNotification={showNotification}
                   addAssignedAsset={(data) => {
                     const updated = [...assignedAssets, data];
@@ -1475,6 +1592,40 @@ function App() {
                             </div>
                           ))
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bulk Employee Import Directory */}
+                  {isUserAdmin && (
+                    <div className="space-y-4 pb-6 border-b border-slate-100">
+                      <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <FileSpreadsheet className="text-red-500" size={18} />
+                        Bulk Import Employee Directory
+                      </h4>
+                      <p className="text-xs text-slate-400">
+                        Upload employee names, codes, departments, and organization details from an Excel sheet to populate the autofill directory.
+                      </p>
+                      
+                      <div className="flex flex-wrap gap-4 items-center bg-slate-50 border border-slate-100 rounded-xl p-4 max-w-xl">
+                        <button
+                          type="button"
+                          onClick={handleDownloadEmployeeTemplate}
+                          className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm"
+                        >
+                          <Download size={14} />
+                          Download Employee Template
+                        </button>
+                        
+                        <div className="flex-1 min-w-[200px]">
+                          <input
+                            type="file"
+                            id="bulk-employee-excel-input"
+                            accept=".xlsx, .xls, .csv"
+                            onChange={(e) => handleUploadEmployeeExcel(e.target.files[0])}
+                            className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black file:cursor-pointer"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}

@@ -10,6 +10,7 @@ export default function AssignAsset({
   mobileAssets = [],
   setMobileAssets,
   assignedAssets = [],
+  employees = [],
   showNotification
 }) {
   const [organization, setOrganization] = useState('')
@@ -42,27 +43,42 @@ export default function AssignAsset({
     }))
   ]
 
-  // Extract unique employee records from assigned assets
-  const uniqueEmployees = []
-  const seenEmployees = new Set()
+  // Extract unique employee records from assigned assets and imported employee directory
+  const uniqueEmployeesMap = new Map()
+  
+  // 1. Add imported employee directory
+  employees.forEach(emp => {
+    if (emp.name) {
+      const nameNorm = emp.name.trim()
+      const idNorm = (emp.id || '').trim()
+      const key = `${nameNorm.toLowerCase()}_${idNorm.toLowerCase()}`
+      uniqueEmployeesMap.set(key, {
+        name: nameNorm,
+        id: idNorm,
+        phone: emp.phone || '',
+        department: emp.department || ''
+      })
+    }
+  })
+
+  // 2. Add employees from assigned assets as fallback
   assignedAssets.forEach(item => {
     if (item.employeeName) {
       const nameNorm = item.employeeName.trim()
       const idNorm = (item.employeeId || '').trim()
       const key = `${nameNorm.toLowerCase()}_${idNorm.toLowerCase()}`
-      if (!seenEmployees.has(key)) {
-        seenEmployees.add(key)
-        uniqueEmployees.push({
+      if (!uniqueEmployeesMap.has(key)) {
+        uniqueEmployeesMap.set(key, {
           name: nameNorm,
           id: idNorm,
-          phone: item.employeePhone,
-          department: item.department
+          phone: item.employeePhone || '',
+          department: item.department || ''
         })
       }
     }
   })
 
-  // Sort unique employees alphabetically by name
+  const uniqueEmployees = Array.from(uniqueEmployeesMap.values())
   uniqueEmployees.sort((a, b) => a.name.localeCompare(b.name))
 
   const handleEmployeeNameChange = (val) => {

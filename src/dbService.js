@@ -448,6 +448,56 @@ export const dbService = {
     return updated;
   },
 
+  // ------------------ EMPLOYEES ------------------
+  async getEmployees() {
+    const local = JSON.parse(localStorage.getItem('employees')) || [];
+    if (!isFirebaseEnabled()) return local;
+
+    try {
+      const querySnapshot = await getDocs(collection(db, 'employees'));
+      const fbEmployees = [];
+      querySnapshot.forEach((doc) => {
+        fbEmployees.push({ id: doc.id, ...doc.data() });
+      });
+
+      if (fbEmployees.length > 0) {
+        localStorage.setItem('employees', JSON.stringify(fbEmployees));
+        return fbEmployees;
+      }
+      return local;
+    } catch (error) {
+      console.warn("Firestore fetch failed for employees, using local storage:", error);
+      return local;
+    }
+  },
+
+  async saveBulkEmployees(newEmployees) {
+    const local = JSON.parse(localStorage.getItem('employees')) || [];
+    // Filter out duplicates based on lowercased name + id combination
+    const existingKeys = new Set(local.map(e => `${(e.name || '').trim().toLowerCase()}_${(e.id || '').trim().toLowerCase()}`));
+    const dedupedNew = newEmployees.filter(emp => {
+      const key = `${(emp.name || '').trim().toLowerCase()}_${(emp.id || '').trim().toLowerCase()}`;
+      if (!existingKeys.has(key)) {
+        existingKeys.add(key);
+        return true;
+      }
+      return false;
+    });
+
+    const updated = [...local, ...dedupedNew];
+    localStorage.setItem('employees', JSON.stringify(updated));
+
+    if (isFirebaseEnabled() && dedupedNew.length > 0) {
+      try {
+        const promises = dedupedNew.map(emp => addDoc(collection(db, 'employees'), emp));
+        await Promise.all(promises);
+      } catch (error) {
+        console.error("Firestore bulk write failed for employees, saved locally:", error);
+      }
+    }
+    return updated;
+  },
+
   // ------------------ ACTIVITY LOGS ------------------
   async getActivityLogs() {
     const local = JSON.parse(localStorage.getItem('activityLogs')) || [];
