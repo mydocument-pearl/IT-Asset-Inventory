@@ -294,6 +294,46 @@ function App() {
     }
   };
 
+  const handleDeleteAssignment = async (assetCode, employeeName) => {
+    if (!isUserAdmin) return;
+    if (window.confirm(`Are you sure you want to delete the active assignment record for asset ${assetCode}?`)) {
+      try {
+        const updated = await dbService.removeAssignedAsset(assetCode);
+        setAssignedAssets(updated);
+        showNotification(`Assignment record for ${assetCode} deleted successfully.`, "success");
+        
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Deleted Assignment Record',
+          details: `Manually deleted active assignment entry of ${assetCode} assigned to ${employeeName}.`
+        });
+      } catch (err) {
+        console.error(err);
+        showNotification("Failed to delete assignment record.", "error");
+      }
+    }
+  };
+
+  const handleDeleteHistoryRecord = async (id, timestamp, assetCode) => {
+    if (!isUserAdmin) return;
+    if (window.confirm(`Are you sure you want to delete this history log record for asset ${assetCode}?`)) {
+      try {
+        const updated = await dbService.deleteAssetHistoryRecord(id, timestamp, assetCode);
+        setAssetHistory(updated);
+        showNotification("History log record deleted successfully.", "success");
+        
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Deleted History Entry',
+          details: `Deleted historical log entry for ${assetCode}.`
+        });
+      } catch (err) {
+        console.error(err);
+        showNotification("Failed to delete history record.", "error");
+      }
+    }
+  };
+
   const handleDownloadEmployeeTemplate = () => {
     const sampleData = [
       {
@@ -1296,12 +1336,23 @@ function App() {
                                 </span>
                               </td>
                               <td className="p-4 text-center">
-                                <button
-                                  onClick={() => handleStartReturnFlow(item)}
-                                  className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-150 cursor-pointer"
-                                >
-                                  Return Asset
-                                </button>
+                                <div className="flex items-center justify-center gap-2">
+                                  <button
+                                    onClick={() => handleStartReturnFlow(item)}
+                                    className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 px-3.5 py-1.5 rounded-lg text-xs font-bold transition duration-150 cursor-pointer"
+                                  >
+                                    Return Asset
+                                  </button>
+                                  {isUserAdmin && (
+                                    <button
+                                      onClick={() => handleDeleteAssignment(item.assetCode, item.employeeName)}
+                                      className="p-1.5 text-red-650 hover:text-red-800 transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
+                                      title="Delete Assignment Entry"
+                                    >
+                                      <Trash2 size={15} />
+                                    </button>
+                                  )}
+                                </div>
                               </td>
                             </tr>
                           ))
@@ -1455,6 +1506,7 @@ function App() {
                           <th className="px-4 py-3 font-bold">Remarks</th>
                           <th className="px-4 py-3 font-bold">Damages</th>
                           <th className="px-4 py-3 font-bold">Status</th>
+                          {isUserAdmin && <th className="px-4 py-3 font-bold text-right print:hidden">Action</th>}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 bg-white">
@@ -1487,11 +1539,22 @@ function App() {
                                   {item.status || 'Returned'}
                                 </span>
                               </td>
+                              {isUserAdmin && (
+                                <td className="px-4 py-3.5 text-right print:hidden">
+                                  <button
+                                    onClick={() => handleDeleteHistoryRecord(item.id, item.timestamp, item.assetCode)}
+                                    className="p-1.5 text-red-650 hover:text-red-800 transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
+                                    title="Delete History Log Entry"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </td>
+                              )}
                             </tr>
                           ))}
                         {assetHistory.length === 0 && (
                           <tr>
-                            <td colSpan={10} className="p-8 text-center text-slate-400 font-medium">
+                            <td colSpan={isUserAdmin ? 12 : 11} className="p-8 text-center text-slate-400 font-medium">
                               No log events captured.
                             </td>
                           </tr>

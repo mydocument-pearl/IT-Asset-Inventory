@@ -556,6 +556,41 @@ export const dbService = {
     return updated;
   },
 
+  async deleteAssetHistoryRecord(id, timestamp, assetCode) {
+    const local = JSON.parse(localStorage.getItem('assetHistory')) || [];
+    const updated = local.filter(item => {
+      if (id && item.id === id) return false;
+      if (timestamp && item.timestamp === timestamp) return false;
+      if (!id && !timestamp && item.assetCode === assetCode) return false;
+      return true;
+    });
+    localStorage.setItem('assetHistory', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        if (id) {
+          const docRef = doc(db, 'assetHistory', id);
+          await deleteDoc(docRef);
+        } else {
+          const q = query(
+            collection(db, 'assetHistory'),
+            where('assetCode', '==', assetCode)
+          );
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach(async (document) => {
+            const data = document.data();
+            if (!timestamp || data.timestamp === timestamp) {
+              await deleteDoc(doc(db, 'assetHistory', document.id));
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Firestore history delete failed:", error);
+      }
+    }
+    return updated;
+  },
+
   // ------------------ ACTIVITY LOGS ------------------
   async getActivityLogs() {
     const local = JSON.parse(localStorage.getItem('activityLogs')) || [];
