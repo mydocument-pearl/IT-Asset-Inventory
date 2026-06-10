@@ -290,48 +290,7 @@ export const dbService = {
 
   // ------------------ MOBILE ASSETS ------------------
   async getMobileAssets() {
-    const localRaw = JSON.parse(localStorage.getItem('mobileAssets')) || [
-      {
-        sr: 1,
-        assetCode: 'MB001',
-        assetType: 'Mobile',
-        employee: 'Rahul Sharma',
-        department: 'Accounts',
-        brand: 'Samsung',
-        model: 'Galaxy S23',
-        imei: '352478965214785',
-        simCompany: 'Airtel',
-        simNumber: '9876543210',
-        status: 'Allocated',
-        vendor: 'Vijay Sales',
-        organizationName: 'On2Cook India Pvt. Ltd.',
-        invoiceNumber: 'INV-9988',
-        purchaseDate: '2025-01-10',
-        invoiceDate: '2025-01-10',
-        amount: 75000,
-        quantity: 1
-      },
-      {
-        sr: 2,
-        assetCode: 'SM001',
-        assetType: 'SIM Card',
-        employee: 'Priya Mehta',
-        department: 'HR',
-        brand: '-',
-        model: '-',
-        imei: '874512369874563',
-        simCompany: 'Jio',
-        simNumber: '9123456780',
-        status: 'Available',
-        vendor: 'Reliance Digital',
-        organizationName: 'InventIndia Innovations Pvt. Ltd.',
-        invoiceNumber: 'INV-1122',
-        purchaseDate: '2025-02-15',
-        invoiceDate: '2025-02-15',
-        amount: 500,
-        quantity: 5
-      }
-    ];
+    const localRaw = JSON.parse(localStorage.getItem('mobileAssets')) || [];
 
     const localSeen = new Set();
     const local = [];
@@ -384,11 +343,7 @@ export const dbService = {
         localStorage.setItem('mobileAssets', JSON.stringify(uniqueFbMobile));
         return uniqueFbMobile;
       } else {
-        // If Firestore is empty, seed it with default data
-        for (const item of local) {
-          await addDoc(collection(db, 'mobileAssets'), item);
-        }
-        return local;
+        return [];
       }
     } catch (error) {
       console.warn("Firestore fetch failed, using local storage:", error);
