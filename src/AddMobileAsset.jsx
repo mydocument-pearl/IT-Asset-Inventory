@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { dbService } from './dbService'
 import { compressImage } from './utils'
-import { FileImage } from 'lucide-react'
+import { FileImage, Upload, Download, FileSpreadsheet } from 'lucide-react'
+import * as XLSX from 'xlsx'
 
 export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, showNotification }) {
   const [assetType, setAssetType] = useState('')
@@ -26,6 +27,221 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
   const [simCompany, setSimCompany] = useState('')
   const [simNumber, setSimNumber] = useState('')
   const [simImei, setSimImei] = useState('')
+
+  const [excelFile, setExcelFile] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { role: 'member', name: 'Unknown' };
+  const isAdmin = currentUser.role === 'admin';
+
+  const handleDownloadTemplate = () => {
+    const sampleData = [
+      {
+        'Asset Code': 'MB003',
+        'Asset Type': 'Mobile',
+        'Brand': 'Samsung',
+        'Model': 'Galaxy S23',
+        'IMEI 1': '358901234567890',
+        'IMEI 2': '358901234567891',
+        'SIM Company': '',
+        'SIM Number': '',
+        'SIM IMEI': '',
+        'Vendor Name': 'Vijay Sales',
+        'Invoice Number': 'VS-4491-26',
+        'Purchase Date': '2026-06-01',
+        'Invoice Date': '2026-06-01',
+        'Amount': 75000,
+        'Organization Name': 'On2Cook India Pvt. Ltd.'
+      },
+      {
+        'Asset Code': 'SM002',
+        'Asset Type': 'SIM Card',
+        'Brand': '',
+        'Model': '',
+        'IMEI 1': '',
+        'IMEI 2': '',
+        'SIM Company': 'Airtel',
+        'SIM Number': '9876543210',
+        'SIM IMEI': '89911234567890123456',
+        'Vendor Name': 'Reliance Digital',
+        'Invoice Number': 'RD-9988-26',
+        'Purchase Date': '2026-06-02',
+        'Invoice Date': '2026-06-02',
+        'Amount': 250,
+        'Organization Name': 'InventIndia Innovations Pvt. Ltd.'
+      }
+    ]
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Mobile SIM Template')
+    
+    const maxLens = sampleData.reduce((acc, row) => {
+      Object.keys(row).forEach((key) => {
+        const valLen = String(row[key] || '').length
+        const keyLen = key.length
+        acc[key] = Math.max(acc[key] || 0, valLen, keyLen)
+      })
+      return acc
+    }, {})
+    worksheet['!cols'] = Object.keys(maxLens).map(key => ({ wch: maxLens[key] + 3 }))
+
+    XLSX.writeFile(workbook, 'Mobile_SIM_Bulk_Upload_Template.xlsx')
+    if (showNotification) {
+      showNotification('Mobile/SIM Excel Template downloaded!', 'success')
+    }
+  }
+
+  const handleUploadExcel = async (e) => {
+    e.preventDefault()
+    if (!excelFile) {
+      if (showNotification) showNotification('Please select an Excel file.', 'error')
+      return
+    }
+
+    setIsUploading(true)
+    const reader = new FileReader()
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target.result
+        const workbook = XLSX.read(bstr, { type: 'binary' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        const rawRows = XLSX.utils.sheet_to_json(worksheet)
+
+        if (rawRows.length === 0) {
+          if (showNotification) showNotification('The spreadsheet is empty.', 'error')
+          setIsUploading(false)
+          return
+        }
+
+        const newItems = []
+        const skippedRows = []
+        const existingCodes = new Set(mobileAssets.map(a => (a.assetCode || '').toLowerCase().trim()))
+
+        for (let i = 0; i < rawRows.length; i++) {
+          const row = rawRows[i]
+
+          const getVal = (possibleKeys) => {
+            for (const key of possibleKeys) {
+              const exactKey = Object.keys(row).find(k => k.toLowerCase().replace(/[\s_-]/g, '') === key.toLowerCase().replace(/[\s_-]/g, ''))
+              if (exactKey !== undefined && row[exactKey] !== undefined) {
+                return String(row[exactKey]).trim()
+              }
+            }
+            return ''
+          }
+
+          const rawCode = getVal(['Asset Code', 'assetCode', 'Code'])
+          const rawType = getVal(['Asset Type', 'assetType', 'Type'])
+          const brand = getVal(['Brand', 'MobileBrand', 'SIMCompany', 'Company'])
+          const model = getVal(['Model', 'MobileModel'])
+          const imei_1 = getVal(['IMEI 1', 'imei1', 'IMEI'])
+          const imei_2 = getVal(['IMEI 2', 'imei2'])
+          const simComp = getVal(['SIM Company', 'simCompany', 'SIMCompany'])
+          const simNo = getVal(['SIM Number', 'simNumber', 'SIMNo', 'Number'])
+          const sImei = getVal(['SIM IMEI', 'simImei', 'SIMSerialNumber', 'SIMSerial'])
+          const vendor = getVal(['Vendor Name', 'vendorName', 'Vendor'])
+          const invoiceNum = getVal(['Invoice Number', 'invoiceNumber', 'Invoice'])
+          const pDate = getVal(['Purchase Date', 'purchaseDate', 'Purchase'])
+          const iDate = getVal(['Invoice Date', 'invoiceDate', 'InvoiceDate'])
+          const amt = getVal(['Amount', 'Price', 'Cost'])
+          const org = getVal(['Organization Name', 'organizationName', 'Organization'])
+
+          if (!rawCode || !rawType) {
+            skippedRows.push({ index: i + 2, reason: 'Missing Asset Code or Type' })
+            continue
+          }
+
+          const typeLower = rawType.toLowerCase()
+          const isMobile = typeLower.includes('mobile') || typeLower === 'phone'
+          const isSIM = typeLower.includes('sim')
+
+          if (!isMobile && !isSIM) {
+            skippedRows.push({ index: i + 2, reason: `Invalid Type: ${rawType} (must be Mobile or SIM Card)` })
+            continue
+          }
+
+          const cleanCode = rawCode.toUpperCase()
+          if (existingCodes.has(cleanCode.toLowerCase())) {
+            skippedRows.push({ index: i + 2, reason: `Duplicate Code: ${cleanCode}` })
+            continue
+          }
+
+          if (newItems.some(a => a.assetCode === cleanCode)) {
+            skippedRows.push({ index: i + 2, reason: `Duplicate Code in sheet: ${cleanCode}` })
+            continue
+          }
+
+          const payload = {
+            assetType: isMobile ? 'Mobile' : 'SIM Card',
+            assetCode: cleanCode,
+            vendorName: vendor || '-',
+            invoiceNumber: invoiceNum || '-',
+            purchaseDate: pDate || '',
+            invoiceDate: iDate || '',
+            amount: amt ? Number(amt) : '',
+            quantity: 1,
+            organizationName: org || '-',
+            invoiceImage: '',
+            status: 'Available',
+            employee: '-',
+            department: '-',
+            brand: isMobile ? (brand || '-') : '-',
+            model: isMobile ? (model || '-') : '-',
+            imei: isMobile ? (imei_1 || '-') : '-',
+            imei2: isMobile ? (imei_2 || '-') : '-',
+            simCompany: isSIM ? (simComp || brand || '-') : '-',
+            simNumber: isSIM ? (simNo || '-') : '-',
+            simImei: isSIM ? (sImei || '-') : '-',
+            createdBy: currentUser.name,
+            createdAt: new Date().toISOString()
+          }
+
+          newItems.push(payload)
+        }
+
+        if (newItems.length === 0) {
+          if (showNotification) {
+            showNotification(`Import failed. 0 items loaded. Errors: ${skippedRows.map(r=>`Row ${r.index} (${r.reason})`).join(', ')}`, 'error')
+          }
+          setIsUploading(false)
+          return
+        }
+
+        const updatedMobile = await dbService.saveBulkMobileAssets(newItems)
+        if (onMobileAssetAdded) {
+          onMobileAssetAdded(updatedMobile)
+        }
+
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Bulk Mobile Upload',
+          details: `Imported ${newItems.length} Mobile/SIM devices via Excel upload. (Skipped: ${skippedRows.length}).`
+        })
+
+        if (showNotification) {
+          let msg = `Successfully imported ${newItems.length} Mobile/SIM assets!`
+          if (skippedRows.length > 0) {
+            msg += ` Skipped ${skippedRows.length} rows due to duplicates or validation errors.`
+          }
+          showNotification(msg, 'success')
+        }
+
+        setExcelFile(null)
+        const fileInput = document.getElementById('bulk-mobile-excel-input')
+        if (fileInput) fileInput.value = ''
+
+      } catch (error) {
+        console.error(error)
+        if (showNotification) showNotification('Failed to parse spreadsheet file.', 'error')
+      } finally {
+        setIsUploading(false)
+      }
+    }
+
+    reader.readAsBinaryString(excelFile)
+  }
 
   const handleAssetTypeChange = (type) => {
     setAssetType(type)
@@ -443,6 +659,80 @@ export default function AddMobileAsset({ mobileAssets = [], onMobileAssetAdded, 
       >
         Save Mobile Asset
       </button>
+
+      {/* Bulk Upload panel - Admin Only */}
+      {isAdmin && (
+        <div className="mt-12 pt-8 border-t border-slate-200">
+          <h3 className="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <FileSpreadsheet className="text-red-500" size={20} />
+            Bulk Import Mobile & SIM Assets
+          </h3>
+          <p className="text-xs text-slate-500 mb-6">
+            Upload multiple company mobile phones or cellular SIM cards at once using our spreadsheet template.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start bg-slate-50/60 border border-slate-100 rounded-2xl p-6">
+            {/* Step 1: Download template */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="h-5 w-5 rounded-full bg-red-100 text-red-600 text-[11px] font-bold flex items-center justify-center">1</span>
+                Download Standard Template
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Start by downloading our Mobile/SIM template. It contains sample rows for both Mobile and SIM Card layouts.
+              </p>
+              <button
+                type="button"
+                onClick={handleDownloadTemplate}
+                className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm"
+              >
+                <Download size={14} />
+                Download Mobile/SIM Template
+              </button>
+            </div>
+
+            {/* Step 2: Upload File */}
+            <form onSubmit={handleUploadExcel} className="space-y-4">
+              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="h-5 w-5 rounded-full bg-red-100 text-red-600 text-[11px] font-bold flex items-center justify-center">2</span>
+                Upload Populated Spreadsheet
+              </h4>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="file"
+                  id="bulk-mobile-excel-input"
+                  accept=".xlsx, .xls, .csv"
+                  onChange={(e) => setExcelFile(e.target.files[0])}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black file:cursor-pointer"
+                />
+                <p className="text-[10px] text-slate-400">Accepted formats: .xlsx, .xls, .csv</p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUploading || !excelFile}
+                className={`w-full md:w-auto px-6 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+                  isUploading || !excelFile
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200/50'
+                    : 'bg-red-600 hover:bg-red-700 text-white cursor-pointer shadow-md shadow-red-500/10'
+                }`}
+              >
+                {isUploading ? (
+                  <>
+                    <div className="h-3.5 w-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                    Importing Records...
+                  </>
+                ) : (
+                  <>
+                    <Upload size={14} />
+                    Upload & Sync Devices
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

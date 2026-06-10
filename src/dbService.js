@@ -278,6 +278,27 @@ export const dbService = {
     return updated;
   },
 
+  async saveBulkMobileAssets(newItems) {
+    const local = JSON.parse(localStorage.getItem('mobileAssets')) || [];
+    let currentLength = local.length;
+    const itemsWithSr = newItems.map((item, index) => ({
+      ...item,
+      sr: currentLength + index + 1
+    }));
+    const updated = [...local, ...itemsWithSr];
+    localStorage.setItem('mobileAssets', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const promises = itemsWithSr.map(item => addDoc(collection(db, 'mobileAssets'), item));
+        await Promise.all(promises);
+      } catch (error) {
+        console.error("Firestore bulk write failed, saved locally:", error);
+      }
+    }
+    return updated;
+  },
+
   async updateMobileAssetStatus(identifier, status, employee = '-', department = '-') {
     const local = JSON.parse(localStorage.getItem('mobileAssets')) || [];
     const updated = local.map(item => 
