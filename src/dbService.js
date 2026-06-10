@@ -41,39 +41,36 @@ export const dbService = {
         fbAssets.push({ id: doc.id, ...doc.data() });
       });
       
-      // Sync local storage with latest Firestore if Firestore has data
-      if (fbAssets.length > 0) {
-        const seenCodes = new Set();
-        const uniqueFbAssets = [];
-        const duplicateDocs = [];
+      const seenCodes = new Set();
+      const uniqueFbAssets = [];
+      const duplicateDocs = [];
 
-        fbAssets.forEach(item => {
-          const code = (item.assetCode || '').toLowerCase().trim();
-          if (code && !seenCodes.has(code)) {
-            seenCodes.add(code);
-            uniqueFbAssets.push(item);
-          } else {
-            duplicateDocs.push(item);
+      fbAssets.forEach(item => {
+        const code = (item.assetCode || '').toLowerCase().trim();
+        if (code && !seenCodes.has(code)) {
+          seenCodes.add(code);
+          uniqueFbAssets.push(item);
+        } else {
+          duplicateDocs.push(item);
+        }
+      });
+
+      // Background clean up of duplicate documents in firestore
+      if (duplicateDocs.length > 0) {
+        duplicateDocs.forEach(async (dup) => {
+          if (dup.id) {
+            try {
+              await deleteDoc(doc(db, 'assets', dup.id));
+            } catch (delErr) {
+              console.error("Firestore asset duplicate delete failed:", delErr);
+            }
           }
         });
-
-        // Background clean up of duplicate documents in firestore
-        if (duplicateDocs.length > 0) {
-          duplicateDocs.forEach(async (dup) => {
-            if (dup.id) {
-              try {
-                await deleteDoc(doc(db, 'assets', dup.id));
-              } catch (delErr) {
-                console.error("Firestore asset duplicate delete failed:", delErr);
-              }
-            }
-          });
-        }
-
-        localStorage.setItem('assets', JSON.stringify(uniqueFbAssets));
-        return uniqueFbAssets;
       }
-      return local;
+
+      // Sync local storage with latest Firestore (always sync if online)
+      localStorage.setItem('assets', JSON.stringify(uniqueFbAssets));
+      return uniqueFbAssets;
     } catch (error) {
       console.warn("Firestore fetch failed, using local storage:", error);
       return local;
@@ -204,11 +201,8 @@ export const dbService = {
         fbAssigned.push({ id: doc.id, ...doc.data() });
       });
 
-      if (fbAssigned.length > 0) {
-        localStorage.setItem('assignedAssets', JSON.stringify(fbAssigned));
-        return fbAssigned;
-      }
-      return local;
+      localStorage.setItem('assignedAssets', JSON.stringify(fbAssigned));
+      return fbAssigned;
     } catch (error) {
       console.warn("Firestore fetch failed, using local storage:", error);
       return local;
@@ -262,11 +256,8 @@ export const dbService = {
         fbHistory.push({ id: doc.id, ...doc.data() });
       });
 
-      if (fbHistory.length > 0) {
-        localStorage.setItem('assetHistory', JSON.stringify(fbHistory));
-        return fbHistory;
-      }
-      return local;
+      localStorage.setItem('assetHistory', JSON.stringify(fbHistory));
+      return fbHistory;
     } catch (error) {
       console.warn("Firestore fetch failed, using local storage:", error);
       return local;
@@ -312,39 +303,35 @@ export const dbService = {
         fbMobile.push({ id: doc.id, ...doc.data() });
       });
 
-      if (fbMobile.length > 0) {
-        const seenCodes = new Set();
-        const uniqueFbMobile = [];
-        const duplicateDocs = [];
+      const seenCodes = new Set();
+      const uniqueFbMobile = [];
+      const duplicateDocs = [];
 
-        fbMobile.forEach(item => {
-          const code = (item.assetCode || '').toLowerCase().trim();
-          if (code && !seenCodes.has(code)) {
-            seenCodes.add(code);
-            uniqueFbMobile.push(item);
-          } else {
-            duplicateDocs.push(item);
+      fbMobile.forEach(item => {
+        const code = (item.assetCode || '').toLowerCase().trim();
+        if (code && !seenCodes.has(code)) {
+          seenCodes.add(code);
+          uniqueFbMobile.push(item);
+        } else {
+          duplicateDocs.push(item);
+        }
+      });
+
+      // Background clean up of duplicate documents in firestore
+      if (duplicateDocs.length > 0) {
+        duplicateDocs.forEach(async (dup) => {
+          if (dup.id) {
+            try {
+              await deleteDoc(doc(db, 'mobileAssets', dup.id));
+            } catch (delErr) {
+              console.error("Firestore duplicate delete failed:", delErr);
+            }
           }
         });
-
-        // Background clean up of duplicate documents in firestore
-        if (duplicateDocs.length > 0) {
-          duplicateDocs.forEach(async (dup) => {
-            if (dup.id) {
-              try {
-                await deleteDoc(doc(db, 'mobileAssets', dup.id));
-              } catch (delErr) {
-                console.error("Firestore duplicate delete failed:", delErr);
-              }
-            }
-          });
-        }
-
-        localStorage.setItem('mobileAssets', JSON.stringify(uniqueFbMobile));
-        return uniqueFbMobile;
-      } else {
-        return [];
       }
+
+      localStorage.setItem('mobileAssets', JSON.stringify(uniqueFbMobile));
+      return uniqueFbMobile;
     } catch (error) {
       console.warn("Firestore fetch failed, using local storage:", error);
       return local;
@@ -569,11 +556,8 @@ export const dbService = {
         fbEmployees.push({ id: doc.id, ...doc.data() });
       });
 
-      if (fbEmployees.length > 0) {
-        localStorage.setItem('employees', JSON.stringify(fbEmployees));
-        return fbEmployees;
-      }
-      return local;
+      localStorage.setItem('employees', JSON.stringify(fbEmployees));
+      return fbEmployees;
     } catch (error) {
       console.warn("Firestore fetch failed for employees, using local storage:", error);
       return local;
