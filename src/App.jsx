@@ -1339,53 +1339,55 @@ function App() {
                   </div>
                 </div>
 
-                {/* Audit Trail Log - Only for System Interface, hidden in Print */}
-                <div className="glass-panel rounded-2xl p-6 print:hidden">
-                  <h3 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <UserCheck className="text-red-500" size={20} />
-                    Member Activity & Security Audit Logs
-                  </h3>
-                  <div className="overflow-x-auto rounded-xl border border-slate-100 text-xs">
-                    <table className="w-full text-left">
-                      <thead className="bg-slate-50 text-slate-600 border-b border-slate-100">
-                        <tr>
-                          <th className="p-3 font-bold">Timestamp</th>
-                          <th className="p-3 font-bold">Authorized Account</th>
-                          <th className="p-3 font-bold">Action Type</th>
-                          <th className="p-3 font-bold">Logged Details</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 bg-white">
-                        {activityLogs.length === 0 ? (
+                {/* Audit Trail Log - Only for System Admin Interface, hidden in Print */}
+                {isUserAdmin && (
+                  <div className="glass-panel rounded-2xl p-6 print:hidden">
+                    <h3 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                      <UserCheck className="text-red-500" size={20} />
+                      Member Activity & Security Audit Logs
+                    </h3>
+                    <div className="overflow-x-auto rounded-xl border border-slate-100 text-xs">
+                      <table className="w-full text-left">
+                        <thead className="bg-slate-50 text-slate-600 border-b border-slate-100">
                           <tr>
-                            <td colSpan={4} className="p-8 text-center text-slate-400 font-medium">
-                              No system activities recorded yet.
-                            </td>
+                            <th className="p-3 font-bold">Timestamp</th>
+                            <th className="p-3 font-bold">Authorized Account</th>
+                            <th className="p-3 font-bold">Action Type</th>
+                            <th className="p-3 font-bold">Logged Details</th>
                           </tr>
-                        ) : (
-                          activityLogs.slice().reverse().map((log, idx) => (
-                            <tr key={idx} className="hover:bg-slate-50/50 transition">
-                              <td className="p-3 font-mono text-slate-400">
-                                {new Date(log.timestamp).toLocaleString('en-GB')}
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 bg-white">
+                          {activityLogs.length === 0 ? (
+                            <tr>
+                              <td colSpan={4} className="p-8 text-center text-slate-400 font-medium">
+                                No system activities recorded yet.
                               </td>
-                              <td className="p-3 font-semibold text-slate-700">{log.member}</td>
-                              <td className="p-3">
-                                <span className={`inline-flex px-2 py-0.5 rounded-full font-bold ${
-                                  log.action.includes('OTP') || log.action.includes('Logged')
-                                    ? 'bg-blue-50 text-blue-800'
-                                    : 'bg-slate-100 text-slate-700'
-                                }`}>
-                                  {log.action}
-                                </span>
-                              </td>
-                              <td className="p-3 text-slate-600 font-medium">{log.details}</td>
                             </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
+                          ) : (
+                            activityLogs.slice().reverse().map((log, idx) => (
+                              <tr key={idx} className="hover:bg-slate-50/50 transition">
+                                <td className="p-3 font-mono text-slate-400">
+                                  {new Date(log.timestamp).toLocaleString('en-GB')}
+                                </td>
+                                <td className="p-3 font-semibold text-slate-700">{log.member}</td>
+                                <td className="p-3">
+                                  <span className={`inline-flex px-2 py-0.5 rounded-full font-bold ${
+                                    log.action.includes('OTP') || log.action.includes('Logged')
+                                      ? 'bg-blue-50 text-blue-800'
+                                      : 'bg-slate-100 text-slate-700'
+                                  }`}>
+                                    {log.action}
+                                  </span>
+                                </td>
+                                <td className="p-3 text-slate-600 font-medium">{log.details}</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
 
               </div>
             )}
