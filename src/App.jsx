@@ -23,7 +23,8 @@ import {
   ShieldCheck,
   UserCheck,
   Eye,
-  KeyRound
+  KeyRound,
+  Trash2
 } from 'lucide-react'
 import {
   PieChart,
@@ -265,6 +266,26 @@ function App() {
       showNotification("Local database cleared.", "success");
     }
   }
+
+  const handleDeleteAsset = async (assetCode) => {
+    if (!isUserAdmin) return;
+    if (window.confirm(`Are you sure you want to delete asset ${assetCode}?`)) {
+      try {
+        const updated = await dbService.deleteAsset(assetCode);
+        setAssets(updated);
+        showNotification(`Asset ${assetCode} deleted successfully.`, "success");
+        
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Deleted Asset',
+          details: `Deleted IT hardware asset ${assetCode}.`
+        });
+      } catch (err) {
+        console.error(err);
+        showNotification("Failed to delete asset.", "error");
+      }
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -1006,12 +1027,13 @@ function App() {
                               <ArrowUpDown size={14} className="text-slate-400" />
                             </div>
                           </th>
+                          {isUserAdmin && <th className="p-4 font-bold text-right">Actions</th>}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {sortedAndFilteredAssets.length === 0 ? (
                           <tr>
-                            <td colSpan={7} className="p-8 text-center text-slate-400 font-medium">
+                            <td colSpan={isUserAdmin ? 8 : 7} className="p-8 text-center text-slate-400 font-medium">
                               No hardware assets found matching the criteria.
                             </td>
                           </tr>
@@ -1047,6 +1069,17 @@ function App() {
                                   {item.status}
                                 </span>
                               </td>
+                              {isUserAdmin && (
+                                <td className="p-4 text-right">
+                                  <button
+                                    onClick={() => handleDeleteAsset(item.assetCode)}
+                                    className="text-red-600 hover:text-red-800 hover:scale-110 active:scale-95 transition duration-150 cursor-pointer"
+                                    title="Delete Asset"
+                                  >
+                                    <Trash2 size={15} />
+                                  </button>
+                                </td>
+                              )}
                             </tr>
                           ))
                         )}
@@ -1061,7 +1094,13 @@ function App() {
             {activeTab === 'mobile' && (
               <div className="space-y-8 animate-fade-in print:hidden">
                 <AddMobileAsset mobileAssets={mobileAssets} onMobileAssetAdded={setMobileAssets} showNotification={showNotification} />
-                <MobileSimInventory mobileAssets={mobileAssets} />
+                <MobileSimInventory
+                  mobileAssets={mobileAssets}
+                  setMobileAssets={setMobileAssets}
+                  showNotification={showNotification}
+                  isUserAdmin={isUserAdmin}
+                  currentUser={currentUser}
+                />
               </div>
             )}
 

@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Trash2 } from 'lucide-react'
+import { dbService } from './dbService'
 
-export default function MobileSimInventory({ mobileAssets = [] }) {
+export default function MobileSimInventory({ mobileAssets = [], setMobileAssets, showNotification, isUserAdmin, currentUser }) {
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -22,6 +24,32 @@ export default function MobileSimInventory({ mobileAssets = [] }) {
 
     return matchesSearch && matchesType && matchesStatus;
   });
+
+  const handleDelete = async (assetCode) => {
+    if (!isUserAdmin) return;
+    if (window.confirm(`Are you sure you want to delete mobile/SIM asset ${assetCode}?`)) {
+      try {
+        const updated = await dbService.deleteMobileAsset(assetCode);
+        if (setMobileAssets) {
+          setMobileAssets(updated);
+        }
+        if (showNotification) {
+          showNotification(`Asset ${assetCode} deleted successfully.`, "success");
+        }
+        
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Deleted Mobile/SIM',
+          details: `Deleted Mobile/SIM asset ${assetCode}.`
+        });
+      } catch (err) {
+        console.error(err);
+        if (showNotification) {
+          showNotification("Failed to delete mobile/SIM asset.", "error");
+        }
+      }
+    }
+  };
 
   return (
     <div className="glass-panel rounded-2xl p-6 mt-10 animate-fade-in">
@@ -83,12 +111,13 @@ export default function MobileSimInventory({ mobileAssets = [] }) {
               <th className="px-4 py-3 text-left font-semibold">Status</th>
               <th className="px-4 py-3 text-left font-semibold">Organization</th>
               <th className="px-4 py-3 text-left font-semibold">Vendor</th>
+              {isUserAdmin && <th className="px-4 py-3 text-right font-semibold">Actions</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-10 text-center text-gray-500 font-medium bg-gray-50/50">
+                <td colSpan={isUserAdmin ? 11 : 10} className="px-4 py-10 text-center text-gray-500 font-medium bg-gray-50/50">
                   No matching mobile or SIM assets found.
                 </td>
               </tr>
@@ -131,6 +160,17 @@ export default function MobileSimInventory({ mobileAssets = [] }) {
                   <td className="px-4 py-4 text-gray-600 text-xs">
                     {item.vendor || '-'}
                   </td>
+                  {isUserAdmin && (
+                    <td className="px-4 py-4 text-right">
+                      <button
+                        onClick={() => handleDelete(item.assetCode)}
+                        className="text-red-600 hover:text-red-800 hover:scale-110 active:scale-95 transition duration-150 cursor-pointer"
+                        title="Delete Asset"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

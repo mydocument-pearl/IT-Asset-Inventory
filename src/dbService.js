@@ -95,6 +95,26 @@ export const dbService = {
     return updated;
   },
 
+  async deleteAsset(assetCode) {
+    const local = JSON.parse(localStorage.getItem('assets')) || [];
+    const updated = local.filter(asset => asset.assetCode !== assetCode);
+    localStorage.setItem('assets', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const q = query(collection(db, 'assets'), where('assetCode', '==', assetCode));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (document) => {
+          const docRef = doc(db, 'assets', document.id);
+          await deleteDoc(docRef);
+        });
+      } catch (error) {
+        console.error("Firestore delete failed, updated locally:", error);
+      }
+    }
+    return updated;
+  },
+
   // ------------------ ASSIGNED ASSETS ------------------
   async getAssignedAssets() {
     const local = JSON.parse(localStorage.getItem('assignedAssets')) || [];
@@ -325,6 +345,26 @@ export const dbService = {
         });
       } catch (error) {
         console.error("Firestore update failed for mobile asset:", error);
+      }
+    }
+    return updated;
+  },
+
+  async deleteMobileAsset(assetCode) {
+    const local = JSON.parse(localStorage.getItem('mobileAssets')) || [];
+    const updated = local.filter(item => item.assetCode !== assetCode);
+    localStorage.setItem('mobileAssets', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const q = query(collection(db, 'mobileAssets'), where('assetCode', '==', assetCode));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (document) => {
+          const docRef = doc(db, 'mobileAssets', document.id);
+          await deleteDoc(docRef);
+        });
+      } catch (error) {
+        console.error("Firestore mobile delete failed, updated locally:", error);
       }
     }
     return updated;
