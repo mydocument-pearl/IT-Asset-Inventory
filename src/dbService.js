@@ -57,6 +57,22 @@ export const dbService = {
     return updated;
   },
 
+  async saveBulkAssets(newAssets) {
+    const local = JSON.parse(localStorage.getItem('assets')) || [];
+    const updated = [...local, ...newAssets];
+    localStorage.setItem('assets', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const promises = newAssets.map(asset => addDoc(collection(db, 'assets'), asset));
+        await Promise.all(promises);
+      } catch (error) {
+        console.error("Firestore bulk write failed, saved locally:", error);
+      }
+    }
+    return updated;
+  },
+
   async updateAssetStatus(assetCode, newStatus) {
     const local = JSON.parse(localStorage.getItem('assets')) || [];
     const updated = local.map(asset => 
