@@ -670,17 +670,19 @@ function App() {
               Reports & History
             </button>
 
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`w-full flex items-center gap-3.5 rounded-xl px-4 py-3 cursor-pointer text-left text-sm font-semibold transition duration-150 ${
-                activeTab === 'settings'
-                  ? 'bg-red-600 text-white shadow-lg shadow-red-600/25 active-nav-glow font-bold'
-                  : 'hover:bg-slate-900 text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <SettingsIcon size={18} />
-              System Settings
-            </button>
+            {isUserAdmin && (
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`w-full flex items-center gap-3.5 rounded-xl px-4 py-3 cursor-pointer text-left text-sm font-semibold transition duration-150 ${
+                  activeTab === 'settings'
+                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/25 active-nav-glow font-bold'
+                    : 'hover:bg-slate-900 text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <SettingsIcon size={18} />
+                System Settings
+              </button>
+            )}
           </nav>
         </div>
 
@@ -1393,7 +1395,7 @@ function App() {
             )}
 
             {/* ---------------- SYSTEM SETTINGS TAB ---------------- */}
-            {activeTab === 'settings' && (
+            {activeTab === 'settings' && isUserAdmin && (
               <div className="glass-panel rounded-2xl p-6 space-y-8 animate-fade-in print:hidden">
                 <div>
                   <h3 className="text-xl font-bold text-slate-800">System Preferences</h3>
