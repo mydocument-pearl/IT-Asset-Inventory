@@ -392,10 +392,10 @@ function App() {
   ]
 
   const pieData = [
-    { name: 'Laptops', value: laptopCount || 1 },
-    { name: 'Monitors', value: monitorCount || 1 },
-    { name: 'Mobiles', value: mobileCount || 1 },
-    { name: 'SIM Cards', value: simCount || 1 },
+    { name: 'Laptops', value: laptopCount },
+    { name: 'Monitors', value: monitorCount },
+    { name: 'Mobiles', value: mobileCount },
+    { name: 'SIM Cards', value: simCount },
   ].filter(item => item.value > 0);
 
   const barData = [
