@@ -78,6 +78,26 @@ function App() {
   const [itSortField, setItSortField] = useState('assetCode')
   const [itSortAsc, setItSortAsc] = useState(true)
 
+  // Dashboard Cards Visibility State
+  const [dashboardConfig, setDashboardConfig] = useState(() => {
+    const saved = localStorage.getItem('dashboardConfig');
+    return saved ? JSON.parse(saved) : {
+      showLaptops: true,
+      showMonitors: true,
+      showPrinters: true,
+      showMobiles: true,
+      showSims: true,
+      showAssigned: true,
+      showAvailable: true,
+      showRepair: true,
+      showLostStolen: true
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('dashboardConfig', JSON.stringify(dashboardConfig));
+  }, [dashboardConfig]);
+
   // Media Preview Modal
   const [previewImage, setPreviewImage] = useState(null)
 
@@ -387,17 +407,17 @@ function App() {
   const lostOrStolenCount = assets.filter(a => a.status === 'Lost' || a.status === 'Stolen').length + mobileAssets.filter(m => m.status === 'Lost' || m.status === 'Stolen').length;
 
   const stats = [
-    { title: 'Total Assets', value: totalAssetsCount, icon: Database, color: 'text-gray-900' },
-    { title: 'Laptops', value: laptopCount, icon: Laptop, color: 'text-red-600' },
-    { title: 'Monitors', value: monitorCount, icon: Laptop, color: 'text-blue-500' },
-    { title: 'Printers', value: printerCount, icon: FileText, color: 'text-emerald-500' },
-    { title: 'Mobile Devices', value: mobileCount, icon: Smartphone, color: 'text-purple-500' },
-    { title: 'SIM Cards', value: simCount, icon: Smartphone, color: 'text-amber-500' },
-    { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600' },
-    { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600' },
-    { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600' },
-    { title: 'Lost / Stolen Assets', value: lostOrStolenCount, icon: AlertTriangle, color: 'text-rose-600' },
-  ]
+    { title: 'Total Assets', value: totalAssetsCount, icon: Database, color: 'text-gray-900', show: true },
+    { title: 'Laptops', value: laptopCount, icon: Laptop, color: 'text-red-600', show: dashboardConfig.showLaptops },
+    { title: 'Monitors', value: monitorCount, icon: Laptop, color: 'text-blue-500', show: dashboardConfig.showMonitors },
+    { title: 'Printers', value: printerCount, icon: FileText, color: 'text-emerald-500', show: dashboardConfig.showPrinters },
+    { title: 'Mobile Devices', value: mobileCount, icon: Smartphone, color: 'text-purple-500', show: dashboardConfig.showMobiles },
+    { title: 'SIM Cards', value: simCount, icon: Smartphone, color: 'text-amber-500', show: dashboardConfig.showSims },
+    { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600', show: dashboardConfig.showAssigned },
+    { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600', show: dashboardConfig.showAvailable },
+    { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600', show: dashboardConfig.showRepair },
+    { title: 'Lost / Stolen Assets', value: lostOrStolenCount, icon: AlertTriangle, color: 'text-rose-600', show: dashboardConfig.showLostStolen },
+  ].filter(s => s.show);
 
   const pieData = [
     { name: 'Laptops', value: laptopCount },
@@ -623,6 +643,115 @@ function App() {
       showNotification("Failed to process asset return.", "error");
     }
   }
+
+  const handlePurgeDatabase = async () => {
+    if (currentUser?.role !== 'admin') {
+      showNotification("Access Denied: Only Admins can purge collections.", "error");
+      return;
+    }
+    
+    const confirm1 = window.confirm("WARNING: You are about to wipe the entire remote database (assets, mobile assets, assignments, asset history, and logs). Are you absolutely sure?");
+    if (!confirm1) return;
+
+    const confirm2 = window.confirm("CRITICAL WARNING: This action CANNOT be undone and will delete all asset tracking records in Firestore and locally. Type 'OK' if you are completely sure you want to proceed.");
+    if (confirm2 !== true && String(confirm2).toLowerCase() !== 'ok') return;
+
+    try {
+      setIsLoading(true);
+      await dbService.purgeRemoteCollections(['assets', 'mobileAssets', 'assignedAssets', 'assetHistory', 'activityLogs']);
+      
+      localStorage.removeItem('assets');
+      localStorage.removeItem('mobileAssets');
+      localStorage.removeItem('assignedAssets');
+      localStorage.removeItem('assetHistory');
+      localStorage.removeItem('activityLogs');
+
+      setAssets([]);
+      setMobileAssets([]);
+      setAssignedAssets([]);
+      setAssetHistory([]);
+      
+      const updatedLogs = await dbService.saveActivityLog({
+        member: `${currentUser.name} (${currentUser.role})`,
+        action: "Purged Database Collections",
+        details: "Wiped all assets, mobile assets, assignments, history records, and logs from Firestore and local cache."
+      });
+      setActivityLogs(updatedLogs);
+
+      showNotification("All database collections purged successfully.", "success");
+    } catch (err) {
+      console.error(err);
+      showNotification("Failed to purge database collections.", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUploadAllocationsExcel = async (e) => {
+    if (currentUser?.role !== 'admin') {
+      showNotification("Access Denied: Only Admins can upload allocation sheets.", "error");
+      return;
+    }
+    
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        setIsLoading(true);
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rawRows = XLSX.utils.sheet_to_json(worksheet);
+
+        if (rawRows.length === 0) {
+          showNotification("The selected Excel sheet is empty.", "error");
+          setIsLoading(false);
+          return;
+        }
+
+        const result = await dbService.importAllocations(rawRows);
+
+        if (result.success) {
+          const [loadedAssets, loadedMobile, loadedAssigned, loadedHistory, loadedLogs, loadedUsers, loadedEmployees] = await Promise.all([
+            dbService.getAssets(),
+            dbService.getMobileAssets(),
+            dbService.getAssignedAssets(),
+            dbService.getAssetHistory(),
+            dbService.getActivityLogs(),
+            dbService.getUsers(),
+            dbService.getEmployees()
+          ]);
+
+          setAssets(loadedAssets);
+          setMobileAssets(loadedMobile);
+          setAssignedAssets(loadedAssigned);
+          setAssetHistory(loadedHistory);
+          setActivityLogs(loadedLogs);
+          setSystemUsers(loadedUsers);
+          setEmployees(loadedEmployees || []);
+
+          const finalLogs = await dbService.saveActivityLog({
+            member: `${currentUser.name} (${currentUser.role})`,
+            action: "Imported Allocation Spreadsheet",
+            details: `Successfully processed ${rawRows.length} allocation entries from spreadsheet: ${file.name}.`
+          });
+          setActivityLogs(finalLogs);
+
+          showNotification(`Spreadsheet imported successfully! Processed ${rawRows.length} entries.`, "success");
+        }
+      } catch (err) {
+        console.error(err);
+        showNotification("Failed to parse or import Excel file.", "error");
+      } finally {
+        setIsLoading(false);
+        e.target.value = '';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   // Quick Action navigation
   const triggerQuickAction = (tabName) => {
@@ -1705,6 +1834,114 @@ function App() {
                           Locks write permissions within localized sandbox. Saves performance overheads, but disables remote dashboards from viewing adjustments.
                         </p>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Dashboard Cards Visibility Toggles */}
+                  <div className="pt-6 border-t border-slate-100">
+                    <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                      <LayoutDashboard className="text-red-500" size={18} />
+                      Dashboard Visibility Preferences
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      Toggle specific metrics cards on and off to customize your main inventory dashboard display.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                      {[
+                        { key: 'showLaptops', label: 'Laptops Card' },
+                        { key: 'showMonitors', label: 'Monitors Card' },
+                        { key: 'showPrinters', label: 'Printers Card' },
+                        { key: 'showMobiles', label: 'Mobile Devices Card' },
+                        { key: 'showSims', label: 'SIM Cards Card' },
+                        { key: 'showAssigned', label: 'Assigned Assets' },
+                        { key: 'showAvailable', label: 'Available Mobile Assets' },
+                        { key: 'showRepair', label: 'Under Repair' },
+                        { key: 'showLostStolen', label: 'Lost / Stolen Assets' }
+                      ].map((card) => (
+                        <label
+                          key={card.key}
+                          className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition shadow-sm"
+                        >
+                          <span className="text-xs font-semibold text-slate-700">{card.label}</span>
+                          <div className="relative inline-flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={dashboardConfig[card.key]}
+                              onChange={(e) =>
+                                setDashboardConfig({
+                                  ...dashboardConfig,
+                                  [card.key]: e.target.checked
+                                })
+                              }
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Spreadsheet Bulk Allocation Importer */}
+                  <div className="pt-6 border-t border-slate-100">
+                    <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                      <FileSpreadsheet className="text-red-500" size={18} />
+                      Spreadsheet Bulk Allocations Importer
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      Upload an Excel spreadsheet (`.xlsx` or `.xls`) containing device allocations. The system will automatically reconcile items by IMEI/SIM serial number, create missing employees, and assign code prefix numbers sequentially.
+                    </p>
+                    <div className="mt-4 max-w-xl">
+                      <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-red-500 rounded-2xl p-6 bg-white hover:bg-red-50/10 cursor-pointer transition text-center shadow-sm">
+                        <FileSpreadsheet className="text-slate-400 mb-2" size={36} />
+                        <span className="text-xs font-bold text-slate-700 font-semibold">Choose allocations spreadsheet to upload</span>
+                        <span className="text-[10px] text-slate-400 mt-1">Supports XLSX, XLS</span>
+                        <input
+                          type="file"
+                          accept=".xlsx, .xls"
+                          onChange={handleUploadAllocationsExcel}
+                          className="hidden"
+                        />
+                      </label>
+                      
+                      <div className="mt-4 bg-slate-50 border border-slate-100 rounded-xl p-3.5 text-[11px] text-slate-500">
+                        <p className="font-semibold text-slate-700 mb-1">Expected Spreadsheet Column Formats:</p>
+                        <ul className="list-disc list-inside space-y-1 mt-1 font-mono">
+                          <li>Asset Type (e.g. Mobile, SIM Card)</li>
+                          <li>Employee Name, Employee ID (Optional)</li>
+                          <li>Brand, Model (Optional)</li>
+                          <li>IMEI 1 / SIM IMEI (Unique Identifier)</li>
+                          <li>Allocation Date, Cost, Invoice, Vendor (Optional)</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Danger Zone: Purge Remote Database Collections */}
+                  <div className="pt-6 border-t border-slate-100">
+                    <h4 className="text-sm font-bold text-red-600 flex items-center gap-2">
+                      <AlertTriangle className="text-red-600" size={18} />
+                      Danger Zone
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      Destructive administrative actions. These changes affect the live remote database and cannot be recovered.
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-4 p-4 border border-red-200 bg-red-50/30 rounded-xl">
+                      <div className="flex-1 min-w-[200px]">
+                        <p className="text-xs font-bold text-slate-800">Purge Live Firestore Collections</p>
+                        <p className="text-[11px] text-slate-500 mt-0.5">Wipe all asset data, mobile devices, current assignments, lifecycle logs, and activity reports from the remote Firestore database.</p>
+                      </div>
+                      <button
+                        onClick={handlePurgeDatabase}
+                        disabled={!isUserAdmin}
+                        className={`px-5 py-2.5 rounded-xl text-xs font-bold transition self-center ${
+                          isUserAdmin 
+                            ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer hover:shadow-md' 
+                            : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        }`}
+                      >
+                        Purge Remote Database Collections
+                      </button>
                     </div>
                   </div>
 
