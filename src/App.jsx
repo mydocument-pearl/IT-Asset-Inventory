@@ -376,6 +376,7 @@ function App() {
 
   const assignedCount = assignedAssets.length;
   const availableCount = assets.filter(a => a.status === 'Available').length + mobileAssets.filter(m => m.status === 'Available').length;
+  const availableMobileCount = mobileAssets.filter(m => m.status === 'Available' && m.assetType === 'Mobile').length;
   const repairCount = assets.filter(a => a.status === 'Under Repair').length + mobileAssets.filter(m => m.status === 'Under Repair').length;
 
   const stats = [
@@ -386,7 +387,7 @@ function App() {
     { title: 'Mobile Devices', value: mobileCount, icon: Smartphone, color: 'text-purple-500' },
     { title: 'SIM Cards', value: simCount, icon: Smartphone, color: 'text-amber-500' },
     { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600' },
-    { title: 'Available Assets', value: availableCount, icon: CheckCircle, color: 'text-green-600' },
+    { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600' },
     { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600' },
   ]
 
@@ -399,7 +400,7 @@ function App() {
 
   const barData = [
     { name: 'Assigned', value: assignedCount },
-    { name: 'Available', value: availableCount },
+    { name: 'Available', value: availableMobileCount },
     { name: 'Repair', value: repairCount },
   ]
 
