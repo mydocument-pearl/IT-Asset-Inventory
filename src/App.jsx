@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Download,
   AlertCircle,
+  AlertTriangle,
   Database,
   CheckCircle,
   Plus,
@@ -383,6 +384,7 @@ function App() {
   const availableCount = assets.filter(a => a.status === 'Available').length + mobileAssets.filter(m => m.status === 'Available').length;
   const availableMobileCount = mobileAssets.filter(m => m.status === 'Available' && m.assetType === 'Mobile').length;
   const repairCount = assets.filter(a => a.status === 'Under Repair').length + mobileAssets.filter(m => m.status === 'Under Repair').length;
+  const lostOrStolenCount = assets.filter(a => a.status === 'Lost' || a.status === 'Stolen').length + mobileAssets.filter(m => m.status === 'Lost' || m.status === 'Stolen').length;
 
   const stats = [
     { title: 'Total Assets', value: totalAssetsCount, icon: Database, color: 'text-gray-900' },
@@ -394,6 +396,7 @@ function App() {
     { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600' },
     { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600' },
     { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600' },
+    { title: 'Lost / Stolen Assets', value: lostOrStolenCount, icon: AlertTriangle, color: 'text-rose-600' },
   ]
 
   const pieData = [
@@ -407,6 +410,7 @@ function App() {
     { name: 'Assigned', value: assignedCount },
     { name: 'Available', value: availableMobileCount },
     { name: 'Repair', value: repairCount },
+    { name: 'Lost/Stolen', value: lostOrStolenCount },
   ]
 
   // --- SORTED & FILTERED ASSIGNED DEPLOYMENTS ---
