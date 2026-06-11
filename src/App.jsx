@@ -114,6 +114,19 @@ function App() {
     }, 4000);
   }
 
+  // Dynamic Employee lookups
+  const getEmployeePhone = (empName, fallbackPhone) => {
+    if (!empName) return fallbackPhone || '-';
+    const emp = employees.find(e => e.name.toLowerCase().trim() === empName.toLowerCase().trim());
+    return emp?.phone && emp.phone !== '-' ? emp.phone : (fallbackPhone || '-');
+  };
+
+  const getEmployeeId = (empName, fallbackId) => {
+    if (!empName) return fallbackId || '-';
+    const emp = employees.find(e => e.name.toLowerCase().trim() === empName.toLowerCase().trim());
+    return emp?.id && emp.id !== '-' ? emp.id : (fallbackId || '-');
+  };
+
   // Load database on authentication
   useEffect(() => {
     if (!currentUser) return;
@@ -361,7 +374,7 @@ function App() {
   const mobileCount = mobileAssets.filter(m => m.assetType === 'Mobile').length;
   const simCount = mobileAssets.filter(m => m.assetType === 'SIM Card').length;
 
-  const assignedCount = assignedAssets.length + mobileAssets.filter(m => m.status === 'Allocated' || m.status === 'Assigned').length;
+  const assignedCount = assignedAssets.length;
   const availableCount = assets.filter(a => a.status === 'Available').length + mobileAssets.filter(m => m.status === 'Available').length;
   const repairCount = assets.filter(a => a.status === 'Under Repair').length + mobileAssets.filter(m => m.status === 'Under Repair').length;
 
@@ -401,8 +414,8 @@ function App() {
 
     const worksheet = XLSX.utils.json_to_sheet(assignedAssets.map((asset) => ({
       'Employee Name': asset.employeeName,
-      'Employee ID': asset.employeeId,
-      'Phone Number': asset.employeePhone || '-',
+      'Employee ID': getEmployeeId(asset.employeeName, asset.employeeId),
+      'Phone Number': getEmployeePhone(asset.employeeName, asset.employeePhone),
       'Department': asset.department,
       'Asset Type': asset.assetType,
       'Asset Name': asset.assetName,
@@ -484,7 +497,8 @@ function App() {
   }
 
   const handleSendReturnOtp = () => {
-    const phone = selectedAsset.employeePhone || '9876543210'
+    const resolvedPhone = getEmployeePhone(selectedAsset.employeeName, selectedAsset.employeePhone);
+    const phone = resolvedPhone && resolvedPhone !== '-' ? resolvedPhone : '9876543210';
     const code = generateOtp()
     setReturnOtpCode(code)
     setReturnOtpSent(true)
@@ -1223,14 +1237,14 @@ function App() {
                             <tr key={index} className="hover:bg-slate-50/50 transition">
                               <td className="p-4">
                                 <div className="font-semibold text-slate-800">{item.employeeName}</div>
-                                <div className="text-xs text-slate-400 font-mono">{item.employeeId}</div>
+                                <div className="text-xs text-slate-400 font-mono">{getEmployeeId(item.employeeName, item.employeeId)}</div>
                               </td>
                               <td className="p-4 text-slate-600 font-medium">{item.department}</td>
                               <td className="p-4 text-slate-600">{item.assetName || item.asset || 'Laptop'}</td>
                               <td className="p-4 font-mono font-bold text-slate-700">{item.assetCode}</td>
                               <td className="p-4">
                                 <div className="text-xs text-slate-600 font-mono">{item.serialNumber}</div>
-                                <div className="text-[10px] text-slate-400 font-mono mt-0.5">{item.employeePhone || 'No Phone'}</div>
+                                <div className="text-[10px] text-slate-400 font-mono mt-0.5">{getEmployeePhone(item.employeeName, item.employeePhone)}</div>
                               </td>
                               <td className="p-4 text-slate-600 font-medium">
                                   {item.allocationDate ? formatDate(item.allocationDate) : '-'}
@@ -1248,15 +1262,6 @@ function App() {
                                   >
                                     Return Asset
                                   </button>
-                                  {isUserAdmin && (
-                                    <button
-                                      onClick={() => handleDeleteAssignment(item.assetCode, item.employeeName)}
-                                      className="p-1.5 text-red-650 hover:text-red-800 transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
-                                      title="Delete Assignment Entry"
-                                    >
-                                      <Trash2 size={15} />
-                                    </button>
-                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -1684,7 +1689,7 @@ function App() {
                 <div>Asset Code: <span className="font-mono font-bold text-slate-700">{selectedAsset.assetCode}</span></div>
                 <div>Asset Name: <span className="font-semibold text-slate-700">{selectedAsset.assetName || selectedAsset.asset}</span></div>
                 <div>Deployer: <span className="font-semibold text-slate-700">{selectedAsset.employeeName}</span></div>
-                <div>Phone: <span className="font-mono font-semibold text-slate-700">{selectedAsset.employeePhone || 'No registered phone'}</span></div>
+                <div>Phone: <span className="font-mono font-semibold text-slate-700">{getEmployeePhone(selectedAsset.employeeName, selectedAsset.employeePhone)}</span></div>
               </div>
 
               <div>
