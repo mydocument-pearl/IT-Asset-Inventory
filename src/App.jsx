@@ -406,46 +406,42 @@ function App() {
   const repairCount = assets.filter(a => a.status === 'Under Repair').length + mobileAssets.filter(m => m.status === 'Under Repair').length;
   const lostOrStolenCount = assets.filter(a => a.status === 'Lost' || a.status === 'Stolen').length + mobileAssets.filter(m => m.status === 'Lost' || m.status === 'Stolen').length;
 
-  const sections = [
-    {
-      title: 'General Summary',
-      icon: Database,
-      show: true,
-      items: [
-        { title: 'Total Assets', value: totalAssetsCount, icon: Database, color: 'text-gray-900', show: true },
-        { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600', show: dashboardConfig.showAssigned },
-      ].filter(s => s.show)
-    },
-    {
-      title: 'Computers & Hardware',
-      icon: Laptop,
-      show: dashboardConfig.showLaptops || dashboardConfig.showMonitors || dashboardConfig.showPrinters,
-      items: [
-        { title: 'Laptops', value: laptopCount, icon: Laptop, color: 'text-red-600', show: dashboardConfig.showLaptops },
-        { title: 'Monitors', value: monitorCount, icon: Laptop, color: 'text-blue-500', show: dashboardConfig.showMonitors },
-        { title: 'Printers', value: printerCount, icon: FileText, color: 'text-emerald-500', show: dashboardConfig.showPrinters },
-      ].filter(s => s.show)
-    },
-    {
-      title: 'Mobile & Telephony',
-      icon: Smartphone,
-      show: dashboardConfig.showMobiles || dashboardConfig.showSims || dashboardConfig.showAvailable,
-      items: [
-        { title: 'Mobile Devices', value: mobileCount, icon: Smartphone, color: 'text-purple-500', show: dashboardConfig.showMobiles },
-        { title: 'SIM Cards', value: simCount, icon: Smartphone, color: 'text-amber-500', show: dashboardConfig.showSims },
-        { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600', show: dashboardConfig.showAvailable },
-      ].filter(s => s.show)
-    },
-    {
-      title: 'Operational Health & Safety',
-      icon: AlertTriangle,
-      show: dashboardConfig.showRepair || dashboardConfig.showLostStolen,
-      items: [
-        { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600', show: dashboardConfig.showRepair },
-        { title: 'Lost / Stolen Assets', value: lostOrStolenCount, icon: AlertTriangle, color: 'text-rose-600', show: dashboardConfig.showLostStolen },
-      ].filter(s => s.show)
-    }
-  ].filter(sec => sec.show && sec.items.length > 0);
+  // Detailed status calculations for custom category dashboard
+  const laptopAssigned = assignedAssets.filter(a => a.assetType === 'Laptop').length;
+  const laptopAvailable = assets.filter(a => a.assetType === 'Laptop' && a.status === 'Available').length;
+  const laptopRepair = assets.filter(a => a.assetType === 'Laptop' && a.status === 'Under Repair').length;
+
+  const monitorAssigned = assignedAssets.filter(a => a.assetType === 'Monitor').length;
+  const monitorAvailable = assets.filter(a => a.assetType === 'Monitor' && a.status === 'Available').length;
+  const monitorRepair = assets.filter(a => a.assetType === 'Monitor' && a.status === 'Under Repair').length;
+
+  const printerAssigned = assignedAssets.filter(a => a.assetType === 'Printer').length;
+  const printerAvailable = assets.filter(a => a.assetType === 'Printer' && a.status === 'Available').length;
+  const printerRepair = assets.filter(a => a.assetType === 'Printer' && a.status === 'Under Repair').length;
+
+  const mobileAssigned = mobileAssets.filter(m => m.assetType === 'Mobile' && m.status === 'Allocated').length;
+  const mobileAvailable = mobileAssets.filter(m => m.assetType === 'Mobile' && m.status === 'Available').length;
+  const mobileRepair = mobileAssets.filter(m => m.assetType === 'Mobile' && m.status === 'Under Repair').length;
+
+  const simAssigned = mobileAssets.filter(m => m.assetType === 'SIM Card' && m.status === 'Allocated').length;
+  const simAvailable = mobileAssets.filter(m => m.assetType === 'SIM Card' && m.status === 'Available').length;
+  const simRepair = mobileAssets.filter(m => m.assetType === 'SIM Card' && m.status === 'Under Repair').length;
+
+  // Available stock breakdown
+  const stockLaptops = laptopAvailable;
+  const stockMobiles = mobileAvailable;
+  const totalStock = stockLaptops + stockMobiles;
+  const laptopStockPct = totalStock > 0 ? (stockLaptops / totalStock) * 100 : 0;
+  const mobileStockPct = totalStock > 0 ? (stockMobiles / totalStock) * 100 : 100;
+
+  // Repair details
+  const repairLaptops = laptopRepair;
+  const repairMobiles = mobileRepair;
+  const repairOthers = repairCount - repairLaptops - repairMobiles;
+
+  // Lost & Stolen details
+  const lostCount = assets.filter(a => a.status === 'Lost').length + mobileAssets.filter(m => m.status === 'Lost').length;
+  const stolenCount = assets.filter(a => a.status === 'Stolen').length + mobileAssets.filter(m => m.status === 'Stolen').length;
 
   const pieData = [
     { name: 'Laptops', value: laptopCount },
@@ -1043,65 +1039,415 @@ function App() {
           <>
             {/* ---------------- DASHBOARD TAB ---------------- */}
             {activeTab === 'dashboard' && (
-              <div className="space-y-10 animate-fade-in print:hidden">
+              <div className="bg-[#070b13] text-slate-100 rounded-3xl p-6 lg:p-8 border border-slate-900/60 shadow-2xl space-y-8 animate-fade-in print:hidden">
                 
-                {/* Categorized Dashboard Sections */}
-                <div className="space-y-10">
-                  {sections.map((section, secIdx) => {
-                    const SecIcon = section.icon;
-                    return (
-                      <div key={secIdx} className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                          <SecIcon className="text-red-500" size={18} />
-                          <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                            {section.title}
-                          </h4>
+                {/* Dashboard Top Header */}
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-6 border-b border-slate-900/60">
+                  <div>
+                    <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                      <LayoutDashboard className="text-red-500" size={24} />
+                      IT Asset Inventory Dashboard
+                    </h1>
+                    <p className="text-xs text-slate-400 mt-1">Welcome, Admin</p>
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-400">
+                    <span className="text-xs bg-[#0b0f17] px-3 py-1.5 rounded-xl border border-slate-800/80 flex items-center gap-1.5 font-semibold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Online
+                    </span>
+                    <span className="text-xs font-mono bg-[#0b0f17] px-3 py-1.5 rounded-xl border border-slate-800/80">
+                      {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Category 1: Computers & Hardware */}
+                  <div className="bg-[#0b101d]/60 border border-slate-900 rounded-3xl p-6 backdrop-blur-md space-y-4">
+                    <div className="flex items-center gap-2 pb-2 border-b border-slate-900/50">
+                      <Laptop className="text-red-500" size={18} />
+                      <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
+                        Computers & Hardware
+                      </h4>
+                    </div>
+
+                    {/* Laptops Card (Full-width inside section) */}
+                    {dashboardConfig.showLaptops && (
+                      <div className="bg-[#070b13]/85 border border-slate-800/80 rounded-2xl p-5 flex justify-between items-center hover:border-slate-755 transition">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-slate-300">
+                            <div className="p-1.5 rounded bg-slate-800/50 text-red-400">
+                              <Laptop size={14} />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-wider">Laptops</span>
+                          </div>
+                          <div className="text-2xl font-extrabold text-white mt-2">
+                            Total: {laptopCount}
+                          </div>
+                          <div className="flex gap-4 text-[10px] text-slate-400 font-semibold mt-1">
+                            <span>Assigned: <strong className="text-slate-200">{laptopAssigned}</strong></span>
+                            <span>Available: <strong className="text-slate-200">{laptopAvailable}</strong></span>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                          {section.items.map((item, index) => {
-                            const Icon = item.icon;
-                            return (
-                              <div
-                                key={index}
-                                className="glass-panel rounded-2xl p-6 hover:shadow-lg transition duration-200 hover:-translate-y-0.5 flex justify-between items-start bg-white"
-                              >
-                                <div>
-                                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
-                                    {item.title}
-                                  </p>
-                                  <h3 className="text-4xl font-extrabold text-slate-900 mt-2">
-                                    {item.value}
-                                  </h3>
-                                </div>
-                                <div className={`p-3 rounded-xl bg-slate-100/80 ${item.color}`}>
-                                  <Icon size={24} />
-                                </div>
-                              </div>
-                            );
-                          })}
+                        {/* Glow Sparkline Line Chart */}
+                        <div className="flex items-center">
+                          <svg className="w-24 h-12 overflow-visible" viewBox="0 0 100 40">
+                            <defs>
+                              <linearGradient id="blueGlow" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.4} />
+                                <stop offset="100%" stopColor="#38bdf8" stopOpacity={0} />
+                              </linearGradient>
+                              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="2" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                              </filter>
+                            </defs>
+                            <path
+                              d="M0,35 Q15,20 30,28 T60,10 T80,18 T100,5"
+                              fill="none"
+                              stroke="#38bdf8"
+                              strokeWidth="2.5"
+                              filter="url(#glow)"
+                            />
+                            <path
+                              d="M0,35 Q15,20 30,28 T60,10 T80,18 T100,5 L100,40 L0,40 Z"
+                              fill="url(#blueGlow)"
+                            />
+                            <circle cx="100" cy="5" r="3" fill="#38bdf8" />
+                            <circle cx="100" cy="5" r="6" fill="#38bdf8" opacity="0.4" className="animate-pulse" />
+                          </svg>
                         </div>
                       </div>
-                    );
-                  })}
+                    )}
+
+                    {/* Bottom grid of section: Monitors and Printers */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Monitors Card */}
+                      {dashboardConfig.showMonitors && (
+                        <div className="bg-[#070b13]/85 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-center hover:border-slate-755 transition">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <div className="p-1.5 rounded bg-slate-800/50 text-blue-400">
+                                <Laptop size={14} />
+                              </div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">Monitors</span>
+                            </div>
+                            <div className="text-xl font-extrabold text-white mt-1">
+                              Total: {monitorCount}
+                            </div>
+                            <div className="text-[9px] text-slate-400 font-semibold space-y-0.5">
+                              <div>In Use: <strong className="text-slate-200">{monitorAssigned}</strong></div>
+                              <div>Maint: <strong className="text-slate-200">{monitorRepair}</strong></div>
+                            </div>
+                          </div>
+                          {/* Mini Vertical bars */}
+                          <div className="flex items-end gap-1.5 h-14 pb-1">
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div className="w-1.5 bg-slate-850 rounded-t h-12"></div>
+                              <span className="text-[7px] text-slate-500">Tot</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div 
+                                className="w-1.5 bg-blue-500 rounded-t shadow-[0_0_6px_#3b82f6]" 
+                                style={{ height: `${monitorCount > 0 ? Math.max(4, Math.round((monitorAssigned / monitorCount) * 48)) : 0}px` }}
+                              ></div>
+                              <span className="text-[7px] text-slate-500">Use</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div 
+                                className="w-1.5 bg-yellow-500 rounded-t shadow-[0_0_6px_#eab308]" 
+                                style={{ height: `${monitorCount > 0 ? Math.max(4, Math.round((monitorRepair / monitorCount) * 48)) : 0}px` }}
+                              ></div>
+                              <span className="text-[7px] text-slate-500">Mnt</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Printers Card */}
+                      {dashboardConfig.showPrinters && (
+                        <div className="bg-[#070b13]/85 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-center hover:border-slate-755 transition">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <div className="p-1.5 rounded bg-slate-800/50 text-emerald-400">
+                                <FileText size={14} />
+                              </div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">Printers</span>
+                            </div>
+                            <div className="text-xl font-extrabold text-white mt-1">
+                              Total: {printerCount}
+                            </div>
+                            <div className="text-[9px] text-slate-400 font-semibold space-y-0.5">
+                              <div>In Use: <strong className="text-slate-200">{printerAssigned}</strong></div>
+                              <div>Avail: <strong className="text-slate-200">{printerAvailable}</strong></div>
+                            </div>
+                          </div>
+                          {/* Circular Radial progress bar */}
+                          <div className="flex items-center">
+                            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                              <path
+                                className="stroke-slate-850"
+                                stroke="#1e293b"
+                                strokeWidth="3.5"
+                                fill="none"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              />
+                              <path
+                                className="text-emerald-500"
+                                stroke="currentColor"
+                                strokeWidth="3.5"
+                                strokeDasharray={`${printerCount > 0 ? Math.round((printerAssigned / printerCount) * 100) : 0}, 100`}
+                                strokeLinecap="round"
+                                fill="none"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                style={{ filter: 'drop-shadow(0 0 3px #10b981)' }}
+                              />
+                              <text x="18" y="20.5" className="text-[8px] font-extrabold fill-white text-anchor-middle transform rotate-90 origin-center text-center">
+                                {printerCount > 0 ? Math.round((printerAssigned / printerCount) * 100) : 0}%
+                              </text>
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Category 2: Mobile & Telephony */}
+                  <div className="bg-[#0b101d]/60 border border-slate-900 rounded-3xl p-6 backdrop-blur-md space-y-4">
+                    <div className="flex items-center gap-2 pb-2 border-b border-slate-900/50">
+                      <Smartphone className="text-red-500" size={18} />
+                      <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
+                        Mobile & Telephony
+                      </h4>
+                    </div>
+
+                    {/* Mobile Devices Card (Full-width inside section) */}
+                    {dashboardConfig.showMobiles && (
+                      <div className="bg-[#070b13]/85 border border-slate-800/80 rounded-2xl p-5 flex justify-between items-center hover:border-slate-755 transition">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-slate-300">
+                            <div className="p-1.5 rounded bg-slate-800/50 text-purple-400">
+                              <Smartphone size={14} />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-wider">Mobile Devices</span>
+                          </div>
+                          <div className="text-2xl font-extrabold text-white mt-2">
+                            Total: {mobileCount}
+                          </div>
+                          <div className="flex gap-4 text-[10px] text-slate-400 font-semibold mt-1">
+                            <span>Assigned: <strong className="text-slate-200">{mobileAssigned}</strong></span>
+                            <span>Pool: <strong className="text-slate-200">{mobileAvailable}</strong></span>
+                          </div>
+                        </div>
+                        {/* Cyan sparkline */}
+                        <div className="flex items-center">
+                          <svg className="w-24 h-12 overflow-visible" viewBox="0 0 100 40">
+                            <defs>
+                              <linearGradient id="cyanGlow" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.4} />
+                                <stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
+                              </linearGradient>
+                              <filter id="cyanGlowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="2" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                              </filter>
+                            </defs>
+                            <path
+                              d="M0,32 Q20,18 40,25 T70,8 T100,12"
+                              fill="none"
+                              stroke="#22d3ee"
+                              strokeWidth="2.5"
+                              filter="url(#cyanGlowFilter)"
+                            />
+                            <path
+                              d="M0,32 Q20,18 40,25 T70,8 T100,12 L100,40 L0,40 Z"
+                              fill="url(#cyanGlow)"
+                            />
+                            <circle cx="100" cy="12" r="3" fill="#22d3ee" />
+                            <circle cx="100" cy="12" r="6" fill="#22d3ee" opacity="0.4" className="animate-pulse" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Bottom grid of section: SIM Cards and Available Stock */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* SIM Cards Card */}
+                      {dashboardConfig.showSims && (
+                        <div className="bg-[#070b13]/85 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-center hover:border-slate-755 transition">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <div className="p-1.5 rounded bg-slate-800/50 text-amber-400">
+                                <Smartphone size={14} />
+                              </div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">SIM Cards</span>
+                            </div>
+                            <div className="text-xl font-extrabold text-white mt-1">
+                              Total: {simCount}
+                            </div>
+                            <div className="text-[9px] text-slate-400 font-semibold space-y-0.5">
+                              <div>Active: <strong className="text-slate-200">{simAssigned}</strong></div>
+                              <div>Avail: <strong className="text-slate-200">{simAvailable}</strong></div>
+                            </div>
+                          </div>
+                          {/* Mini Vertical bars */}
+                          <div className="flex items-end gap-1.5 h-14 pb-1">
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div className="w-1.5 bg-slate-850 rounded-t h-12"></div>
+                              <span className="text-[7px] text-slate-500">Tot</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div 
+                                className="w-1.5 bg-amber-500 rounded-t shadow-[0_0_6px_#f59e0b]" 
+                                style={{ height: `${simCount > 0 ? Math.max(4, Math.round((simAssigned / simCount) * 48)) : 0}px` }}
+                              ></div>
+                              <span className="text-[7px] text-slate-500">Act</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div 
+                                className="w-1.5 bg-green-500 rounded-t shadow-[0_0_6px_#10b981]" 
+                                style={{ height: `${simCount > 0 ? Math.max(4, Math.round((simAvailable / simCount) * 48)) : 0}px` }}
+                              ></div>
+                              <span className="text-[7px] text-slate-500">Avail</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Available Mobile Stock Card */}
+                      {dashboardConfig.showAvailable && (
+                        <div className="bg-[#070b13]/85 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-755 transition">
+                          <div>
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <div className="p-1.5 rounded bg-slate-800/50 text-green-400">
+                                <CheckCircle size={14} />
+                              </div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider">Available Mobile Stock</span>
+                            </div>
+                            <div className="text-lg font-extrabold text-white mt-1.5">
+                              Total Units: {availableMobileCount}
+                            </div>
+                          </div>
+                          
+                          {/* Linear progress bar */}
+                          <div className="w-full mt-2">
+                            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
+                              <div className="bg-slate-500 h-full" style={{ width: `${laptopStockPct}%` }}></div>
+                              <div className="bg-cyan-400 h-full shadow-[0_0_6px_#22d3ee]" style={{ width: `${mobileStockPct}%` }}></div>
+                            </div>
+                            <div className="flex justify-between text-[8px] text-slate-400 font-semibold mt-1">
+                              <span>Laptops: {stockLaptops}</span>
+                              <span>Mobiles: {stockMobiles}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
+
+                {/* Bottom Section: Operational Health */}
+                {(dashboardConfig.showRepair || dashboardConfig.showLostStolen) && (
+                  <div className="bg-[#0b101d]/60 border border-slate-900 rounded-3xl p-6 backdrop-blur-md space-y-4">
+                    <div className="flex items-center gap-2 pb-2 border-b border-slate-900/50">
+                      <AlertTriangle className="text-red-500" size={18} />
+                      <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
+                        Operational Health
+                      </h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Under Repair Card */}
+                      {dashboardConfig.showRepair && (
+                        <div className="bg-[#070b13]/85 border border-cyan-500/30 rounded-2xl p-5 flex justify-between items-center shadow-[inset_0_0_12px_rgba(34,211,238,0.05)] hover:border-cyan-500/50 transition">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <div className="p-1.5 rounded bg-slate-800/50 text-cyan-400">
+                                <AlertCircle size={14} />
+                              </div>
+                              <span className="text-xs font-bold uppercase tracking-wider">Under Repair</span>
+                            </div>
+                            <div className="text-2xl font-extrabold text-white mt-2">
+                              Total Assets: {repairCount}
+                            </div>
+                            <div className="flex gap-4 text-[10px] text-slate-400 font-semibold mt-1">
+                              <span>Laptops: <strong className="text-slate-200">{repairLaptops}</strong></span>
+                              <span>Mobiles: <strong className="text-slate-200">{repairMobiles}</strong></span>
+                              <span>Others: <strong className="text-slate-200">{repairOthers}</strong></span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Lost / Stolen Card */}
+                      {dashboardConfig.showLostStolen && (
+                        <div className="bg-[#070b13]/85 border border-rose-500/30 rounded-2xl p-5 flex justify-between items-center shadow-[inset_0_0_12px_rgba(244,63,94,0.05)] hover:border-rose-500/50 transition">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <div className="p-1.5 rounded bg-slate-800/50 text-rose-400">
+                                <AlertTriangle size={14} />
+                              </div>
+                              <span className="text-xs font-bold uppercase tracking-wider">Lost / Stolen Assets</span>
+                            </div>
+                            <div className="text-2xl font-extrabold text-white mt-2">
+                              Total: {lostOrStolenCount}
+                            </div>
+                            <div className="flex gap-4 text-[10px] text-slate-400 font-semibold mt-1">
+                              <span>Lost: <strong className="text-slate-200">{lostCount}</strong></span>
+                              <span>Stolen: <strong className="text-slate-200">{stolenCount}</strong></span>
+                            </div>
+                          </div>
+                          {/* Glowing Red Sparkline */}
+                          <div className="flex items-center">
+                            <svg className="w-24 h-12 overflow-visible" viewBox="0 0 100 40">
+                              <defs>
+                                <linearGradient id="redGlow" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.4} />
+                                  <stop offset="100%" stopColor="#f43f5e" stopOpacity={0} />
+                                </linearGradient>
+                                <filter id="redGlowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                                  <feGaussianBlur stdDeviation="2" result="blur" />
+                                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                              </defs>
+                              <path
+                                d="M0,38 Q25,28 50,34 T80,15 T100,22"
+                                fill="none"
+                                stroke="#f43f5e"
+                                strokeWidth="2.5"
+                                filter="url(#redGlowFilter)"
+                              />
+                              <path
+                                d="M0,38 Q25,28 50,34 T80,15 T100,22 L100,40 L0,40 Z"
+                                fill="url(#redGlow)"
+                              />
+                              <circle cx="100" cy="22" r="3" fill="#f43f5e" />
+                              <circle cx="100" cy="22" r="6" fill="#f43f5e" opacity="0.4" className="animate-pulse" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Dashboard Charts & Insights */}
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   {/* Asset Category Distribution (Pie Chart) */}
-                  <div className="glass-panel rounded-2xl p-6">
+                  <div className="bg-[#0b101d]/60 border border-slate-900 rounded-3xl p-6 backdrop-blur-md">
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
                         <TrendingUp className="text-red-500" size={18} />
                         Asset Distribution
                       </h3>
-                      <span className="text-xs bg-slate-100 px-2.5 py-1 rounded-full font-semibold text-slate-500">
+                      <span className="text-xs bg-[#070b13]/80 border border-slate-800 px-2.5 py-1 rounded-full font-semibold text-slate-400">
                         By Category
                       </span>
                     </div>
 
                     <div className="h-80 flex items-center justify-center">
                       {pieData.length === 0 ? (
-                        <p className="text-slate-400 text-sm font-medium">Add assets to view distribution</p>
+                        <p className="text-slate-500 text-sm font-medium">Add assets to view distribution</p>
                       ) : (
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
@@ -1112,12 +1458,13 @@ function App() {
                               outerRadius={85}
                               dataKey="value"
                               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                              labelLine={{ stroke: '#475569' }}
                             >
                               {pieData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <Tooltip formatter={(value) => [`${value} Assets`, 'Count']} />
+                            <Tooltip contentStyle={{ backgroundColor: '#070b13', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc' }} formatter={(value) => [`${value} Assets`, 'Count']} />
                           </PieChart>
                         </ResponsiveContainer>
                       )}
@@ -1125,13 +1472,13 @@ function App() {
                   </div>
 
                   {/* Status Overview (Bar Chart) */}
-                  <div className="glass-panel rounded-2xl p-6">
+                  <div className="bg-[#0b101d]/60 border border-slate-900 rounded-3xl p-6 backdrop-blur-md">
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
                         <TrendingUp className="text-red-500" size={18} />
                         Asset Status Overview
                       </h3>
-                      <span className="text-xs bg-slate-100 px-2.5 py-1 rounded-full font-semibold text-slate-500">
+                      <span className="text-xs bg-[#070b13]/80 border border-slate-800 px-2.5 py-1 rounded-full font-semibold text-slate-400">
                         Deployability
                       </span>
                     </div>
@@ -1139,10 +1486,10 @@ function App() {
                     <div className="h-80">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={barData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                          <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                          <YAxis stroke="#94a3b8" fontSize={12} />
-                          <Tooltip cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                          <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
+                          <YAxis stroke="#64748b" fontSize={12} />
+                          <Tooltip contentStyle={{ backgroundColor: '#070b13', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc' }} cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }} />
                           <Bar dataKey="value" fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={60} />
                         </BarChart>
                       </ResponsiveContainer>
