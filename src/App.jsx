@@ -87,7 +87,8 @@ function App() {
     leavingDate: '',
     returnDate: '',
     remarks: '',
-    damages: ''
+    damages: '',
+    dispositionStatus: 'Available'
   })
   
   // Return OTP Authentication
@@ -489,7 +490,7 @@ function App() {
   // --- RETURN ASSET OTP & VALIDATION PROCESS ---
   const handleStartReturnFlow = (item) => {
     setSelectedAsset(item)
-    setReturnForm({ leavingDate: '', returnDate: '', remarks: '' })
+    setReturnForm({ leavingDate: '', returnDate: '', remarks: '', damages: '', dispositionStatus: 'Available' })
     setReturnOtpSent(false)
     setReturnOtpCode('')
     setReturnOtpInput('')
@@ -530,13 +531,15 @@ function App() {
       const updatedAssigned = await dbService.removeAssignedAsset(selectedAsset.assetCode);
       setAssignedAssets(updatedAssigned);
 
-      // 2. Mark source asset as 'Available'
+      const dispStatus = returnForm.dispositionStatus || 'Available';
+
+      // 2. Mark source asset as the selected status (Available, Lost, Stolen, Under Repair)
       const isMobile = selectedAsset.assetCode?.startsWith('MB') || selectedAsset.assetCode?.startsWith('SM') || selectedAsset.assetType === 'Mobile' || selectedAsset.assetType === 'SIM Card';
       if (isMobile) {
-        const updatedMobile = await dbService.updateMobileAssetStatus(selectedAsset.assetCode, 'Available', '-', '-');
+        const updatedMobile = await dbService.updateMobileAssetStatus(selectedAsset.assetCode, dispStatus, '-', '-');
         setMobileAssets(updatedMobile);
       } else {
-        const updatedAssets = await dbService.updateAssetStatus(selectedAsset.assetCode, 'Available');
+        const updatedAssets = await dbService.updateAssetStatus(selectedAsset.assetCode, dispStatus);
         setAssets(updatedAssets);
       }
 
@@ -553,7 +556,7 @@ function App() {
         leavingDate: returnForm.leavingDate,
         remarks: returnForm.remarks,
         damages: returnForm.damages || 'None',
-        status: 'Returned',
+        status: dispStatus === 'Available' ? 'Returned' : dispStatus,
         returnedOn: new Date().toISOString()
       };
 
@@ -561,17 +564,22 @@ function App() {
       setAssetHistory(updatedHistory);
 
       // 4. Save audit log
+      const actionText = dispStatus === 'Available' ? 'Returned Asset (OTP Verified)' : `Marked Asset as ${dispStatus} (OTP Verified)`;
+      const detailsText = dispStatus === 'Available' 
+        ? `Returned ${selectedAsset.assetType} [${selectedAsset.assetCode}] from employee ${selectedAsset.employeeName}.` 
+        : `Marked ${selectedAsset.assetType} [${selectedAsset.assetCode}] assigned to ${selectedAsset.employeeName} as ${dispStatus}.`;
+
       const updatedLogs = await dbService.saveActivityLog({
         member: `${currentUser.name} (${currentUser.role})`,
-        action: 'Returned Asset (OTP Verified)',
-        details: `Returned ${selectedAsset.assetType} [${selectedAsset.assetCode}] from employee ${selectedAsset.employeeName}.`
+        action: actionText,
+        details: detailsText
       });
       setActivityLogs(updatedLogs);
 
-      showNotification(`Asset ${selectedAsset.assetCode} returned successfully.`, "success");
+      showNotification(`Asset ${selectedAsset.assetCode} return processed successfully as ${dispStatus}.`, "success");
       setShowReturnModal(false);
       setSelectedAsset(null);
-      setReturnForm({ leavingDate: '', returnDate: '', remarks: '', damages: '' });
+      setReturnForm({ leavingDate: '', returnDate: '', remarks: '', damages: '', dispositionStatus: 'Available' });
     } catch (err) {
       console.error(err);
       showNotification("Failed to process asset return.", "error");
@@ -1142,7 +1150,9 @@ function App() {
                                     ? 'bg-rose-100 text-rose-800'
                                     : item.status === 'Available'
                                       ? 'bg-emerald-100 text-emerald-800'
-                                      : 'bg-yellow-100 text-yellow-800'
+                                      : item.status === 'Lost' || item.status === 'Stolen'
+                                        ? 'bg-red-100 text-red-800'
+                                        : 'bg-yellow-100 text-yellow-800'
                                 }`}>
                                   {item.status}
                                 </span>
@@ -1711,6 +1721,20 @@ function App() {
                   onChange={(e) => setReturnForm({ ...returnForm, returnDate: e.target.value })}
                   className="w-full glass-input p-3 rounded-xl text-sm outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="block mb-1 text-xs font-bold text-slate-500 uppercase">Return Status / Asset Condition *</label>
+                <select
+                  value={returnForm.dispositionStatus}
+                  onChange={(e) => setReturnForm({ ...returnForm, dispositionStatus: e.target.value })}
+                  className="w-full glass-input p-3 rounded-xl text-sm outline-none bg-white text-slate-700 font-medium"
+                >
+                  <option value="Available">Available (Returned to Stock)</option>
+                  <option value="Lost">Lost (Misplaced / Missing)</option>
+                  <option value="Stolen">Stolen (Theft / Burglary)</option>
+                  <option value="Under Repair">Under Repair (Faulty / Damaged)</option>
+                </select>
               </div>
 
               <div>

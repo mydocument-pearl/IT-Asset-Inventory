@@ -157,7 +157,9 @@ export default function MobileSimInventory({
                         ? 'bg-green-100 text-green-800' 
                         : item.status === 'Allocated' || item.status === 'Assigned'
                           ? 'bg-blue-100 text-blue-800' 
-                          : 'bg-yellow-100 text-yellow-800'
+                          : item.status === 'Lost' || item.status === 'Stolen'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
                     }`}>
                       {item.status}
                     </span>
