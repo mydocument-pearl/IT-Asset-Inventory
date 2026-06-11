@@ -406,18 +406,46 @@ function App() {
   const repairCount = assets.filter(a => a.status === 'Under Repair').length + mobileAssets.filter(m => m.status === 'Under Repair').length;
   const lostOrStolenCount = assets.filter(a => a.status === 'Lost' || a.status === 'Stolen').length + mobileAssets.filter(m => m.status === 'Lost' || m.status === 'Stolen').length;
 
-  const stats = [
-    { title: 'Total Assets', value: totalAssetsCount, icon: Database, color: 'text-gray-900', show: true },
-    { title: 'Laptops', value: laptopCount, icon: Laptop, color: 'text-red-600', show: dashboardConfig.showLaptops },
-    { title: 'Monitors', value: monitorCount, icon: Laptop, color: 'text-blue-500', show: dashboardConfig.showMonitors },
-    { title: 'Printers', value: printerCount, icon: FileText, color: 'text-emerald-500', show: dashboardConfig.showPrinters },
-    { title: 'Mobile Devices', value: mobileCount, icon: Smartphone, color: 'text-purple-500', show: dashboardConfig.showMobiles },
-    { title: 'SIM Cards', value: simCount, icon: Smartphone, color: 'text-amber-500', show: dashboardConfig.showSims },
-    { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600', show: dashboardConfig.showAssigned },
-    { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600', show: dashboardConfig.showAvailable },
-    { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600', show: dashboardConfig.showRepair },
-    { title: 'Lost / Stolen Assets', value: lostOrStolenCount, icon: AlertTriangle, color: 'text-rose-600', show: dashboardConfig.showLostStolen },
-  ].filter(s => s.show);
+  const sections = [
+    {
+      title: 'General Summary',
+      icon: Database,
+      show: true,
+      items: [
+        { title: 'Total Assets', value: totalAssetsCount, icon: Database, color: 'text-gray-900', show: true },
+        { title: 'Assigned Assets', value: assignedCount, icon: Users, color: 'text-indigo-600', show: dashboardConfig.showAssigned },
+      ].filter(s => s.show)
+    },
+    {
+      title: 'Computers & Hardware',
+      icon: Laptop,
+      show: dashboardConfig.showLaptops || dashboardConfig.showMonitors || dashboardConfig.showPrinters,
+      items: [
+        { title: 'Laptops', value: laptopCount, icon: Laptop, color: 'text-red-600', show: dashboardConfig.showLaptops },
+        { title: 'Monitors', value: monitorCount, icon: Laptop, color: 'text-blue-500', show: dashboardConfig.showMonitors },
+        { title: 'Printers', value: printerCount, icon: FileText, color: 'text-emerald-500', show: dashboardConfig.showPrinters },
+      ].filter(s => s.show)
+    },
+    {
+      title: 'Mobile & Telephony',
+      icon: Smartphone,
+      show: dashboardConfig.showMobiles || dashboardConfig.showSims || dashboardConfig.showAvailable,
+      items: [
+        { title: 'Mobile Devices', value: mobileCount, icon: Smartphone, color: 'text-purple-500', show: dashboardConfig.showMobiles },
+        { title: 'SIM Cards', value: simCount, icon: Smartphone, color: 'text-amber-500', show: dashboardConfig.showSims },
+        { title: 'Available Mobile Assets', value: availableMobileCount, icon: CheckCircle, color: 'text-green-600', show: dashboardConfig.showAvailable },
+      ].filter(s => s.show)
+    },
+    {
+      title: 'Operational Health & Safety',
+      icon: AlertTriangle,
+      show: dashboardConfig.showRepair || dashboardConfig.showLostStolen,
+      items: [
+        { title: 'Under Repair', value: repairCount, icon: AlertCircle, color: 'text-yellow-600', show: dashboardConfig.showRepair },
+        { title: 'Lost / Stolen Assets', value: lostOrStolenCount, icon: AlertTriangle, color: 'text-rose-600', show: dashboardConfig.showLostStolen },
+      ].filter(s => s.show)
+    }
+  ].filter(sec => sec.show && sec.items.length > 0);
 
   const pieData = [
     { name: 'Laptops', value: laptopCount },
@@ -1017,28 +1045,43 @@ function App() {
             {activeTab === 'dashboard' && (
               <div className="space-y-10 animate-fade-in print:hidden">
                 
-                {/* KPI cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {stats.map((item, index) => {
-                    const Icon = item.icon;
+                {/* Categorized Dashboard Sections */}
+                <div className="space-y-10">
+                  {sections.map((section, secIdx) => {
+                    const SecIcon = section.icon;
                     return (
-                      <div
-                        key={index}
-                        className="glass-panel rounded-2xl p-6 hover:shadow-lg transition duration-200 hover:-translate-y-0.5 flex justify-between items-start"
-                      >
-                        <div>
-                          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
-                            {item.title}
-                          </p>
-                          <h3 className="text-4xl font-extrabold text-slate-900 mt-2">
-                            {item.value}
-                          </h3>
+                      <div key={secIdx} className="space-y-4">
+                        <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+                          <SecIcon className="text-red-500" size={18} />
+                          <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
+                            {section.title}
+                          </h4>
                         </div>
-                        <div className={`p-3 rounded-xl bg-slate-100/80 ${item.color}`}>
-                          <Icon size={24} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                          {section.items.map((item, index) => {
+                            const Icon = item.icon;
+                            return (
+                              <div
+                                key={index}
+                                className="glass-panel rounded-2xl p-6 hover:shadow-lg transition duration-200 hover:-translate-y-0.5 flex justify-between items-start bg-white"
+                              >
+                                <div>
+                                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                                    {item.title}
+                                  </p>
+                                  <h3 className="text-4xl font-extrabold text-slate-900 mt-2">
+                                    {item.value}
+                                  </h3>
+                                </div>
+                                <div className={`p-3 rounded-xl bg-slate-100/80 ${item.color}`}>
+                                  <Icon size={24} />
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
 
