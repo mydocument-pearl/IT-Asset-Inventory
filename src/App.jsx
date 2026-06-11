@@ -103,6 +103,10 @@ function App() {
   const [searchEmployee, setSearchEmployee] = useState('')
   const [searchAssetType, setSearchAssetType] = useState('')
 
+  // Search/Filter states for Currently Assigned Deployments
+  const [deploymentsSearch, setDeploymentsSearch] = useState('')
+  const [deploymentsTypeFilter, setDeploymentsTypeFilter] = useState('all')
+
   // System mode
   const [dbMode, setDbMode] = useState('sync')
 
@@ -404,6 +408,36 @@ function App() {
     { name: 'Available', value: availableMobileCount },
     { name: 'Repair', value: repairCount },
   ]
+
+  // --- SORTED & FILTERED ASSIGNED DEPLOYMENTS ---
+  const sortedAndFilteredDeployments = assignedAssets
+    .filter(item => {
+      const name = (item.employeeName || '').toLowerCase();
+      const code = (item.assetCode || '').toLowerCase();
+      const serial = (item.serialNumber || '').toLowerCase();
+      const type = (item.assetType || '').toLowerCase();
+      const assetName = (item.assetName || item.asset || '').toLowerCase();
+      const queryStr = deploymentsSearch.toLowerCase();
+
+      const matchesSearch = 
+        name.includes(queryStr) ||
+        code.includes(queryStr) ||
+        serial.includes(queryStr) ||
+        assetName.includes(queryStr);
+
+      const matchesType = 
+        deploymentsTypeFilter === 'all' || 
+        type === deploymentsTypeFilter.toLowerCase() ||
+        (deploymentsTypeFilter === 'SIM Card' && type === 'sim card') ||
+        (deploymentsTypeFilter === 'Mobile' && type === 'mobile');
+
+      return matchesSearch && matchesType;
+    })
+    .sort((a, b) => {
+      const nameA = (a.employeeName || '').toLowerCase().trim();
+      const nameB = (b.employeeName || '').toLowerCase().trim();
+      return nameA.localeCompare(nameB);
+    });
 
   const COLORS = ['#ef4444', '#3b82f6', '#8b5cf6', '#f59e0b']
 
@@ -1213,13 +1247,43 @@ function App() {
 
                 {/* Assigned Assets Table */}
                 <div className="glass-panel rounded-2xl overflow-hidden">
-                  <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-xl font-bold text-slate-800">
-                      Currently Assigned Deployments
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Live map of workers deploying active hardware.
-                    </p>
+                  <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">
+                        Currently Assigned Deployments
+                      </h2>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Live map of workers deploying active hardware.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      {/* Search Bar */}
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Search deployments..."
+                          value={deploymentsSearch}
+                          onChange={(e) => setDeploymentsSearch(e.target.value)}
+                          className="glass-input text-xs pl-8 pr-3 py-2 rounded-xl w-60 outline-none"
+                        />
+                        <Search className="absolute left-2.5 top-2.5 text-slate-400" size={14} />
+                      </div>
+
+                      {/* Type Filter */}
+                      <select
+                        value={deploymentsTypeFilter}
+                        onChange={(e) => setDeploymentsTypeFilter(e.target.value)}
+                        className="glass-input text-xs px-3 py-2 rounded-xl outline-none text-slate-655 font-medium"
+                      >
+                        <option value="all">All Categories</option>
+                        <option value="Mobile">Mobiles Only</option>
+                        <option value="SIM Card">SIM Cards Only</option>
+                        <option value="Laptop">Laptops Only</option>
+                        <option value="Monitor">Monitors Only</option>
+                        <option value="Printer">Printers Only</option>
+                      </select>
+                    </div>
                   </div>
 
                   <div className="overflow-x-auto">
@@ -1237,14 +1301,14 @@ function App() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {assignedAssets.length === 0 ? (
+                        {sortedAndFilteredDeployments.length === 0 ? (
                           <tr>
                             <td colSpan={8} className="p-8 text-center text-slate-400 font-medium">
-                              No assets currently assigned to employees.
+                              {deploymentsSearch ? "No matching deployments found." : "No assets currently assigned to employees."}
                             </td>
                           </tr>
                         ) : (
-                          assignedAssets.map((item, index) => (
+                          sortedAndFilteredDeployments.map((item, index) => (
                             <tr key={index} className="hover:bg-slate-50/50 transition">
                               <td className="p-4">
                                 <div className="font-semibold text-slate-800">{item.employeeName}</div>
