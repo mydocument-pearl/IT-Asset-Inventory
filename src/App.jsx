@@ -467,11 +467,14 @@ function App() {
       const assetName = (item.assetName || item.asset || '').toLowerCase();
       const queryStr = deploymentsSearch.toLowerCase();
 
+      const phone = getEmployeePhone(item.employeeName, item.employeePhone).toLowerCase();
+
       const matchesSearch = 
         name.includes(queryStr) ||
         code.includes(queryStr) ||
         serial.includes(queryStr) ||
-        assetName.includes(queryStr);
+        assetName.includes(queryStr) ||
+        phone.includes(queryStr);
 
       const matchesType = 
         deploymentsTypeFilter === 'all' || 
@@ -1747,6 +1750,7 @@ function App() {
                   showNotification={showNotification}
                   isUserAdmin={isUserAdmin}
                   currentUser={currentUser}
+                  employees={employees}
                 />
               </div>
             )}

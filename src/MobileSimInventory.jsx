@@ -9,7 +9,8 @@ export default function MobileSimInventory({
   setAssetHistory,
   showNotification,
   isUserAdmin,
-  currentUser
+  currentUser,
+  employees = []
 }) {
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
@@ -17,11 +18,19 @@ export default function MobileSimInventory({
 
   // Filtering logic
   const filtered = mobileAssets.filter((item) => {
+    const emp = employees.find(e => e.name.toLowerCase().trim() === item.employee?.toLowerCase().trim());
+    const empPhone = emp?.phone || '';
+
+    const query = searchTerm.toLowerCase();
+
     const matchesSearch = 
-      (item.employee?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.brand?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.model?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.simNumber?.includes(searchTerm));
+      (item.employee?.toLowerCase().includes(query)) ||
+      (item.brand?.toLowerCase().includes(query)) ||
+      (item.model?.toLowerCase().includes(query)) ||
+      (item.simNumber?.includes(searchTerm)) ||
+      (item.simImei?.includes(searchTerm)) ||
+      (item.imei?.includes(searchTerm)) ||
+      (empPhone.includes(searchTerm));
       
     const matchesType = filterType === 'all' || 
       (filterType === 'mobile' && item.assetType?.toLowerCase() === 'mobile') ||

@@ -16,6 +16,17 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
 
   const [excelFile, setExcelFile] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredEmployees = employees.filter(emp => {
+    const query = searchTerm.toLowerCase().trim();
+    if (!query) return true;
+    return (emp.name || '').toLowerCase().includes(query) ||
+           (emp.id || '').toLowerCase().includes(query) ||
+           (emp.phone || '').toLowerCase().includes(query) ||
+           (emp.department || '').toLowerCase().includes(query) ||
+           (emp.organization || '').toLowerCase().includes(query);
+  });
 
   const isUserAdmin = currentUser?.role === 'admin'
 
@@ -426,14 +437,25 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
 
       {/* 3. Employee Directory List Table */}
       <div className="glass-panel rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
-          <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <Users className="text-red-500" size={20} />
-            Employee Directory Register
-          </h3>
-          <p className="text-xs text-slate-500 mt-1">
-            Showing {employees.length} employees currently registered in the database.
-          </p>
+        <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <Users className="text-red-500" size={20} />
+              Employee Directory Register
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Showing {filteredEmployees.length} of {employees.length} employees currently registered in the database.
+            </p>
+          </div>
+          <div className="w-full md:w-auto">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by name, ID, or phone number"
+              className="glass-input rounded-xl px-4 py-2.5 text-xs outline-none w-full md:w-72 border border-slate-200"
+            />
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -450,14 +472,14 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
-              {employees.length === 0 ? (
+              {filteredEmployees.length === 0 ? (
                 <tr>
                   <td colSpan={isUserAdmin ? 7 : 6} className="p-8 text-center text-slate-400 font-medium">
-                    No employees registered in the directory. Add manually or upload Excel.
+                    No matching employees found in the directory.
                   </td>
                 </tr>
               ) : (
-                employees.map((item, idx) => (
+                filteredEmployees.map((item, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/50 transition">
                     <td className="p-4 font-bold text-slate-800">{item.name}</td>
                     <td className="p-4 font-mono font-semibold text-slate-600">{item.id}</td>
