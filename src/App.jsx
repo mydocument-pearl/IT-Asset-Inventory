@@ -1076,7 +1076,7 @@ function App() {
       </div>
 
       {/* Main Content Area */}
-      <div className={`flex-1 overflow-y-auto px-8 py-8 print:full-width print:p-0 transition-colors duration-150 ${
+      <div className={`flex-1 min-w-0 overflow-y-auto px-8 py-8 print:full-width print:p-0 transition-colors duration-150 ${
         activeTab === 'dashboard'
           ? 'bg-[#f8fafc] bg-[linear-gradient(rgba(226,232,240,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.5)_1px,transparent_1px)] bg-[size:24px_24px]'
           : 'bg-[#fafafa]'
