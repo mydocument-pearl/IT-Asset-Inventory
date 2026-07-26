@@ -852,7 +852,7 @@ function App() {
   const isUserAdmin = currentUser.role === 'admin';
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-50 flex font-sans antialiased text-slate-800">
+    <div className="h-screen w-full overflow-hidden bg-slate-50 flex font-sans antialiased text-slate-800">
       
       {/* Print stylesheet helper */}
       <style>{`
@@ -1084,7 +1084,7 @@ function App() {
         
         {/* Top Header */}
         {activeTab !== 'dashboard' && (
-          <header className="flex justify-between items-center mb-8 border-b border-slate-200 pb-5 print:hidden">
+          <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8 border-b border-slate-200 pb-5 print:hidden">
             <div>
               <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight capitalize">
                 {activeTab === 'itassets' ? 'IT Inventory' : activeTab === 'allocation' ? 'Asset Assignments' : activeTab === 'mobile' ? 'Mobile / SIM Suite' : activeTab === 'vendors' ? 'Vendors Registry' : activeTab === 'reports' ? 'Reports & History' : activeTab === 'employees' ? 'Employee Directory' : activeTab === 'software' ? 'Software & License Suite' : activeTab}
