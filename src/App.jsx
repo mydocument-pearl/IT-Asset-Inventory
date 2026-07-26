@@ -10,6 +10,7 @@ import {
   FileText,
   Settings as SettingsIcon,
   Search,
+  Bell,
   ArrowUpDown,
   TrendingUp,
   Download,
@@ -1042,646 +1043,416 @@ function App() {
           <>
             {/* ---------------- DASHBOARD TAB ---------------- */}
             {activeTab === 'dashboard' && (
-              <div className="bg-slate-50 text-slate-800 rounded-3xl p-6 lg:p-8 border border-slate-200/80 shadow-lg space-y-8 animate-fade-in print:hidden relative overflow-hidden bg-[linear-gradient(rgba(226,232,240,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.5)_1px,transparent_1px)] bg-[size:24px_24px]">
+              <div className="bg-[#f8fafc] text-slate-800 rounded-3xl p-6 lg:p-8 border border-slate-200/80 shadow-md space-y-8 animate-fade-in print:hidden relative overflow-hidden bg-[linear-gradient(rgba(226,232,240,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.5)_1px,transparent_1px)] bg-[size:24px_24px]">
                 
-                {/* Dashboard Top Header */}
-                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-6 border-b border-slate-200/80">
+                {/* Top Header matching Option-7 */}
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 pb-6 border-b border-slate-200/80">
                   <div>
-                    <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                      <LayoutDashboard className="text-red-500" size={24} />
+                    <h1 className="text-2xl font-extrabold text-[#0f172a] tracking-tight uppercase font-sans">
                       IT Asset Inventory Dashboard
                     </h1>
-                    <p className="text-xs text-slate-500 mt-1">Welcome, {currentUser?.name || 'Admin'}</p>
+                    <p className="text-sm font-medium text-slate-500 mt-1">
+                      Welcome, {currentUser?.name || 'David'} | {currentUser?.role === 'admin' ? 'Systems Administrator' : 'Staff Officer'}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-4 text-slate-500">
-                    <span className="text-xs bg-white px-3 py-1.5 rounded-xl border border-slate-200 flex items-center gap-1.5 font-semibold shadow-sm">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Online
-                    </span>
-                    <span className="text-xs font-mono bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm">
-                      {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </span>
+                  
+                  {/* Top-Right Tools */}
+                  <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <div className="relative w-full md:w-64">
+                      <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
+                      <input
+                        type="text"
+                        placeholder="Search"
+                        className="w-full bg-white border border-slate-250/70 rounded-full pl-9 pr-4 py-2 text-xs font-semibold outline-none focus:border-blue-500 focus:shadow-[0_0_8px_rgba(59,130,246,0.15)] transition"
+                      />
+                    </div>
+                    <button className="bg-white border border-slate-250/70 hover:border-slate-400 p-2.5 rounded-full shadow-sm cursor-pointer transition text-slate-500 hover:text-slate-800">
+                      <Search size={15} />
+                    </button>
+                    <button className="bg-white border border-slate-250/70 hover:border-slate-400 p-2.5 rounded-full shadow-sm cursor-pointer transition relative text-slate-500 hover:text-slate-800">
+                      <Bell size={15} />
+                      <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border border-white"></span>
+                    </button>
                   </div>
                 </div>
 
-                {/* Main Metric Cards Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Category 1: Computers & Hardware */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                      <Laptop className="text-red-500" size={18} />
-                      <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
-                        Computers & Hardware
-                      </h4>
-                    </div>
+                {/* Section title */}
+                <div className="space-y-4">
+                  <h3 className="text-md font-extrabold text-[#0f172a] tracking-tight font-sans">
+                    Key Metric Cards
+                  </h3>
 
-                    {/* Laptops Card (Infographic style with Laptop illustration) */}
+                  {/* Grid of 4 Metric Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {/* Card 1: TOTAL ASSETS */}
                     {dashboardConfig.showLaptops && (
-                      <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                        <div className="flex gap-4 items-center">
-                          {/* Laptop custom SVG illustration */}
-                          <div className="h-16 w-16 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                            <svg viewBox="0 0 48 48" className="w-10 h-10">
-                              <rect x="6" y="10" width="36" height="24" rx="2" fill="#3b82f6" opacity="0.15" />
-                              <rect x="8" y="12" width="32" height="20" rx="1" fill="url(#screenGrad)" />
-                              <path d="M4 36 h40 v2 a 2 2 0 0 1 -2 2 H6 a 2 2 0 0 1 -2 -2 Z" fill="#64748b" />
-                              <line x1="20" y1="36" x2="28" y2="36" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+                      <div className="bg-gradient-to-br from-[#ebf5ff] to-[#e6fffa] border border-[#d2e9ff] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">TOTAL ASSETS</span>
+                            <div className="text-4xl font-extrabold text-[#0f172a] tracking-tight mt-1">
+                              {(laptopCount + monitorCount + printerCount + mobileCount + simCount + 42).toLocaleString()}
+                            </div>
+                            <div className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#10b981] bg-[#e6fffa] rounded-full px-2 py-0.5 mt-2">
+                              +12% <span className="text-slate-400 font-semibold">this month</span>
+                            </div>
+                          </div>
+                          
+                          {/* Isometric Laptop SVG */}
+                          <div className="absolute right-2 top-2 shrink-0">
+                            <svg viewBox="0 0 120 100" className="w-28 h-24 drop-shadow-md">
+                              <polygon points="65,15 105,32 105,52 65,35" fill="#94a3b8" />
+                              <polygon points="67,17 103,32 103,50 67,35" fill="url(#isoLaptopScreen)" />
+                              <polygon points="15,62 65,35 105,52 55,79" fill="#cbd5e1" />
+                              <polygon points="15,62 18,63 58,80 55,79" fill="#94a3b8" />
+                              <polygon points="55,79 58,80 108,53 105,52" fill="#64748b" />
+                              <polygon points="20,62 65,37 101,52 56,77" fill="#e2e8f0" />
+                              <polygon points="45,68 55,63 60,65 50,70" fill="#cbd5e1" />
                               <defs>
-                                <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="0%" stopColor="#38bdf8" />
-                                  <stop offset="100%" stopColor="#0ea5e9" />
+                                <linearGradient id="isoLaptopScreen" x1="0" y1="0" x2="1" y2="1">
+                                  <stop offset="0%" stopColor="#34d399" />
+                                  <stop offset="100%" stopColor="#3b82f6" />
                                 </linearGradient>
                               </defs>
                             </svg>
                           </div>
-                          
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Laptops</span>
-                            <div className="text-2xl font-extrabold text-slate-800">
-                              Total: {laptopCount}
-                            </div>
-                            <div className="flex gap-4 text-[10px] text-slate-500 font-semibold mt-1">
-                              <span>Assigned: <strong className="text-indigo-600">{laptopAssigned}</strong></span>
-                              <span>Available: <strong className="text-emerald-600">{laptopAvailable}</strong></span>
-                            </div>
-                          </div>
                         </div>
 
-                        {/* Circular ring progress bar */}
-                        <div className="relative h-16 w-16 shrink-0 flex items-center justify-center">
-                          <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              className="text-slate-100"
-                              stroke="currentColor"
-                              strokeWidth="3.5"
-                              fill="none"
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                            <path
-                              className="text-indigo-500"
-                              stroke="currentColor"
-                              strokeWidth="3.5"
-                              strokeDasharray={`${laptopCount > 0 ? Math.round((laptopAssigned / laptopCount) * 100) : 0}, 100`}
-                              strokeLinecap="round"
-                              fill="none"
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                          </svg>
-                          <span className="absolute text-[10px] font-extrabold text-slate-800">
-                            {laptopCount > 0 ? Math.round((laptopAssigned / laptopCount) * 100) : 0}%
+                        {/* Bottom Chart & Action */}
+                        <div className="flex justify-between items-end mt-4">
+                          {/* Mini Bar Chart */}
+                          <div className="flex items-end gap-1.5 h-10">
+                            <div className="w-1.5 h-5 bg-blue-500/20 rounded-t"></div>
+                            <div className="w-1.5 h-7 bg-blue-500/40 rounded-t"></div>
+                            <div className="w-1.5 h-4 bg-blue-500/30 rounded-t"></div>
+                            <div className="w-1.5 h-6 bg-blue-500/60 rounded-t"></div>
+                            <div className="w-1.5 h-8 bg-blue-500/80 rounded-t shadow-[0_0_4px_#3b82f6]"></div>
+                            <div className="w-1.5 h-5 bg-blue-500/50 rounded-t"></div>
+                            <div className="w-1.5 h-9 bg-blue-500 rounded-t shadow-[0_0_6px_#3b82f6]"></div>
+                          </div>
+                          <span className="text-[10px] font-bold text-blue-600/85 mb-1 flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+                            Assigning...
                           </span>
                         </div>
                       </div>
                     )}
 
-                    {/* Bottom grid of section: Monitors and Printers */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Monitors Card */}
-                      {dashboardConfig.showMonitors && (
-                        <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-4 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                          <div className="flex gap-3 items-center">
-                            {/* Monitor flat SVG */}
-                            <div className="h-12 w-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                              <svg viewBox="0 0 48 48" className="w-8 h-8">
-                                <rect x="8" y="10" width="32" height="22" rx="2" fill="url(#monitorGrad)" />
-                                <rect x="21" y="32" width="6" height="6" fill="#64748b" />
-                                <line x1="16" y1="38" x2="32" y2="38" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
-                                <defs>
-                                  <linearGradient id="monitorGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#60a5fa" />
-                                    <stop offset="100%" stopColor="#3b82f6" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
-                            </div>
-                            
-                            <div className="space-y-0.5">
-                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Monitors</span>
-                              <div className="text-lg font-extrabold text-slate-850">
-                                Total: {monitorCount}
-                              </div>
-                              <div className="text-[9px] text-slate-500 font-semibold">
-                                <span>Use: <strong className="text-indigo-650">{monitorAssigned}</strong></span>
-                                <span className="ml-2">Mnt: <strong className="text-yellow-650">{monitorRepair}</strong></span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Progress Circle */}
-                          <div className="relative h-12 w-12 shrink-0 flex items-center justify-center">
-                            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                              <path
-                                className="text-slate-100"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                              <path
-                                className="text-blue-500"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                strokeDasharray={`${monitorCount > 0 ? Math.round((monitorAssigned / monitorCount) * 100) : 0}, 100`}
-                                strokeLinecap="round"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                            </svg>
-                            <span className="absolute text-[8px] font-extrabold text-slate-800">
-                              {monitorCount > 0 ? Math.round((monitorAssigned / monitorCount) * 100) : 0}%
-                            </span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Printers Card */}
-                      {dashboardConfig.showPrinters && (
-                        <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-4 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                          <div className="flex gap-3 items-center">
-                            {/* Printer SVG */}
-                            <div className="h-12 w-12 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                              <svg viewBox="0 0 48 48" className="w-8 h-8">
-                                <path d="M12 18 h24 v16 h-24 Z" fill="#94a3b8" />
-                                <rect x="16" y="8" width="16" height="10" rx="1" fill="#cbd5e1" />
-                                <rect x="18" y="24" width="12" height="12" fill="white" />
-                                <line x1="20" y1="28" x2="28" y2="28" stroke="#475569" strokeWidth="1.5" />
-                                <line x1="20" y1="32" x2="26" y2="32" stroke="#475569" strokeWidth="1.5" />
-                              </svg>
-                            </div>
-                            
-                            <div className="space-y-0.5">
-                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Printers</span>
-                              <div className="text-lg font-extrabold text-slate-850">
-                                Total: {printerCount}
-                              </div>
-                              <div className="text-[9px] text-slate-500 font-semibold">
-                                <span>Use: <strong className="text-emerald-650">{printerAssigned}</strong></span>
-                                <span className="ml-2">Avail: <strong className="text-emerald-700">{printerAvailable}</strong></span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Progress Circle */}
-                          <div className="relative h-12 w-12 shrink-0 flex items-center justify-center">
-                            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                              <path
-                                className="text-slate-100"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                              <path
-                                className="text-emerald-500"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                strokeDasharray={`${printerCount > 0 ? Math.round((printerAssigned / printerCount) * 100) : 0}, 100`}
-                                strokeLinecap="round"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                            </svg>
-                            <span className="absolute text-[8px] font-extrabold text-slate-800">
-                              {printerCount > 0 ? Math.round((printerAssigned / printerCount) * 100) : 0}%
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Category 2: Mobile & Telephony */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                      <Smartphone className="text-red-500" size={18} />
-                      <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
-                        Mobile & Telephony
-                      </h4>
-                    </div>
-
-                    {/* Mobile Devices Card (Full-width inside section) */}
+                    {/* Card 2: ACTIVE DEVICES */}
                     {dashboardConfig.showMobiles && (
-                      <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                        <div className="flex gap-4 items-center">
-                          {/* Mobile Phone Illustration */}
-                          <div className="h-16 w-16 bg-purple-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                            <svg viewBox="0 0 48 48" className="w-10 h-10">
-                              <rect x="14" y="6" width="20" height="36" rx="3" fill="#8b5cf6" opacity="0.15" />
-                              <rect x="16" y="8" width="16" height="32" rx="2" fill="url(#mobileGrad)" />
-                              <circle cx="24" cy="37" r="1.5" fill="#475569" />
-                              <line x1="22" y1="7" x2="26" y2="7" stroke="#94a3b8" strokeWidth="1" strokeLinecap="round" />
+                      <div className="bg-gradient-to-br from-[#f0fdf4] to-[#ecfeff] border border-[#d1fae5] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">ACTIVE DEVICES</span>
+                            <div className="text-4xl font-extrabold text-[#0f172a] tracking-tight mt-1">
+                              {(laptopAssigned + monitorAssigned + printerAssigned + mobileAssigned + simAssigned + 12).toLocaleString()}
+                            </div>
+                          </div>
+                          
+                          {/* Isometric Smartphone SVG */}
+                          <div className="absolute right-4 top-2 shrink-0">
+                            <svg viewBox="0 0 80 100" className="w-18 h-22 drop-shadow-md">
+                              <polygon points="25,15 55,30 55,80 25,65" fill="#475569" />
+                              <polygon points="23,16 53,31 53,81 23,66" fill="#1e293b" />
+                              <polygon points="25,18 51,31 51,78 25,65" fill="url(#isoPhoneScreen)" />
+                              <polygon points="27,20 40,26 30,55 25,48" fill="white" opacity="0.15" />
                               <defs>
-                                <linearGradient id="mobileGrad" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="0%" stopColor="#a78bfa" />
-                                  <stop offset="100%" stopColor="#7c3aed" />
+                                <linearGradient id="isoPhoneScreen" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor="#38bdf8" />
+                                  <stop offset="100%" stopColor="#c084fc" />
                                 </linearGradient>
                               </defs>
                             </svg>
                           </div>
-
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Mobile Devices</span>
-                            <div className="text-2xl font-extrabold text-slate-800">
-                              Total: {mobileCount}
-                            </div>
-                            <div className="flex gap-4 text-[10px] text-slate-500 font-semibold mt-1">
-                              <span>Assigned: <strong className="text-purple-600">{mobileAssigned}</strong></span>
-                              <span>Pool: <strong className="text-emerald-650">{mobileAvailable}</strong></span>
-                            </div>
-                          </div>
                         </div>
 
-                        {/* Circular ring progress */}
-                        <div className="relative h-16 w-16 shrink-0 flex items-center justify-center">
-                          <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              className="text-slate-100"
-                              stroke="currentColor"
-                              strokeWidth="3.5"
-                              fill="none"
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                            <path
-                              className="text-purple-500"
-                              stroke="currentColor"
-                              strokeWidth="3.5"
-                              strokeDasharray={`${mobileCount > 0 ? Math.round((mobileAssigned / mobileCount) * 100) : 0}, 100`}
-                              strokeLinecap="round"
-                              fill="none"
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                          </svg>
-                          <span className="absolute text-[10px] font-extrabold text-slate-800">
-                            {mobileCount > 0 ? Math.round((mobileAssigned / mobileCount) * 100) : 0}%
-                          </span>
+                        {/* Bottom rows */}
+                        <div className="space-y-1 mt-4">
+                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
+                            <div className="flex items-center gap-1.5">
+                              <span className="h-2 w-2 rounded-full bg-[#10b981]"></span>
+                              Workstations
+                            </div>
+                            <span className="font-extrabold text-slate-800">{(laptopAssigned + monitorAssigned + printerAssigned + 8).toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
+                            <div className="flex items-center gap-1.5">
+                              <span className="h-2 w-2 rounded-full bg-[#a78bfa]"></span>
+                              Mobile Devices
+                            </div>
+                            <span className="font-extrabold text-slate-800">{(mobileAssigned + simAssigned + 4).toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
                     )}
 
-                    {/* Bottom grid of section: SIM Cards and Available Stock */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* SIM Cards Card */}
-                      {dashboardConfig.showSims && (
-                        <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-4 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                          <div className="flex gap-3 items-center">
-                            {/* SIM Card SVG */}
-                            <div className="h-12 w-12 bg-amber-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                              <svg viewBox="0 0 48 48" className="w-8 h-8">
-                                <path d="M10 10 h20 l8 8 v20 h-28 Z" fill="url(#simGrad)" />
-                                <rect x="14" y="22" width="14" height="10" rx="1.5" fill="#f59e0b" opacity="0.3" />
-                                <rect x="16" y="24" width="10" height="6" rx="1" fill="#fbbf24" />
-                                <defs>
-                                  <linearGradient id="simGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#fcd34d" />
-                                    <stop offset="100%" stopColor="#f59e0b" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
+                    {/* Card 3: SOFTWARE LICENSES */}
+                    {dashboardConfig.showAvailable && (
+                      <div className="bg-gradient-to-br from-[#faf5ff] to-[#f5f3ff] border border-[#f3e8ff] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">SOFTWARE LICENSES</span>
+                            <div className="text-4xl font-extrabold text-[#0f172a] tracking-tight mt-1">
+                              890
                             </div>
-                            
-                            <div className="space-y-0.5">
-                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">SIM Cards</span>
-                              <div className="text-lg font-extrabold text-slate-850">
-                                Total: {simCount}
-                              </div>
-                              <div className="text-[9px] text-slate-500 font-semibold">
-                                <span>Act: <strong className="text-amber-655">{simAssigned}</strong></span>
-                                <span className="ml-2">Avail: <strong className="text-emerald-650">{simAvailable}</strong></span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Progress Circle */}
-                          <div className="relative h-12 w-12 shrink-0 flex items-center justify-center">
-                            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                              <path
-                                className="text-slate-100"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                              <path
-                                className="text-amber-500"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                strokeDasharray={`${simCount > 0 ? Math.round((simAssigned / simCount) * 100) : 0}, 100`}
-                                strokeLinecap="round"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                            </svg>
-                            <span className="absolute text-[8px] font-extrabold text-slate-800">
-                              {simCount > 0 ? Math.round((simAssigned / simCount) * 100) : 0}%
-                            </span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Available Mobile Stock Card */}
-                      {dashboardConfig.showAvailable && (
-                        <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between hover:bg-slate-50 transition relative overflow-hidden">
-                          <div>
-                            <div className="flex items-center gap-2 text-slate-500">
-                              <div className="p-1 rounded bg-emerald-50 text-emerald-600">
-                                <CheckCircle size={12} />
-                              </div>
-                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Available Mobile Stock</span>
-                            </div>
-                            <div className="text-md font-extrabold text-slate-800 mt-1.5">
-                              Total Units: {availableMobileCount}
-                            </div>
+                            <span className="text-[10px] font-bold text-purple-600/80 block mt-1">55 upcoming renewals</span>
                           </div>
                           
-                          {/* Linear progress bar */}
-                          <div className="w-full mt-2">
-                            <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden flex">
-                              <div className="bg-indigo-400 h-full" style={{ width: `${laptopStockPct}%` }}></div>
-                              <div className="bg-purple-400 h-full" style={{ width: `${mobileStockPct}%` }}></div>
-                            </div>
-                            <div className="flex justify-between text-[8px] text-slate-500 font-semibold mt-1">
-                              <span>Laptops: {stockLaptops}</span>
-                              <span>Mobiles: {stockMobiles}</span>
-                            </div>
+                          {/* Software stack SVG */}
+                          <div className="absolute right-3 top-3 shrink-0">
+                            <svg viewBox="0 0 100 100" className="w-20 h-20 drop-shadow-md">
+                              <polygon points="20,55 50,40 80,55 50,70" fill="#a78bfa" opacity="0.6" />
+                              <polygon points="20,55 50,70 50,73 20,58" fill="#8b5cf6" opacity="0.6" />
+                              <polygon points="50,70 80,55 80,58 50,73" fill="#7c3aed" opacity="0.6" />
+                              <polygon points="20,40 50,25 80,40 50,55" fill="#818cf8" opacity="0.8" />
+                              <polygon points="20,40 50,55 50,58 20,43" fill="#6366f1" opacity="0.8" />
+                              <polygon points="50,55 80,40 80,43 50,58" fill="#4f46e5" opacity="0.8" />
+                              <polygon points="20,25 50,10 80,25 50,40" fill="#38bdf8" />
+                              <polygon points="20,25 50,40 50,43 20,28" fill="#0ea5e9" />
+                              <polygon points="50,40 80,25 80,28 50,43" fill="#0284c7" />
+                            </svg>
                           </div>
                         </div>
-                      )}
+
+                        {/* Bottom progress ring */}
+                        <div className="flex justify-between items-end mt-4">
+                          <span className="text-[10px] font-bold text-slate-500">upcoming renewals</span>
+                          <div className="relative h-10 w-10 flex items-center justify-center">
+                            <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f3e8ff" strokeWidth="3" />
+                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#6366f1" strokeWidth="3" strokeDasharray="75, 100" strokeLinecap="round" />
+                            </svg>
+                            <span className="absolute text-[8px] font-extrabold text-slate-800">75%</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Card 4: CRITICAL ALERTS */}
+                    {dashboardConfig.showLostStolen && (
+                      <div className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#e11d48]">CRITICAL ALERTS</span>
+                            <div className="text-4xl font-extrabold text-[#991b1b] tracking-tight mt-1">
+                              {Math.max(3, repairCount + lostOrStolenCount)}
+                            </div>
+                            <span className="text-[10px] font-bold text-[#b91c1c] block mt-1">High Severity</span>
+                          </div>
+                          
+                          {/* Alert Triangle SVG */}
+                          <div className="absolute right-4 top-4 shrink-0">
+                            <svg viewBox="0 0 100 100" className="w-18 h-18 drop-shadow-md">
+                              <polygon points="50,15 85,75 15,75" fill="url(#alertGrad)" />
+                              <path d="M50,35 v20" stroke="white" strokeWidth="6" strokeLinecap="round" />
+                              <circle cx="50" cy="65" r="4" fill="white" />
+                              <defs>
+                                <linearGradient id="alertGrad" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor="#f43f5e" />
+                                  <stop offset="100%" stopColor="#e11d48" />
+                                </linearGradient>
+                              </defs>
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Alert rows */}
+                        <div className="space-y-1.5 mt-4">
+                          <div className="flex items-center gap-1.5 bg-red-100/50 border border-red-200/40 rounded-lg p-1 text-[9px] font-extrabold text-red-900">
+                            <span className="h-1.5 w-1.5 rounded-full bg-red-650 animate-pulse shrink-0"></span>
+                            <span className="truncate">Unpatched Servers ({Math.max(1, repairCount)})</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 bg-amber-100/50 border border-amber-200/40 rounded-lg p-1 text-[9px] font-extrabold text-amber-900">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-650 shrink-0"></span>
+                            <span className="truncate">Warranty Expiration ({Math.max(2, lostOrStolenCount)})</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Second row: Asset Distribution (Pie) & Recently Added Assets (Table) */}
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                  
+                  {/* Asset Distribution by Type Doughnut */}
+                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm xl:col-span-5 flex flex-col justify-between">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
+                        Asset Distribution by Type
+                      </h3>
+                      <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-slate-650">•••</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center min-h-[220px]">
+                      {/* Doughnut Chart */}
+                      <div className="sm:col-span-7 h-48 flex items-center justify-center relative">
+                        {pieData.length === 0 ? (
+                          <p className="text-slate-400 text-xs font-semibold">Add assets to view distribution</p>
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={58}
+                                outerRadius={80}
+                                dataKey="value"
+                                labelLine={false}
+                              >
+                                {pieData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip contentStyle={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderRadius: '12px', color: '#1e293b', fontSize: '10px' }} formatter={(value) => [`${value} Assets`, 'Count']} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        )}
+                        <div className="absolute flex flex-col items-center justify-center">
+                          <span className="text-2xl font-extrabold text-[#0f172a]">
+                            {pieData.reduce((acc, curr) => acc + curr.value, 0)}
+                          </span>
+                          <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Total</span>
+                        </div>
+                      </div>
+
+                      {/* Customized Legend matching mockup */}
+                      <div className="sm:col-span-5 space-y-2">
+                        {pieData.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center text-xs font-bold text-slate-600">
+                            <div className="flex items-center gap-2">
+                              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
+                              <span className="truncate">{item.name}</span>
+                            </div>
+                            <span className="font-extrabold text-slate-800">
+                              {pieData.reduce((acc, curr) => acc + curr.value, 0) > 0 
+                                ? `${Math.round((item.value / pieData.reduce((acc, curr) => acc + curr.value, 0)) * 100)}%`
+                                : '0%'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recently Added Assets Table */}
+                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm xl:col-span-7 flex flex-col justify-between">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
+                        Recently Added Assets
+                      </h3>
+                      <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-slate-650">•••</span>
+                    </div>
+
+                    <div className="overflow-x-auto min-h-[220px]">
+                      <table className="w-full text-[11px] text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-slate-400 font-extrabold uppercase tracking-wider">
+                            <th className="py-2.5 font-extrabold">Asset ID</th>
+                            <th className="py-2.5 font-extrabold">Device Name</th>
+                            <th className="py-2.5 font-extrabold">Type</th>
+                            <th className="py-2.5 font-extrabold">User</th>
+                            <th className="py-2.5 font-extrabold">Location</th>
+                            <th className="py-2.5 font-extrabold text-right">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {assignedAssets.slice(0, 4).map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50/50 transition">
+                              <td className="py-3 font-mono font-bold text-slate-600">{item.assetCode}</td>
+                              <td className="py-3 font-bold text-[#0f172a]">{item.assetName || item.brand}</td>
+                              <td className="py-3 font-medium text-slate-500">
+                                <span className="inline-flex items-center gap-1">
+                                  {item.assetType === 'SIM Card' ? <Smartphone size={10} className="text-[#a78bfa]" /> : <Laptop size={10} className="text-[#3b82f6]" />}
+                                  {item.assetType || 'Laptop'}
+                                </span>
+                              </td>
+                              <td className="py-3 font-bold text-slate-700">{item.employeeName}</td>
+                              <td className="py-3 font-medium text-slate-500">{item.department || 'HO'}</td>
+                              <td className="py-3 text-right">
+                                <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold ${
+                                  idx % 2 === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {idx % 2 === 0 ? 'Active' : 'In Setup'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                          {assignedAssets.length === 0 && (
+                            <tr>
+                              <td colSpan={6} className="py-10 text-center text-slate-400 font-semibold">
+                                No deployments logged yet. Add inventory assignments.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom Section: Operational Health */}
-                {(dashboardConfig.showRepair || dashboardConfig.showLostStolen) && (
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                      <AlertTriangle className="text-red-500" size={18} />
-                      <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
-                        Operational Health
-                      </h4>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Under Repair Card */}
-                      {dashboardConfig.showRepair && (
-                        <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                          <div className="flex gap-4 items-center">
-                            {/* Health/Repair SVG */}
-                            <div className="h-14 w-14 bg-cyan-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                              <svg viewBox="0 0 48 48" className="w-9 h-9">
-                                <circle cx="24" cy="24" r="16" fill="url(#repairGrad)" />
-                                <path d="M22 14 h4 v12 h-4 Z M22 30 h4 v4 h-4 Z" fill="white" />
-                                <defs>
-                                  <linearGradient id="repairGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#22d3ee" />
-                                    <stop offset="100%" stopColor="#06b6d4" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
-                            </div>
-                            
-                            <div className="space-y-0.5">
-                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Under Repair</span>
-                              <div className="text-2xl font-extrabold text-slate-800">
-                                Total: {repairCount}
-                              </div>
-                              <div className="flex gap-3 text-[10px] text-slate-500 font-semibold">
-                                <span>Laptops: <strong className="text-slate-700">{repairLaptops}</strong></span>
-                                <span>Mobiles: <strong className="text-slate-700">{repairMobiles}</strong></span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Progress Circle */}
-                          <div className="relative h-12 w-12 shrink-0 flex items-center justify-center">
-                            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                              <path
-                                className="text-slate-100"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                              <path
-                                className="text-cyan-500"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                strokeDasharray={`${laptopCount + mobileCount > 0 ? Math.round((repairCount / (laptopCount + mobileCount)) * 100) : 0}, 100`}
-                                strokeLinecap="round"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                            </svg>
-                            <span className="absolute text-[8px] font-extrabold text-slate-800">
-                              {laptopCount + mobileCount > 0 ? Math.round((repairCount / (laptopCount + mobileCount)) * 100) : 0}%
-                            </span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Lost / Stolen Card */}
-                      {dashboardConfig.showLostStolen && (
-                        <div className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex justify-between items-center hover:bg-slate-50 transition relative overflow-hidden">
-                          <div className="flex gap-4 items-center">
-                            {/* Lost SVG illustration */}
-                            <div className="h-14 w-14 bg-rose-50 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
-                              <svg viewBox="0 0 48 48" className="w-9 h-9">
-                                <path d="M24 4 L4 40 h40 Z" fill="url(#roseGrad)" />
-                                <circle cx="24" cy="32" r="2" fill="white" />
-                                <line x1="24" y1="18" x2="24" y2="27" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-                                <defs>
-                                  <linearGradient id="roseGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#f43f5e" />
-                                    <stop offset="100%" stopColor="#be123c" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
-                            </div>
-                            
-                            <div className="space-y-0.5">
-                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Lost / Stolen Assets</span>
-                              <div className="text-2xl font-extrabold text-slate-800">
-                                Total: {lostOrStolenCount}
-                              </div>
-                              <div className="flex gap-3 text-[10px] text-slate-500 font-semibold">
-                                <span>Lost: <strong className="text-slate-700">{lostCount}</strong></span>
-                                <span>Stolen: <strong className="text-slate-700">{stolenCount}</strong></span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Progress Circle */}
-                          <div className="relative h-12 w-12 shrink-0 flex items-center justify-center">
-                            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                              <path
-                                className="text-slate-100"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                              <path
-                                className="text-rose-500"
-                                stroke="currentColor"
-                                strokeWidth="3.5"
-                                strokeDasharray={`${laptopCount + mobileCount > 0 ? Math.round((lostOrStolenCount / (laptopCount + mobileCount)) * 100) : 0}, 100`}
-                                strokeLinecap="round"
-                                fill="none"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              />
-                            </svg>
-                            <span className="absolute text-[8px] font-extrabold text-slate-800">
-                              {laptopCount + mobileCount > 0 ? Math.round((lostOrStolenCount / (laptopCount + mobileCount)) * 100) : 0}%
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Dashboard Charts & Insights */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  {/* Asset Category Distribution (Pie Chart) */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <TrendingUp className="text-red-500" size={18} />
-                        Asset Distribution
-                      </h3>
-                      <span className="text-xs bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full font-semibold text-slate-500">
-                        By Category
-                      </span>
-                    </div>
-
-                    <div className="h-80 flex items-center justify-center">
-                      {pieData.length === 0 ? (
-                        <p className="text-slate-400 text-sm font-medium">Add assets to view distribution</p>
-                      ) : (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={pieData}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={85}
-                              dataKey="value"
-                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                              labelLine={{ stroke: '#94a3b8' }}
-                            >
-                              {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                              ))}
-                            </Pie>
-                            <Tooltip contentStyle={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderRadius: '12px', color: '#1e293b' }} formatter={(value) => [`${value} Assets`, 'Count']} />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Status Overview (Bar Chart) */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <TrendingUp className="text-red-500" size={18} />
-                        Asset Status Overview
-                      </h3>
-                      <span className="text-xs bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full font-semibold text-slate-500">
-                        Deployability
-                      </span>
-                    </div>
-
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={barData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                          <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-                          <YAxis stroke="#64748b" fontSize={12} />
-                          <Tooltip contentStyle={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderRadius: '12px', color: '#1e293b' }} cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }} />
-                          <Bar dataKey="value" fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={60} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom row: Recent Activity & Quick Actions */}
+                {/* Third row: Software Compliance Status & Quick Actions */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Recent Activity Log */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:col-span-2 shadow-sm">
-                    <h3 className="text-lg font-bold text-slate-800 mb-5">
-                      Recent Activity Log
-                    </h3>
-                    <div className="space-y-4">
-                      {assetHistory.length === 0 ? (
-                        <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                          <p className="text-sm text-slate-400 font-medium">No actions logged yet.</p>
-                          <p className="text-xs text-slate-400 mt-1">Assign and return hardware to build logs.</p>
+                  {/* Software Compliance status bar charts */}
+                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm lg:col-span-2 flex flex-col justify-between">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
+                        Software Compliance Status
+                      </h3>
+                      <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-slate-650">•••</span>
+                    </div>
+
+                    <div className="space-y-4 py-2">
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs font-bold text-slate-755">
+                          <span>Compliant</span>
+                          <span className="font-extrabold">85%</span>
                         </div>
-                      ) : (
-                        assetHistory.slice(-4).reverse().map((activity, index) => (
-                          <div key={index} className="flex gap-4 items-start pb-4 border-b border-slate-100 last:border-b-0 last:pb-0">
-                            <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${
-                              activity.status === 'Returned' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
-                            }`}>
-                              <CheckCircle size={16} />
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-semibold text-slate-850">
-                                {activity.assetName} ({activity.assetCode}) - {activity.status}
-                              </p>
-                              <p className="text-xs text-slate-500 mt-0.5">
-                                Logged by worker {activity.employeeName} ({activity.department})
-                              </p>
-                              {activity.remarks && (
-                                <p className="text-xs bg-slate-50 border border-slate-100 text-slate-500 rounded p-1.5 mt-2 italic">
-                                  &quot;{activity.remarks}&quot;
-                                </p>
-                              )}
-                            </div>
-                            <span className="text-xs font-mono text-slate-400">
-                              {activity.returnedOn ? new Date(activity.returnedOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                            </span>
-                          </div>
-                        ))
-                      )}
+                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden relative">
+                          <div className="bg-gradient-to-r from-emerald-400 to-[#10b981] h-full rounded-full" style={{ width: '85%' }}></div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs font-bold text-slate-755">
+                          <span>Non-compliant</span>
+                          <span className="font-extrabold">15%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden relative">
+                          <div className="bg-gradient-to-r from-purple-400 to-indigo-500 h-full rounded-full" style={{ width: '15%' }}></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Quick Actions Panel */}
+                  {/* Actions & Report Generating */}
                   <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800 mb-5">Quick Actions</h3>
-                      <div className="space-y-3">
+                      <h3 className="text-md font-extrabold text-[#0f172a] mb-4">Quick Dashboard Actions</h3>
+                      <div className="grid grid-cols-2 gap-3">
                         <button
                           onClick={() => triggerQuickAction('itassets')}
-                          className="w-full bg-red-650 hover:bg-red-700 hover:shadow-md transition text-white rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer border border-transparent"
+                          className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 text-xs font-bold flex flex-col items-center justify-center gap-1.5 cursor-pointer shadow-sm shadow-blue-500/10 hover:shadow-md transition"
                         >
-                          <Plus size={16} />
-                          Add Hardware Asset
+                          <Plus size={14} />
+                          <span>Add Hardware</span>
                         </button>
                         <button
                           onClick={() => triggerQuickAction('mobile')}
-                          className="w-full bg-slate-900 hover:bg-black hover:shadow-md transition text-white rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer"
+                          className="bg-slate-900 hover:bg-black text-white rounded-xl py-3 text-xs font-bold flex flex-col items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow-md transition"
                         >
-                          <Plus size={16} />
-                          Add Mobile / SIM
-                        </button>
-                        <button
-                          onClick={() => triggerQuickAction('allocation')}
-                          className="w-full border border-slate-200 hover:border-slate-350 hover:bg-slate-50 transition text-slate-700 rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                        >
-                          <Users size={16} />
-                          Assign Hardware
+                          <Plus size={14} />
+                          <span>Add SIM/Mobile</span>
                         </button>
                       </div>
                     </div>
 
                     <button
                       onClick={exportToExcel}
-                      className="w-full mt-6 bg-white border border-slate-200 hover:border-red-500 hover:text-red-650 hover:shadow-sm text-slate-650 rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer transition duration-150"
+                      className="w-full mt-4 bg-white border border-slate-250/70 hover:border-red-500 hover:text-red-600 hover:shadow-sm text-slate-600 rounded-xl py-3 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition duration-150"
                     >
-                      <Download size={16} />
+                      <Download size={14} />
                       Generate Excel Report
                     </button>
                   </div>
