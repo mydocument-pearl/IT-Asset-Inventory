@@ -18,6 +18,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
   const [expiryDate, setExpiryDate] = useState('')
   const [usersPerLicense, setUsersPerLicense] = useState('1')
   const [amtOfRenewal, setAmtOfRenewal] = useState('')
+  const [subscriptionPeriod, setSubscriptionPeriod] = useState('1 Year')
   
   // Multiple users for new license
   const [assignedUsers, setAssignedUsers] = useState([])
@@ -40,6 +41,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
   const [newExpiryDate, setNewExpiryDate] = useState('')
   const [newAmtOfRenewal, setNewAmtOfRenewal] = useState('')
   const [renewalRemarks, setRenewalRemarks] = useState('License Renewed')
+  const [newSubscriptionPeriod, setNewSubscriptionPeriod] = useState('1 Year')
   
   // Multiple users for renewal/edit
   const [renewAssignedUsers, setRenewAssignedUsers] = useState([])
@@ -87,6 +89,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       usersPerLicense: Number(usersPerLicense),
       amtOfRenewal: Number(amtOfRenewal),
       whoIsUsing: assignedUsers,
+      subscriptionPeriod,
       historyOfRenewal: [
         {
           date: renewalDate,
@@ -118,6 +121,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       setExpiryDate('')
       setUsersPerLicense('1')
       setAmtOfRenewal('')
+      setSubscriptionPeriod('1 Year')
       setAssignedUsers([])
       setUserInput('')
       setShowAddModal(false)
@@ -151,6 +155,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       expiryDate: newExpiryDate,
       amtOfRenewal: Number(newAmtOfRenewal),
       whoIsUsing: renewAssignedUsers,
+      subscriptionPeriod: newSubscriptionPeriod,
       historyOfRenewal: updatedHistory
     }
 
@@ -173,6 +178,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       setNewExpiryDate('')
       setNewAmtOfRenewal('')
       setRenewalRemarks('License Renewed')
+      setNewSubscriptionPeriod('1 Year')
       setRenewAssignedUsers([])
       setRenewUserInput('')
       setShowRenewModal(false)
@@ -297,7 +303,12 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                 const status = getLicenseStatus(item.expiryDate)
                 return (
                   <tr key={index} className="hover:bg-slate-50/50 transition">
-                    <td className="px-3 py-2 font-bold text-slate-800">{item.softwareName}</td>
+                    <td className="px-3 py-2 font-bold text-slate-800">
+                      <div>{item.softwareName}</div>
+                      <div className="text-[9px] font-normal text-slate-400 mt-0.5">
+                        Period: {item.subscriptionPeriod || '1 Year'}
+                      </div>
+                    </td>
                     <td className="px-3 py-2 text-center font-semibold text-slate-600">
                       <span className="inline-flex items-center gap-1">
                         <Users size={10} className="text-slate-400" />
@@ -353,6 +364,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                           setNewRenewalDate(item.renewalDate || '')
                           setNewExpiryDate(item.expiryDate || '')
                           setNewAmtOfRenewal(item.amtOfRenewal || '')
+                          setNewSubscriptionPeriod(item.subscriptionPeriod || '1 Year')
                           const currentUsers = Array.isArray(item.whoIsUsing)
                             ? item.whoIsUsing
                             : (typeof item.whoIsUsing === 'string' && item.whoIsUsing !== '-' ? item.whoIsUsing.split(',').map(u => u.trim()).filter(Boolean) : [])
@@ -459,6 +471,23 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                     className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
+                  Subscription Period *
+                </label>
+                <select
+                  value={subscriptionPeriod}
+                  onChange={(e) => setSubscriptionPeriod(e.target.value)}
+                  className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                >
+                  <option value="6 Months">6 Months</option>
+                  <option value="1 Year">1 Year</option>
+                  <option value="2 Years">2 Years</option>
+                  <option value="2.5 Years">2.5 Years</option>
+                  <option value="3 Years">3 Years</option>
+                </select>
               </div>
 
               <div>
@@ -622,6 +651,23 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                   onChange={(e) => setNewAmtOfRenewal(e.target.value)}
                   className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
+                  New Subscription Period *
+                </label>
+                <select
+                  value={newSubscriptionPeriod}
+                  onChange={(e) => setNewSubscriptionPeriod(e.target.value)}
+                  className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                >
+                  <option value="6 Months">6 Months</option>
+                  <option value="1 Year">1 Year</option>
+                  <option value="2 Years">2 Years</option>
+                  <option value="2.5 Years">2.5 Years</option>
+                  <option value="3 Years">3 Years</option>
+                </select>
               </div>
 
               <div>

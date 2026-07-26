@@ -67,6 +67,7 @@ function App() {
   const [activityLogs, setActivityLogs] = useState([])
   const [systemUsers, setSystemUsers] = useState([])
   const [employees, setEmployees] = useState([])
+  const [softwareLicenses, setSoftwareLicenses] = useState([])
   
   // App UI States
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -156,6 +157,46 @@ function App() {
     return emp?.id && emp.id !== '-' ? emp.id : (fallbackId || '-');
   };
 
+  const checkSoftwareRenewals = (softwareList, currentLogs) => {
+    if (!softwareList || softwareList.length === 0) return currentLogs;
+    const logs = [...currentLogs];
+    let updated = false;
+
+    softwareList.forEach(item => {
+      if (!item.renewalDate) return;
+      const renewal = new Date(item.renewalDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diffTime = renewal - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // If renewal is within 30 days and not expired yet (diffDays >= 0)
+      if (diffDays >= 0 && diffDays <= 30) {
+        const logId = `log_email_${item.softwareName}_${item.renewalDate}`;
+        const alreadyNotified = logs.some(log => log.id === logId);
+
+        if (!alreadyNotified) {
+          const logMsg = `[AUTOMATED EMAIL SENT] Software Renewal Warning: "${item.softwareName}" is due for renewal in ${diffDays} days (Date: ${item.renewalDate}). Reminder email dispatched to Admin & IT Support.`;
+          logs.unshift({
+            id: logId,
+            action: 'SOFTWARE_EMAIL_ALERT',
+            timestamp: new Date().toISOString(),
+            details: logMsg
+          });
+          updated = true;
+          
+          showNotification(`Renewal Alert: Reminder email sent for ${item.softwareName}!`, 'warning');
+        }
+      }
+    });
+
+    if (updated) {
+      localStorage.setItem('activityLogs', JSON.stringify(logs));
+      return logs;
+    }
+    return currentLogs;
+  };
+
   // Load database on authentication
   useEffect(() => {
     if (!currentUser) return;
@@ -166,23 +207,27 @@ function App() {
         const online = await dbService.checkConnection();
         setIsFirebaseOnline(online);
 
-        const [loadedAssets, loadedMobile, loadedAssigned, loadedHistory, loadedLogs, loadedUsers, loadedEmployees] = await Promise.all([
+        const [loadedAssets, loadedMobile, loadedAssigned, loadedHistory, loadedLogs, loadedUsers, loadedEmployees, loadedSoftware] = await Promise.all([
           dbService.getAssets(),
           dbService.getMobileAssets(),
           dbService.getAssignedAssets(),
           dbService.getAssetHistory(),
           dbService.getActivityLogs(),
           dbService.getUsers(),
-          dbService.getEmployees()
+          dbService.getEmployees(),
+          dbService.getSoftwareLicenses()
         ]);
 
         setAssets(loadedAssets);
         setMobileAssets(loadedMobile);
         setAssignedAssets(loadedAssigned);
         setAssetHistory(loadedHistory);
-        setActivityLogs(loadedLogs);
         setSystemUsers(loadedUsers);
         setEmployees(loadedEmployees || []);
+        setSoftwareLicenses(loadedSoftware || []);
+
+        const finalLogs = checkSoftwareRenewals(loadedSoftware || [], loadedLogs || []);
+        setActivityLogs(finalLogs);
       } catch (err) {
         console.error("Failed to load inventory:", err);
         showNotification("Failed to connect to database. Falling back to local storage.", "error");
@@ -408,6 +453,16 @@ function App() {
   const availableMobileCount = mobileAssets.filter(m => m.status === 'Available' && m.assetType === 'Mobile').length;
   const repairCount = assets.filter(a => a.status === 'Under Repair').length + mobileAssets.filter(m => m.status === 'Under Repair').length;
   const lostOrStolenCount = assets.filter(a => a.status === 'Lost' || a.status === 'Stolen').length + mobileAssets.filter(m => m.status === 'Lost' || m.status === 'Stolen').length;
+  
+  const softwareExpiringCount = softwareLicenses.filter(item => {
+    if (!item.renewalDate) return false;
+    const renewal = new Date(item.renewalDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffTime = renewal - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= 30;
+  }).length;
 
   // Detailed status calculations for custom category dashboard
   const laptopAssigned = assignedAssets.filter(a => a.assetType === 'Laptop').length;
@@ -1251,12 +1306,12 @@ function App() {
 
                     {/* Card 4: CRITICAL ALERTS */}
                     {dashboardConfig.showLostStolen && (
-                      <div className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
+                      <div className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between min-h-[142px]">
                         <div className="flex justify-between items-start">
                           <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#e11d48]">CRITICAL ALERTS</span>
                             <div className="text-2xl font-extrabold text-[#991b1b] tracking-tight mt-0.5">
-                              {Math.max(3, repairCount + lostOrStolenCount)}
+                              {repairCount + lostOrStolenCount + softwareExpiringCount}
                             </div>
                             <span className="text-[9px] font-bold text-[#b91c1c] block mt-0.5">High Severity</span>
                           </div>
@@ -1280,13 +1335,19 @@ function App() {
                         {/* Alert rows */}
                         <div className="space-y-1 mt-2">
                           <div className="flex items-center gap-1 bg-red-100/50 border border-red-200/40 rounded-lg px-2 py-0.5 text-[9px] font-extrabold text-red-900">
-                            <span className="h-1 w-1 rounded-full bg-red-650 animate-pulse shrink-0"></span>
-                            <span className="truncate">Unpatched ({Math.max(1, repairCount)})</span>
+                            <span className="h-1 w-1 rounded-full bg-red-600 animate-pulse shrink-0"></span>
+                            <span className="truncate">Unpatched ({repairCount})</span>
                           </div>
                           <div className="flex items-center gap-1 bg-amber-100/50 border border-amber-200/40 rounded-lg px-2 py-0.5 text-[9px] font-extrabold text-amber-900">
-                            <span className="h-1 w-1 rounded-full bg-amber-650 shrink-0"></span>
-                            <span className="truncate">Warranty ({Math.max(2, lostOrStolenCount)})</span>
+                            <span className="h-1 w-1 rounded-full bg-amber-500 shrink-0"></span>
+                            <span className="truncate">Warranty ({lostOrStolenCount})</span>
                           </div>
+                          {softwareExpiringCount > 0 && (
+                            <div className="flex items-center gap-1 bg-rose-100/50 border border-rose-200/40 rounded-lg px-2 py-0.5 text-[9px] font-extrabold text-rose-900">
+                              <span className="h-1 w-1 rounded-full bg-rose-600 animate-pulse shrink-0"></span>
+                              <span className="truncate">Software Renewals ({softwareExpiringCount})</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
