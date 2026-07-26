@@ -1007,32 +1007,38 @@ function App() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto px-8 py-8 print:full-width print:p-0">
+      <div className={`flex-1 overflow-y-auto px-8 py-8 print:full-width print:p-0 transition-colors duration-150 ${
+        activeTab === 'dashboard'
+          ? 'bg-[#f8fafc] bg-[linear-gradient(rgba(226,232,240,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.5)_1px,transparent_1px)] bg-[size:24px_24px]'
+          : 'bg-[#fafafa]'
+      }`}>
         
         {/* Top Header */}
-        <header className="flex justify-between items-center mb-8 border-b border-slate-200 pb-5 print:hidden">
-          <div>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight capitalize">
-              {activeTab === 'itassets' ? 'IT Inventory' : activeTab === 'allocation' ? 'Asset Assignments' : activeTab === 'mobile' ? 'Mobile / SIM Suite' : activeTab === 'vendors' ? 'Vendors Registry' : activeTab === 'reports' ? 'Reports & History' : activeTab === 'employees' ? 'Employee Directory' : activeTab}
-            </h2>
-            <p className="text-slate-500 text-sm mt-1">
-              {activeTab === 'dashboard' && `Welcome, ${currentUser.name}! Monitor and deploy company assets in real-time.`}
-              {activeTab === 'itassets' && 'Add, filter, and track laptops, monitors, accessories, and components.'}
-              {activeTab === 'mobile' && 'Track company cellular networks, SIM keys, and mobile inventory.'}
-              {activeTab === 'allocation' && 'Assign company hardware assets to registered workers.'}
-              {activeTab === 'employees' && 'Register and manage company employee records, departments, and organizations.'}
-              {activeTab === 'vendors' && 'Manage procurement contacts, purchase routes, and vendor listings.'}
-              {activeTab === 'reports' && 'Review lifecycle logs, returned assets, and member audit trails.'}
-              {activeTab === 'settings' && 'Configure database connections and approve pending user registrations.'}
-            </p>
-          </div>
+        {activeTab !== 'dashboard' && (
+          <header className="flex justify-between items-center mb-8 border-b border-slate-200 pb-5 print:hidden">
+            <div>
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight capitalize">
+                {activeTab === 'itassets' ? 'IT Inventory' : activeTab === 'allocation' ? 'Asset Assignments' : activeTab === 'mobile' ? 'Mobile / SIM Suite' : activeTab === 'vendors' ? 'Vendors Registry' : activeTab === 'reports' ? 'Reports & History' : activeTab === 'employees' ? 'Employee Directory' : activeTab}
+              </h2>
+              <p className="text-slate-500 text-sm mt-1">
+                {activeTab === 'dashboard' && `Welcome, ${currentUser.name}! Monitor and deploy company assets in real-time.`}
+                {activeTab === 'itassets' && 'Add, filter, and track laptops, monitors, accessories, and components.'}
+                {activeTab === 'mobile' && 'Track company cellular networks, SIM keys, and mobile inventory.'}
+                {activeTab === 'allocation' && 'Assign company hardware assets to registered workers.'}
+                {activeTab === 'employees' && 'Register and manage company employee records, departments, and organizations.'}
+                {activeTab === 'vendors' && 'Manage procurement contacts, purchase routes, and vendor listings.'}
+                {activeTab === 'reports' && 'Review lifecycle logs, returned assets, and member audit trails.'}
+                {activeTab === 'settings' && 'Configure database connections and approve pending user registrations.'}
+              </p>
+            </div>
 
-          <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
-            <span>Server Time: {formatDate(new Date())}</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-slate-300"></span>
-            <span>Role: {currentUser.role.toUpperCase()}</span>
-          </div>
-        </header>
+            <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
+              <span>Server Time: {formatDate(new Date())}</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-300"></span>
+              <span>Role: {currentUser.role.toUpperCase()}</span>
+            </div>
+          </header>
+        )}
 
         {isLoading ? (
           <div className="min-h-[400px] flex items-center justify-center flex-col gap-3 text-slate-500">
@@ -1043,7 +1049,7 @@ function App() {
           <>
             {/* ---------------- DASHBOARD TAB ---------------- */}
             {activeTab === 'dashboard' && (
-              <div className="bg-[#f8fafc] text-slate-800 rounded-3xl p-6 lg:p-8 border border-slate-200/80 shadow-md space-y-8 animate-fade-in print:hidden relative overflow-hidden bg-[linear-gradient(rgba(226,232,240,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(226,232,240,0.5)_1px,transparent_1px)] bg-[size:24px_24px]">
+              <div className="space-y-8 animate-fade-in print:hidden relative">
                 
                 {/* Top Header matching Option-7 */}
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 pb-6 border-b border-slate-200/80">
