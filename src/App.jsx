@@ -464,6 +464,9 @@ function App() {
     return diffDays >= 0 && diffDays <= 30;
   }).length;
 
+  const totalSoftwareSeats = softwareLicenses.reduce((acc, curr) => acc + (Number(curr.usersPerLicense) || 0), 0);
+  const activeSoftwarePct = softwareLicenses.length > 0 ? Math.round(((softwareLicenses.length - softwareExpiringCount) / softwareLicenses.length) * 100) : 100;
+
   // Detailed status calculations for custom category dashboard
   const laptopAssigned = assignedAssets.filter(a => a.assetType === 'Laptop').length;
   const laptopAvailable = assets.filter(a => a.assetType === 'Laptop' && a.status === 'Available').length;
@@ -1162,12 +1165,15 @@ function App() {
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                     {/* Card 1: TOTAL ASSETS */}
                     {dashboardConfig.showLaptops && (
-                      <div className="bg-gradient-to-br from-[#ebf5ff] to-[#e6fffa] border border-[#d2e9ff] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
+                      <div 
+                        onClick={() => setActiveTab('itassets')}
+                        className="bg-gradient-to-br from-[#ebf5ff] to-[#e6fffa] border border-[#d2e9ff] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px] cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-150"
+                      >
                         <div className="flex justify-between items-start">
                           <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">TOTAL ASSETS</span>
                             <div className="text-2xl font-extrabold text-[#0f172a] tracking-tight mt-0.5">
-                              {(laptopCount + monitorCount + printerCount + mobileCount + simCount + 42).toLocaleString()}
+                              {(laptopCount + monitorCount + printerCount + mobileCount + simCount).toLocaleString()}
                             </div>
                             <div className="inline-flex items-center gap-1 text-[9px] font-extrabold text-[#10b981] bg-[#e6fffa] rounded-full px-2 py-0.5 mt-1.5">
                               +12% <span className="text-slate-400 font-semibold text-[8px]">this month</span>
@@ -1216,7 +1222,10 @@ function App() {
 
                     {/* Card 2: ACTIVE DEVICES */}
                     {dashboardConfig.showMobiles && (
-                      <div className="bg-gradient-to-br from-[#f0fdf4] to-[#ecfeff] border border-[#d1fae5] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
+                      <div 
+                        onClick={() => setActiveTab('allocation')}
+                        className="bg-gradient-to-br from-[#f0fdf4] to-[#ecfeff] border border-[#d1fae5] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px] cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-150"
+                      >
                         <div className="flex justify-between items-start">
                           <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">ACTIVE DEVICES</span>
@@ -1264,14 +1273,19 @@ function App() {
 
                     {/* Card 3: SOFTWARE LICENSES */}
                     {dashboardConfig.showAvailable && (
-                      <div className="bg-gradient-to-br from-[#faf5ff] to-[#f5f3ff] border border-[#f3e8ff] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
+                      <div 
+                        onClick={() => setActiveTab('software')}
+                        className="bg-gradient-to-br from-[#faf5ff] to-[#f5f3ff] border border-[#f3e8ff] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px] cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-150"
+                      >
                         <div className="flex justify-between items-start">
                           <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">SOFTWARE LICENSES</span>
                             <div className="text-2xl font-extrabold text-[#0f172a] tracking-tight mt-0.5">
-                              890
+                              {softwareLicenses.length}
                             </div>
-                            <span className="text-[9px] font-bold text-purple-600/80 block mt-0.5">55 upcoming renewals</span>
+                            <span className="text-[9px] font-bold text-purple-600/80 block mt-0.5">
+                              {totalSoftwareSeats} active seats
+                            </span>
                           </div>
                           
                           {/* Software stack SVG */}
@@ -1292,13 +1306,15 @@ function App() {
 
                         {/* Bottom progress ring */}
                         <div className="flex justify-between items-end mt-2">
-                          <span className="text-[9px] font-bold text-slate-500">upcoming renewals</span>
+                          <span className="text-[9px] font-bold text-slate-500">
+                            {softwareExpiringCount} due in 30d
+                          </span>
                           <div className="relative h-8 w-8 flex items-center justify-center">
                             <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 36 36">
                               <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f3e8ff" strokeWidth="3.5" />
-                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#6366f1" strokeWidth="3.5" strokeDasharray="75, 100" strokeLinecap="round" />
+                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#6366f1" strokeWidth="3.5" strokeDasharray={`${activeSoftwarePct}, 100`} strokeLinecap="round" />
                             </svg>
-                            <span className="absolute text-[7px] font-extrabold text-slate-800">75%</span>
+                            <span className="absolute text-[7px] font-extrabold text-slate-800">{activeSoftwarePct}%</span>
                           </div>
                         </div>
                       </div>
@@ -1306,7 +1322,10 @@ function App() {
 
                     {/* Card 4: CRITICAL ALERTS */}
                     {dashboardConfig.showLostStolen && (
-                      <div className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between min-h-[142px]">
+                      <div 
+                        onClick={() => setActiveTab('itassets')}
+                        className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between min-h-[142px] cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-150"
+                      >
                         <div className="flex justify-between items-start">
                           <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#e11d48]">CRITICAL ALERTS</span>
