@@ -18,13 +18,44 @@ export default function SoftwareInventory({ employees = [], showNotification, is
   const [expiryDate, setExpiryDate] = useState('')
   const [usersPerLicense, setUsersPerLicense] = useState('1')
   const [amtOfRenewal, setAmtOfRenewal] = useState('')
-  const [whoIsUsing, setWhoIsUsing] = useState('') // Employee name
+  
+  // Multiple users for new license
+  const [assignedUsers, setAssignedUsers] = useState([])
+  const [userInput, setUserInput] = useState('')
+
+  const handleAddUser = (userToAdd) => {
+    const clean = userToAdd.trim()
+    if (clean && !assignedUsers.includes(clean)) {
+      setAssignedUsers([...assignedUsers, clean])
+    }
+    setUserInput('')
+  }
+
+  const handleRemoveUser = (userToRemove) => {
+    setAssignedUsers(assignedUsers.filter(u => u !== userToRemove))
+  }
 
   // Renewal Action states
   const [newRenewalDate, setNewRenewalDate] = useState('')
   const [newExpiryDate, setNewExpiryDate] = useState('')
   const [newAmtOfRenewal, setNewAmtOfRenewal] = useState('')
   const [renewalRemarks, setRenewalRemarks] = useState('License Renewed')
+  
+  // Multiple users for renewal/edit
+  const [renewAssignedUsers, setRenewAssignedUsers] = useState([])
+  const [renewUserInput, setRenewUserInput] = useState('')
+
+  const handleAddRenewUser = (userToAdd) => {
+    const clean = userToAdd.trim()
+    if (clean && !renewAssignedUsers.includes(clean)) {
+      setRenewAssignedUsers([...renewAssignedUsers, clean])
+    }
+    setRenewUserInput('')
+  }
+
+  const handleRemoveRenewUser = (userToRemove) => {
+    setRenewAssignedUsers(renewAssignedUsers.filter(u => u !== userToRemove))
+  }
 
   // Fetch licenses
   const fetchLicenses = async () => {
@@ -55,7 +86,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       expiryDate,
       usersPerLicense: Number(usersPerLicense),
       amtOfRenewal: Number(amtOfRenewal),
-      whoIsUsing: whoIsUsing || '-',
+      whoIsUsing: assignedUsers,
       historyOfRenewal: [
         {
           date: renewalDate,
@@ -87,7 +118,8 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       setExpiryDate('')
       setUsersPerLicense('1')
       setAmtOfRenewal('')
-      setWhoIsUsing('')
+      setAssignedUsers([])
+      setUserInput('')
       setShowAddModal(false)
       fetchLicenses()
     } catch (err) {
@@ -96,7 +128,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
     }
   }
 
-  // Renew License Action
+  // Renew/Edit License Action
   const handleRenew = async (e) => {
     e.preventDefault()
     if (!newRenewalDate || !newExpiryDate || !newAmtOfRenewal) {
@@ -118,12 +150,13 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       renewalDate: newRenewalDate,
       expiryDate: newExpiryDate,
       amtOfRenewal: Number(newAmtOfRenewal),
+      whoIsUsing: renewAssignedUsers,
       historyOfRenewal: updatedHistory
     }
 
     try {
       await dbService.updateSoftwareLicense(selectedLicense.softwareName, updatedLicense)
-      showNotification(`${selectedLicense.softwareName} has been renewed successfully!`, 'success')
+      showNotification(`${selectedLicense.softwareName} has been renewed/updated successfully!`, 'success')
 
       // Log activity
       const logMsg = `Renewed software license for ${selectedLicense.softwareName} (New Expiry: ${newExpiryDate}, Amt: INR ${newAmtOfRenewal})`;
@@ -140,6 +173,8 @@ export default function SoftwareInventory({ employees = [], showNotification, is
       setNewExpiryDate('')
       setNewAmtOfRenewal('')
       setRenewalRemarks('License Renewed')
+      setRenewAssignedUsers([])
+      setRenewUserInput('')
       setShowRenewModal(false)
       fetchLicenses()
     } catch (err) {
@@ -269,7 +304,27 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                         {item.usersPerLicense} users
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-slate-700 font-medium">{item.whoIsUsing || '-'}</td>
+                    <td className="px-3 py-2 text-slate-700">
+                      <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        {Array.isArray(item.whoIsUsing) ? (
+                          item.whoIsUsing.map((user, uIdx) => (
+                            <span key={uIdx} className="bg-slate-100 border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                              {user}
+                            </span>
+                          ))
+                        ) : (
+                          item.whoIsUsing && item.whoIsUsing !== '-' ? (
+                            item.whoIsUsing.split(',').map((user, uIdx) => (
+                              <span key={uIdx} className="bg-slate-100 border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                                {user.trim()}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-slate-400 font-mono">-</span>
+                          )
+                        )}
+                      </div>
+                    </td>
                     <td className="px-3 py-2 text-slate-600 font-mono text-[10px]">{item.renewalDate}</td>
                     <td className="px-3 py-2 text-slate-600 font-mono text-[10px]">{item.expiryDate}</td>
                     <td className="px-3 py-2 text-right font-bold text-slate-700">₹{Number(item.amtOfRenewal).toLocaleString('en-IN')}</td>
@@ -298,6 +353,10 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                           setNewRenewalDate(item.renewalDate || '')
                           setNewExpiryDate(item.expiryDate || '')
                           setNewAmtOfRenewal(item.amtOfRenewal || '')
+                          const currentUsers = Array.isArray(item.whoIsUsing)
+                            ? item.whoIsUsing
+                            : (typeof item.whoIsUsing === 'string' && item.whoIsUsing !== '-' ? item.whoIsUsing.split(',').map(u => u.trim()).filter(Boolean) : [])
+                          setRenewAssignedUsers(currentUsers)
                           setShowRenewModal(true)
                         }}
                         className="bg-slate-900 hover:bg-black text-white px-2 py-0.5 rounded text-[10px] font-bold transition cursor-pointer"
@@ -404,21 +463,54 @@ export default function SoftwareInventory({ employees = [], showNotification, is
 
               <div>
                 <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
-                  Who is Using (Employee Name)
+                  Assign Users (Select Multiple)
                 </label>
-                <input
-                  type="text"
-                  value={whoIsUsing}
-                  onChange={(e) => setWhoIsUsing(e.target.value)}
-                  placeholder="Select or enter user"
-                  list="software-employees-list"
-                  className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
-                />
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    value={userInput}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setUserInput(val)
+                      const matchingEmp = employees.find(emp => emp.name.toLowerCase() === val.toLowerCase())
+                      if (matchingEmp) {
+                        handleAddUser(matchingEmp.name)
+                      }
+                    }}
+                    placeholder="Search or enter user name"
+                    list="software-employees-list"
+                    className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleAddUser(userInput)}
+                    className="bg-slate-900 hover:bg-black text-white px-3 rounded-xl text-xs font-bold transition cursor-pointer"
+                  >
+                    Add
+                  </button>
+                </div>
                 <datalist id="software-employees-list">
                   {employees.map((emp, idx) => (
                     <option key={idx} value={emp.name} />
                   ))}
                 </datalist>
+
+                {assignedUsers.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2 p-1.5 bg-slate-50 border border-slate-100 rounded-xl max-h-24 overflow-y-auto">
+                    {assignedUsers.map((user, idx) => (
+                      <span key={idx} className="bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1">
+                        {user}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveUser(user)}
+                          className="text-red-500 hover:text-red-700 font-bold ml-1 text-xs"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-2.5 pt-3">
@@ -544,6 +636,54 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                   className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
                 />
               </div>
+
+              <div>
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
+                  Assign Users (Select Multiple)
+                </label>
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    value={renewUserInput}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setRenewUserInput(val)
+                      const matchingEmp = employees.find(emp => emp.name.toLowerCase() === val.toLowerCase())
+                      if (matchingEmp) {
+                        handleAddRenewUser(matchingEmp.name)
+                      }
+                    }}
+                    placeholder="Search or enter user name"
+                    list="software-employees-list"
+                    className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleAddRenewUser(renewUserInput)}
+                    className="bg-slate-900 hover:bg-black text-white px-3 rounded-xl text-xs font-bold transition cursor-pointer"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {renewAssignedUsers.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2 p-1.5 bg-slate-50 border border-slate-100 rounded-xl max-h-24 overflow-y-auto">
+                    {renewAssignedUsers.map((user, idx) => (
+                      <span key={idx} className="bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1">
+                        {user}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveRenewUser(user)}
+                          className="text-red-500 hover:text-red-700 font-bold ml-1 text-xs"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
 
               <div className="flex gap-2.5 pt-3">
                 <button
