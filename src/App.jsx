@@ -1083,30 +1083,30 @@ function App() {
                 </div>
 
                 {/* Section title */}
-                <div className="space-y-4">
-                  <h3 className="text-md font-extrabold text-[#0f172a] tracking-tight font-sans">
+                <div className="space-y-3">
+                  <h3 className="text-xs font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
                     Key Metric Cards
                   </h3>
 
                   {/* Grid of 4 Metric Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                     {/* Card 1: TOTAL ASSETS */}
                     {dashboardConfig.showLaptops && (
-                      <div className="bg-gradient-to-br from-[#ebf5ff] to-[#e6fffa] border border-[#d2e9ff] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                      <div className="bg-gradient-to-br from-[#ebf5ff] to-[#e6fffa] border border-[#d2e9ff] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
                         <div className="flex justify-between items-start">
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">TOTAL ASSETS</span>
-                            <div className="text-4xl font-extrabold text-[#0f172a] tracking-tight mt-1">
+                            <div className="text-2xl font-extrabold text-[#0f172a] tracking-tight mt-0.5">
                               {(laptopCount + monitorCount + printerCount + mobileCount + simCount + 42).toLocaleString()}
                             </div>
-                            <div className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#10b981] bg-[#e6fffa] rounded-full px-2 py-0.5 mt-2">
-                              +12% <span className="text-slate-400 font-semibold">this month</span>
+                            <div className="inline-flex items-center gap-1 text-[9px] font-extrabold text-[#10b981] bg-[#e6fffa] rounded-full px-2 py-0.5 mt-1.5">
+                              +12% <span className="text-slate-400 font-semibold text-[8px]">this month</span>
                             </div>
                           </div>
                           
                           {/* Isometric Laptop SVG */}
-                          <div className="absolute right-2 top-2 shrink-0">
-                            <svg viewBox="0 0 120 100" className="w-28 h-24 drop-shadow-md">
+                          <div className="absolute right-0.5 top-1.5 shrink-0">
+                            <svg viewBox="0 0 120 100" className="w-22 h-18 drop-shadow-md">
                               <polygon points="65,15 105,32 105,52 65,35" fill="#94a3b8" />
                               <polygon points="67,17 103,32 103,50 67,35" fill="url(#isoLaptopScreen)" />
                               <polygon points="15,62 65,35 105,52 55,79" fill="#cbd5e1" />
@@ -1125,18 +1125,18 @@ function App() {
                         </div>
 
                         {/* Bottom Chart & Action */}
-                        <div className="flex justify-between items-end mt-4">
+                        <div className="flex justify-between items-end mt-2">
                           {/* Mini Bar Chart */}
-                          <div className="flex items-end gap-1.5 h-10">
-                            <div className="w-1.5 h-5 bg-blue-500/20 rounded-t"></div>
-                            <div className="w-1.5 h-7 bg-blue-500/40 rounded-t"></div>
-                            <div className="w-1.5 h-4 bg-blue-500/30 rounded-t"></div>
-                            <div className="w-1.5 h-6 bg-blue-500/60 rounded-t"></div>
-                            <div className="w-1.5 h-8 bg-blue-500/80 rounded-t shadow-[0_0_4px_#3b82f6]"></div>
-                            <div className="w-1.5 h-5 bg-blue-500/50 rounded-t"></div>
-                            <div className="w-1.5 h-9 bg-blue-500 rounded-t shadow-[0_0_6px_#3b82f6]"></div>
+                          <div className="flex items-end gap-1 h-6">
+                            <div className="w-1 h-3 bg-blue-500/20 rounded-t"></div>
+                            <div className="w-1 h-5 bg-blue-500/40 rounded-t"></div>
+                            <div className="w-1 h-2.5 bg-blue-500/30 rounded-t"></div>
+                            <div className="w-1 h-4 bg-blue-500/60 rounded-t"></div>
+                            <div className="w-1 h-5.5 bg-blue-500/80 rounded-t shadow-[0_0_3px_#3b82f6]"></div>
+                            <div className="w-1 h-3.5 bg-blue-500/50 rounded-t"></div>
+                            <div className="w-1 h-6 bg-blue-500 rounded-t shadow-[0_0_4px_#3b82f6]"></div>
                           </div>
-                          <span className="text-[10px] font-bold text-blue-600/85 mb-1 flex items-center gap-1.5">
+                          <span className="text-[9px] font-bold text-blue-600/85 flex items-center gap-1 mb-0.5">
                             <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                             Assigning...
                           </span>
@@ -1146,18 +1146,18 @@ function App() {
 
                     {/* Card 2: ACTIVE DEVICES */}
                     {dashboardConfig.showMobiles && (
-                      <div className="bg-gradient-to-br from-[#f0fdf4] to-[#ecfeff] border border-[#d1fae5] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                      <div className="bg-gradient-to-br from-[#f0fdf4] to-[#ecfeff] border border-[#d1fae5] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
                         <div className="flex justify-between items-start">
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">ACTIVE DEVICES</span>
-                            <div className="text-4xl font-extrabold text-[#0f172a] tracking-tight mt-1">
+                            <div className="text-2xl font-extrabold text-[#0f172a] tracking-tight mt-0.5">
                               {(laptopAssigned + monitorAssigned + printerAssigned + mobileAssigned + simAssigned + 12).toLocaleString()}
                             </div>
                           </div>
                           
                           {/* Isometric Smartphone SVG */}
-                          <div className="absolute right-4 top-2 shrink-0">
-                            <svg viewBox="0 0 80 100" className="w-18 h-22 drop-shadow-md">
+                          <div className="absolute right-2.5 top-1.5 shrink-0">
+                            <svg viewBox="0 0 80 100" className="w-12 h-16 drop-shadow-md">
                               <polygon points="25,15 55,30 55,80 25,65" fill="#475569" />
                               <polygon points="23,16 53,31 53,81 23,66" fill="#1e293b" />
                               <polygon points="25,18 51,31 51,78 25,65" fill="url(#isoPhoneScreen)" />
@@ -1173,17 +1173,17 @@ function App() {
                         </div>
 
                         {/* Bottom rows */}
-                        <div className="space-y-1 mt-4">
-                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                              <span className="h-2 w-2 rounded-full bg-[#10b981]"></span>
+                        <div className="space-y-1 mt-2">
+                          <div className="flex justify-between items-center text-[9px] font-bold text-slate-600">
+                            <div className="flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]"></span>
                               Workstations
                             </div>
                             <span className="font-extrabold text-slate-800">{(laptopAssigned + monitorAssigned + printerAssigned + 8).toLocaleString()}</span>
                           </div>
-                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                              <span className="h-2 w-2 rounded-full bg-[#a78bfa]"></span>
+                          <div className="flex justify-between items-center text-[9px] font-bold text-slate-600">
+                            <div className="flex items-center gap-1">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#a78bfa]"></span>
                               Mobile Devices
                             </div>
                             <span className="font-extrabold text-slate-800">{(mobileAssigned + simAssigned + 4).toLocaleString()}</span>
@@ -1194,19 +1194,19 @@ function App() {
 
                     {/* Card 3: SOFTWARE LICENSES */}
                     {dashboardConfig.showAvailable && (
-                      <div className="bg-gradient-to-br from-[#faf5ff] to-[#f5f3ff] border border-[#f3e8ff] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                      <div className="bg-gradient-to-br from-[#faf5ff] to-[#f5f3ff] border border-[#f3e8ff] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
                         <div className="flex justify-between items-start">
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">SOFTWARE LICENSES</span>
-                            <div className="text-4xl font-extrabold text-[#0f172a] tracking-tight mt-1">
+                            <div className="text-2xl font-extrabold text-[#0f172a] tracking-tight mt-0.5">
                               890
                             </div>
-                            <span className="text-[10px] font-bold text-purple-600/80 block mt-1">55 upcoming renewals</span>
+                            <span className="text-[9px] font-bold text-purple-600/80 block mt-0.5">55 upcoming renewals</span>
                           </div>
                           
                           {/* Software stack SVG */}
-                          <div className="absolute right-3 top-3 shrink-0">
-                            <svg viewBox="0 0 100 100" className="w-20 h-20 drop-shadow-md">
+                          <div className="absolute right-2.5 top-1.5 shrink-0">
+                            <svg viewBox="0 0 100 100" className="w-14 h-14 drop-shadow-md">
                               <polygon points="20,55 50,40 80,55 50,70" fill="#a78bfa" opacity="0.6" />
                               <polygon points="20,55 50,70 50,73 20,58" fill="#8b5cf6" opacity="0.6" />
                               <polygon points="50,70 80,55 80,58 50,73" fill="#7c3aed" opacity="0.6" />
@@ -1221,14 +1221,14 @@ function App() {
                         </div>
 
                         {/* Bottom progress ring */}
-                        <div className="flex justify-between items-end mt-4">
-                          <span className="text-[10px] font-bold text-slate-500">upcoming renewals</span>
-                          <div className="relative h-10 w-10 flex items-center justify-center">
-                            <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
-                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f3e8ff" strokeWidth="3" />
-                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#6366f1" strokeWidth="3" strokeDasharray="75, 100" strokeLinecap="round" />
+                        <div className="flex justify-between items-end mt-2">
+                          <span className="text-[9px] font-bold text-slate-500">upcoming renewals</span>
+                          <div className="relative h-8 w-8 flex items-center justify-center">
+                            <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 36 36">
+                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f3e8ff" strokeWidth="3.5" />
+                              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#6366f1" strokeWidth="3.5" strokeDasharray="75, 100" strokeLinecap="round" />
                             </svg>
-                            <span className="absolute text-[8px] font-extrabold text-slate-800">75%</span>
+                            <span className="absolute text-[7px] font-extrabold text-slate-800">75%</span>
                           </div>
                         </div>
                       </div>
@@ -1236,19 +1236,19 @@ function App() {
 
                     {/* Card 4: CRITICAL ALERTS */}
                     {dashboardConfig.showLostStolen && (
-                      <div className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-3xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[190px]">
+                      <div className="bg-gradient-to-br from-[#fef2f2] to-[#fff7ed] border border-[#fee2e2] rounded-2xl p-4 shadow-sm hover:shadow-md transition relative overflow-hidden flex flex-col justify-between h-[142px]">
                         <div className="flex justify-between items-start">
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#e11d48]">CRITICAL ALERTS</span>
-                            <div className="text-4xl font-extrabold text-[#991b1b] tracking-tight mt-1">
+                            <div className="text-2xl font-extrabold text-[#991b1b] tracking-tight mt-0.5">
                               {Math.max(3, repairCount + lostOrStolenCount)}
                             </div>
-                            <span className="text-[10px] font-bold text-[#b91c1c] block mt-1">High Severity</span>
+                            <span className="text-[9px] font-bold text-[#b91c1c] block mt-0.5">High Severity</span>
                           </div>
                           
                           {/* Alert Triangle SVG */}
-                          <div className="absolute right-4 top-4 shrink-0">
-                            <svg viewBox="0 0 100 100" className="w-18 h-18 drop-shadow-md">
+                          <div className="absolute right-3.5 top-2.5 shrink-0">
+                            <svg viewBox="0 0 100 100" className="w-12 h-12 drop-shadow-md">
                               <polygon points="50,15 85,75 15,75" fill="url(#alertGrad)" />
                               <path d="M50,35 v20" stroke="white" strokeWidth="6" strokeLinecap="round" />
                               <circle cx="50" cy="65" r="4" fill="white" />
@@ -1263,14 +1263,14 @@ function App() {
                         </div>
 
                         {/* Alert rows */}
-                        <div className="space-y-1.5 mt-4">
-                          <div className="flex items-center gap-1.5 bg-red-100/50 border border-red-200/40 rounded-lg p-1 text-[9px] font-extrabold text-red-900">
-                            <span className="h-1.5 w-1.5 rounded-full bg-red-650 animate-pulse shrink-0"></span>
-                            <span className="truncate">Unpatched Servers ({Math.max(1, repairCount)})</span>
+                        <div className="space-y-1 mt-2">
+                          <div className="flex items-center gap-1 bg-red-100/50 border border-red-200/40 rounded-lg px-2 py-0.5 text-[9px] font-extrabold text-red-900">
+                            <span className="h-1 w-1 rounded-full bg-red-650 animate-pulse shrink-0"></span>
+                            <span className="truncate">Unpatched ({Math.max(1, repairCount)})</span>
                           </div>
-                          <div className="flex items-center gap-1.5 bg-amber-100/50 border border-amber-200/40 rounded-lg p-1 text-[9px] font-extrabold text-amber-900">
-                            <span className="h-1.5 w-1.5 rounded-full bg-amber-650 shrink-0"></span>
-                            <span className="truncate">Warranty Expiration ({Math.max(2, lostOrStolenCount)})</span>
+                          <div className="flex items-center gap-1 bg-amber-100/50 border border-amber-200/40 rounded-lg px-2 py-0.5 text-[9px] font-extrabold text-amber-900">
+                            <span className="h-1 w-1 rounded-full bg-amber-650 shrink-0"></span>
+                            <span className="truncate">Warranty ({Math.max(2, lostOrStolenCount)})</span>
                           </div>
                         </div>
                       </div>
@@ -1282,17 +1282,17 @@ function App() {
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                   
                   {/* Asset Distribution by Type Doughnut */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm xl:col-span-5 flex flex-col justify-between">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-sm font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
+                  <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm xl:col-span-5 flex flex-col justify-between">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-xs font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
                         Asset Distribution by Type
                       </h3>
                       <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-slate-650">•••</span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center min-h-[220px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center min-h-[170px]">
                       {/* Doughnut Chart */}
-                      <div className="sm:col-span-7 h-48 flex items-center justify-center relative">
+                      <div className="sm:col-span-7 h-36 flex items-center justify-center relative">
                         {pieData.length === 0 ? (
                           <p className="text-slate-400 text-xs font-semibold">Add assets to view distribution</p>
                         ) : (
@@ -1302,8 +1302,8 @@ function App() {
                                 data={pieData}
                                 cx="50%"
                                 cy="50%"
-                                innerRadius={58}
-                                outerRadius={80}
+                                innerRadius={42}
+                                outerRadius={60}
                                 dataKey="value"
                                 labelLine={false}
                               >
@@ -1311,27 +1311,27 @@ function App() {
                                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                               </Pie>
-                              <Tooltip contentStyle={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderRadius: '12px', color: '#1e293b', fontSize: '10px' }} formatter={(value) => [`${value} Assets`, 'Count']} />
+                              <Tooltip contentStyle={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderRadius: '8px', color: '#1e293b', fontSize: '9px' }} formatter={(value) => [`${value} Assets`, 'Count']} />
                             </PieChart>
                           </ResponsiveContainer>
                         )}
                         <div className="absolute flex flex-col items-center justify-center">
-                          <span className="text-2xl font-extrabold text-[#0f172a]">
+                          <span className="text-xl font-extrabold text-[#0f172a]">
                             {pieData.reduce((acc, curr) => acc + curr.value, 0)}
                           </span>
-                          <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Total</span>
+                          <span className="text-[8px] font-extrabold uppercase text-slate-400 tracking-wider">Total</span>
                         </div>
                       </div>
 
                       {/* Customized Legend matching mockup */}
-                      <div className="sm:col-span-5 space-y-2">
+                      <div className="sm:col-span-5 space-y-1.5">
                         {pieData.map((item, idx) => (
-                          <div key={idx} className="flex justify-between items-center text-xs font-bold text-slate-600">
-                            <div className="flex items-center gap-2">
-                              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
+                          <div key={idx} className="flex justify-between items-center text-[10px] font-bold text-slate-655">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
                               <span className="truncate">{item.name}</span>
                             </div>
-                            <span className="font-extrabold text-slate-800">
+                            <span className="font-extrabold text-slate-800 shrink-0">
                               {pieData.reduce((acc, curr) => acc + curr.value, 0) > 0 
                                 ? `${Math.round((item.value / pieData.reduce((acc, curr) => acc + curr.value, 0)) * 100)}%`
                                 : '0%'}
@@ -1343,41 +1343,41 @@ function App() {
                   </div>
 
                   {/* Recently Added Assets Table */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm xl:col-span-7 flex flex-col justify-between">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-sm font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
+                  <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm xl:col-span-7 flex flex-col justify-between">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-xs font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
                         Recently Added Assets
                       </h3>
                       <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-slate-650">•••</span>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[220px]">
-                      <table className="w-full text-[11px] text-left border-collapse">
+                    <div className="overflow-x-auto min-h-[170px]">
+                      <table className="w-full text-[10px] text-left border-collapse">
                         <thead>
                           <tr className="border-b border-slate-100 text-slate-400 font-extrabold uppercase tracking-wider">
-                            <th className="py-2.5 font-extrabold">Asset ID</th>
-                            <th className="py-2.5 font-extrabold">Device Name</th>
-                            <th className="py-2.5 font-extrabold">Type</th>
-                            <th className="py-2.5 font-extrabold">User</th>
-                            <th className="py-2.5 font-extrabold">Location</th>
-                            <th className="py-2.5 font-extrabold text-right">Status</th>
+                            <th className="py-2 font-extrabold">Asset ID</th>
+                            <th className="py-2 font-extrabold">Device Name</th>
+                            <th className="py-2 font-extrabold">Type</th>
+                            <th className="py-2 font-extrabold">User</th>
+                            <th className="py-2 font-extrabold">Location</th>
+                            <th className="py-2 font-extrabold text-right">Status</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                           {assignedAssets.slice(0, 4).map((item, idx) => (
                             <tr key={idx} className="hover:bg-slate-50/50 transition">
-                              <td className="py-3 font-mono font-bold text-slate-600">{item.assetCode}</td>
-                              <td className="py-3 font-bold text-[#0f172a]">{item.assetName || item.brand}</td>
-                              <td className="py-3 font-medium text-slate-500">
+                              <td className="py-2 font-mono font-bold text-slate-600">{item.assetCode}</td>
+                              <td className="py-2 font-bold text-[#0f172a]">{item.assetName || item.brand}</td>
+                              <td className="py-2 font-medium text-slate-500">
                                 <span className="inline-flex items-center gap-1">
-                                  {item.assetType === 'SIM Card' ? <Smartphone size={10} className="text-[#a78bfa]" /> : <Laptop size={10} className="text-[#3b82f6]" />}
+                                  {item.assetType === 'SIM Card' ? <Smartphone size={9} className="text-[#a78bfa]" /> : <Laptop size={9} className="text-[#3b82f6]" />}
                                   {item.assetType || 'Laptop'}
                                 </span>
                               </td>
-                              <td className="py-3 font-bold text-slate-700">{item.employeeName}</td>
-                              <td className="py-3 font-medium text-slate-500">{item.department || 'HO'}</td>
-                              <td className="py-3 text-right">
-                                <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold ${
+                              <td className="py-2 font-bold text-slate-700">{item.employeeName}</td>
+                              <td className="py-2 font-medium text-slate-500">{item.department || 'HO'}</td>
+                              <td className="py-2 text-right">
+                                <span className={`inline-flex px-1.5 py-0.5 rounded-full text-[8px] font-extrabold ${
                                   idx % 2 === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                                 }`}>
                                   {idx % 2 === 0 ? 'Active' : 'In Setup'}
@@ -1387,7 +1387,7 @@ function App() {
                           ))}
                           {assignedAssets.length === 0 && (
                             <tr>
-                              <td colSpan={6} className="py-10 text-center text-slate-400 font-semibold">
+                              <td colSpan={6} className="py-8 text-center text-slate-400 font-semibold">
                                 No deployments logged yet. Add inventory assignments.
                               </td>
                             </tr>
@@ -1399,33 +1399,33 @@ function App() {
                 </div>
 
                 {/* Third row: Software Compliance Status & Quick Actions */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                   {/* Software Compliance status bar charts */}
-                  <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm lg:col-span-2 flex flex-col justify-between">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-sm font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
+                  <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm lg:col-span-2 flex flex-col justify-between">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-xs font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
                         Software Compliance Status
                       </h3>
                       <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-slate-650">•••</span>
                     </div>
 
-                    <div className="space-y-4 py-2">
+                    <div className="space-y-3 py-1">
                       <div className="space-y-1">
-                        <div className="flex justify-between text-xs font-bold text-slate-755">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-700">
                           <span>Compliant</span>
                           <span className="font-extrabold">85%</span>
                         </div>
-                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden relative">
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden relative">
                           <div className="bg-gradient-to-r from-emerald-400 to-[#10b981] h-full rounded-full" style={{ width: '85%' }}></div>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="flex justify-between text-xs font-bold text-slate-755">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-700">
                           <span>Non-compliant</span>
                           <span className="font-extrabold">15%</span>
                         </div>
-                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden relative">
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden relative">
                           <div className="bg-gradient-to-r from-purple-400 to-indigo-500 h-full rounded-full" style={{ width: '15%' }}></div>
                         </div>
                       </div>
