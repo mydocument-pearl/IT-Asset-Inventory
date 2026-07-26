@@ -605,7 +605,7 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
       <button
         type="button"
         onClick={handleSave}
-        className="mt-6 bg-red-655 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer"
+        className="mt-6 bg-red-600 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer"
       >
         Save Asset
       </button>

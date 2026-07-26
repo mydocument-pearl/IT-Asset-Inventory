@@ -354,7 +354,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
           <div className="lg:col-span-3 mt-1">
             <button
               type="submit"
-              className="bg-red-655 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer flex items-center gap-1.5"
+              className="bg-red-600 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer flex items-center gap-1.5"
             >
               <Plus size={14} />
               Save Employee

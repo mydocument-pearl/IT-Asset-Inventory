@@ -227,7 +227,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="bg-red-655 hover:bg-red-700 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm shadow-red-500/10 shrink-0"
+            className="bg-red-600 hover:bg-red-700 text-white rounded-lg px-3 py-1.5 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm shadow-red-500/10 shrink-0"
           >
             <Plus size={13} />
             Register License
@@ -431,7 +431,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-red-655 hover:bg-red-700 text-white py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm"
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm"
                 >
                   Register
                 </button>
@@ -555,7 +555,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-red-655 hover:bg-red-700 text-white py-2 rounded-xl text-xs font-bold transition cursor-pointer"
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl text-xs font-bold transition cursor-pointer"
                 >
                   Complete Renewal
                 </button>
