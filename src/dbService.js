@@ -1000,5 +1000,78 @@ export const dbService = {
       success: true,
       importedCount: rawRows.length
     };
+  },
+
+  // ------------------ SOFTWARE LICENSES ------------------
+  async getSoftwareLicenses() {
+    const local = JSON.parse(localStorage.getItem('softwareLicenses')) || [];
+    if (!isFirebaseEnabled()) return local;
+    try {
+      const querySnapshot = await getDocs(collection(db, 'softwareLicenses'));
+      const fbLicenses = [];
+      querySnapshot.forEach((docSnap) => {
+        fbLicenses.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      localStorage.setItem('softwareLicenses', JSON.stringify(fbLicenses));
+      return fbLicenses;
+    } catch (error) {
+      console.warn("Firestore software fetch failed, using local storage:", error);
+      return local;
+    }
+  },
+
+  async saveSoftwareLicense(license) {
+    const local = JSON.parse(localStorage.getItem('softwareLicenses')) || [];
+    const updated = [...local, license];
+    localStorage.setItem('softwareLicenses', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const docRef = await addDoc(collection(db, 'softwareLicenses'), license);
+        license.id = docRef.id;
+      } catch (error) {
+        console.error("Firestore software write failed, saved locally:", error);
+      }
+    }
+    return updated;
+  },
+
+  async deleteSoftwareLicense(softwareName) {
+    const local = JSON.parse(localStorage.getItem('softwareLicenses')) || [];
+    const updated = local.filter(item => item.softwareName !== softwareName);
+    localStorage.setItem('softwareLicenses', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const q = query(collection(db, 'softwareLicenses'), where('softwareName', '==', softwareName));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (dDoc) => {
+          await deleteDoc(doc(db, 'softwareLicenses', dDoc.id));
+        });
+      } catch (error) {
+        console.error("Firestore software delete failed:", error);
+      }
+    }
+    return updated;
+  },
+
+  async updateSoftwareLicense(softwareName, updatedLicense) {
+    const local = JSON.parse(localStorage.getItem('softwareLicenses')) || [];
+    const updated = local.map(item => item.softwareName === softwareName ? { ...item, ...updatedLicense } : item);
+    localStorage.setItem('softwareLicenses', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const q = query(collection(db, 'softwareLicenses'), where('softwareName', '==', softwareName));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (dDoc) => {
+          await updateDoc(doc(db, 'softwareLicenses', dDoc.id), updatedLicense);
+        });
+      } catch (error) {
+        console.error("Firestore software update failed:", error);
+      }
+    }
+    return updated;
   }
 }
+

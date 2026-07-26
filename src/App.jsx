@@ -26,7 +26,8 @@ import {
   UserCheck,
   Eye,
   KeyRound,
-  Trash2
+  Trash2,
+  Award
 } from 'lucide-react'
 import {
   PieChart,
@@ -49,6 +50,7 @@ import AddMobileAsset from './AddMobileAsset'
 import AssignAsset from './AssignAsset'
 import Login from './Login'
 import EmployeeDirectory from './EmployeeDirectory'
+import SoftwareInventory from './SoftwareInventory'
 
 function App() {
   // Authentication State
@@ -924,6 +926,18 @@ function App() {
             </button>
 
             <button
+              onClick={() => setActiveTab('software')}
+              className={`w-full flex items-center gap-3.5 rounded-xl px-4 py-3 cursor-pointer text-left text-sm font-semibold transition duration-150 ${
+                activeTab === 'software'
+                  ? 'bg-red-600 text-white shadow-lg shadow-red-600/25 active-nav-glow font-bold'
+                  : 'hover:bg-slate-900 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Award size={18} />
+              Software Licenses
+            </button>
+
+            <button
               onClick={() => setActiveTab('allocation')}
               className={`w-full flex items-center gap-3.5 rounded-xl px-4 py-3 cursor-pointer text-left text-sm font-semibold transition duration-150 ${
                 activeTab === 'allocation'
@@ -1018,12 +1032,13 @@ function App() {
           <header className="flex justify-between items-center mb-8 border-b border-slate-200 pb-5 print:hidden">
             <div>
               <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight capitalize">
-                {activeTab === 'itassets' ? 'IT Inventory' : activeTab === 'allocation' ? 'Asset Assignments' : activeTab === 'mobile' ? 'Mobile / SIM Suite' : activeTab === 'vendors' ? 'Vendors Registry' : activeTab === 'reports' ? 'Reports & History' : activeTab === 'employees' ? 'Employee Directory' : activeTab}
+                {activeTab === 'itassets' ? 'IT Inventory' : activeTab === 'allocation' ? 'Asset Assignments' : activeTab === 'mobile' ? 'Mobile / SIM Suite' : activeTab === 'vendors' ? 'Vendors Registry' : activeTab === 'reports' ? 'Reports & History' : activeTab === 'employees' ? 'Employee Directory' : activeTab === 'software' ? 'Software & License Suite' : activeTab}
               </h2>
               <p className="text-slate-500 text-sm mt-1">
                 {activeTab === 'dashboard' && `Welcome, ${currentUser.name}! Monitor and deploy company assets in real-time.`}
                 {activeTab === 'itassets' && 'Add, filter, and track laptops, monitors, accessories, and components.'}
                 {activeTab === 'mobile' && 'Track company cellular networks, SIM keys, and mobile inventory.'}
+                {activeTab === 'software' && 'Track enterprise software assets, renewals, seats, and usage history.'}
                 {activeTab === 'allocation' && 'Assign company hardware assets to registered workers.'}
                 {activeTab === 'employees' && 'Register and manage company employee records, departments, and organizations.'}
                 {activeTab === 'vendors' && 'Manage procurement contacts, purchase routes, and vendor listings.'}
@@ -1756,6 +1771,15 @@ function App() {
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* ---------------- SOFTWARE LICENSES TAB ---------------- */}
+            {activeTab === 'software' && (
+              <SoftwareInventory
+                employees={employees}
+                showNotification={showNotification}
+                isAdmin={isUserAdmin}
+              />
             )}
 
             {/* ---------------- EMPLOYEE DIRECTORY TAB ---------------- */}
