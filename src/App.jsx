@@ -852,7 +852,7 @@ function App() {
   const isUserAdmin = currentUser.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex font-sans antialiased text-slate-800">
+    <div className="h-screen w-screen overflow-hidden bg-slate-50 flex font-sans antialiased text-slate-800">
       
       {/* Print stylesheet helper */}
       <style>{`
@@ -917,7 +917,7 @@ function App() {
       </div>
 
       {/* Sidebar */}
-      <div className="w-72 bg-gray-950 text-slate-200 p-6 flex flex-col justify-between shrink-0 shadow-xl print:hidden">
+      <div className="w-72 h-full overflow-y-auto bg-gray-950 text-slate-200 p-6 flex flex-col justify-between shrink-0 shadow-xl print:hidden">
         <div>
           <div className="flex items-center gap-3 mb-8">
             <div className="bg-red-600 h-10 w-10 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-red-600/30">
