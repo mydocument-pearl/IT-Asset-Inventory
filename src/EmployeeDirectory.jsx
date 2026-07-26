@@ -242,17 +242,17 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
   }
 
   return (
-    <div className="space-y-8 animate-fade-in print:hidden">
+    <div className="space-y-6 animate-fade-in print:hidden">
       {/* 1. Manual Add Employee Panel */}
-      <div className="glass-panel p-8 rounded-2xl">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-red-500"></span>
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
+        <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
           Register New Employee
         </h2>
 
-        <form onSubmit={handleSaveEmployee} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
+        <form onSubmit={handleSaveEmployee} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Employee Name *
             </label>
             <input
@@ -260,18 +260,18 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
               value={empName}
               onChange={(e) => setEmpName(e.target.value)}
               placeholder="Enter employee name"
-              className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+              className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Organization Name *
             </label>
             <select
               value={org}
               onChange={(e) => handleOrgChange(e.target.value)}
-              className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+              className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             >
               <option value="">Select Organization</option>
               <option>On2Cook India Pvt. Ltd.</option>
@@ -280,11 +280,11 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Employee ID Code *
             </label>
             <div className="flex">
-              <div className="bg-gray-155 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl px-4 py-3 text-slate-500 font-semibold text-sm flex items-center justify-center min-w-[70px]">
+              <div className="bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl px-3 py-2 text-slate-500 font-bold text-xs flex items-center justify-center min-w-[60px]">
                 {empPrefix || 'ID'}
               </div>
               <input
@@ -292,19 +292,19 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                 value={empIdCode}
                 onChange={(e) => setEmpIdCode(e.target.value)}
                 placeholder="e.g. 101"
-                className="w-full border border-slate-200 rounded-r-xl px-4 py-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Gender
             </label>
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+              className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             >
               <option value="">Select Gender</option>
               <option>Male</option>
@@ -314,7 +314,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Mobile Number
             </label>
             <input
@@ -322,18 +322,18 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
               value={mobileNum}
               onChange={(e) => setMobileNum(e.target.value.replace(/[^0-9+]/g, ''))}
               placeholder="e.g. 9876543210"
-              className="w-full glass-input rounded-xl px-4 py-3 outline-none font-mono"
+              className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none font-mono focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Department
             </label>
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+              className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             >
               <option value="">Select Department</option>
               <option>Administration</option>
@@ -351,12 +351,12 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             </select>
           </div>
 
-          <div className="lg:col-span-3 mt-2">
+          <div className="lg:col-span-3 mt-1">
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 text-white px-8 py-3 rounded-xl font-medium transition duration-200 cursor-pointer flex items-center gap-1.5"
+              className="bg-red-655 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer flex items-center gap-1.5"
             >
-              <Plus size={16} />
+              <Plus size={14} />
               Save Employee
             </button>
           </div>
@@ -365,67 +365,68 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
 
       {/* 2. Bulk Excel Upload (Admin Only) */}
       {isUserAdmin && (
-        <div className="glass-panel p-8 rounded-2xl">
-          <h3 className="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-            <FileSpreadsheet className="text-red-500" size={20} />
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
+            <FileSpreadsheet className="text-red-500" size={16} />
             Bulk Import Employee Directory
           </h3>
-          <p className="text-xs text-slate-500 mb-6">
+          <p className="text-[11px] text-slate-400 mb-4">
             Upload employee names, codes, departments, and organization details from an Excel sheet to populate the autocomplete database.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start bg-slate-50/60 border border-slate-100 rounded-2xl p-6">
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                <span className="h-5 w-5 rounded-full bg-red-100 text-red-600 text-[11px] font-bold flex items-center justify-center">1</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start bg-slate-50/50 border border-slate-150 rounded-2xl p-4">
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="h-4.5 w-4.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold flex items-center justify-center">1</span>
                 Download Template
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-slate-400 leading-relaxed">
                 Download the spreadsheet template containing the directory columns (Name, Employee ID, Gender, Phone, Dept, Organization).
               </p>
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm"
+                className="bg-white border border-slate-200 hover:border-slate-350 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-[10px] font-bold transition flex items-center gap-2 cursor-pointer shadow-sm"
               >
-                <Download size={14} />
+                <Download size={12} />
                 Download Excel Template
               </button>
             </div>
 
-            <form onSubmit={handleUploadExcel} className="space-y-4">
-              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                <span className="h-5 w-5 rounded-full bg-red-100 text-red-600 text-[11px] font-bold flex items-center justify-center">2</span>
+            <form onSubmit={handleUploadExcel} className="space-y-3">
+              <h4 className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="h-4.5 w-4.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold flex items-center justify-center">2</span>
                 Upload Spreadsheet
               </h4>
-              <div className="flex flex-col gap-2">
+
+              <div className="flex flex-col gap-1.5">
                 <input
                   type="file"
                   id="bulk-employee-dir-input"
                   accept=".xlsx, .xls, .csv"
                   onChange={(e) => setExcelFile(e.target.files[0])}
-                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black file:cursor-pointer"
+                  className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black file:cursor-pointer"
                 />
-                <p className="text-[10px] text-slate-400">Formats: .xlsx, .xls, .csv</p>
+                <p className="text-[9px] text-slate-400">Formats: .xlsx, .xls, .csv</p>
               </div>
 
               <button
                 type="submit"
                 disabled={isUploading || !excelFile}
-                className={`w-full md:w-auto px-6 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+                className={`w-full md:w-auto px-4 py-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1.5 ${
                   isUploading || !excelFile
                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200/50'
-                    : 'bg-red-600 hover:bg-red-700 text-white cursor-pointer shadow-md'
+                    : 'bg-red-600 hover:bg-red-700 text-white cursor-pointer shadow-sm'
                 }`}
               >
                 {isUploading ? (
                   <>
-                    <div className="h-3.5 w-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
                     Importing Records...
                   </>
                 ) : (
                   <>
-                    <Upload size={14} />
+                    <Upload size={12} />
                     Upload & Sync Directory
                   </>
                 )}
@@ -436,14 +437,14 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       )}
 
       {/* 3. Employee Directory List Table */}
-      <div className="glass-panel rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
           <div>
-            <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <Users className="text-red-500" size={20} />
+            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <Users className="text-red-500" size={16} />
               Employee Directory Register
             </h3>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[11px] text-slate-400 mt-0.5">
               Showing {filteredEmployees.length} of {employees.length} employees currently registered in the database.
             </p>
           </div>
@@ -453,48 +454,48 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by name, ID, or phone number"
-              className="glass-input rounded-xl px-4 py-2.5 text-xs outline-none w-full md:w-72 border border-slate-200"
+              className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none w-full md:w-64 focus:border-red-500 transition"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-600 border-b border-slate-100">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-slate-50 text-slate-500 border-b border-slate-100 font-extrabold uppercase tracking-wider text-[10px]">
               <tr>
-                <th className="p-4 font-bold">Employee Name</th>
-                <th className="p-4 font-bold">Employee ID / Code</th>
-                <th className="p-4 font-bold">Gender</th>
-                <th className="p-4 font-bold">Mobile Number</th>
-                <th className="p-4 font-bold">Department</th>
-                <th className="p-4 font-bold">Organization</th>
-                {isUserAdmin && <th className="p-4 font-bold text-right">Actions</th>}
+                <th className="p-3 font-extrabold">Employee Name</th>
+                <th className="p-3 font-extrabold">Employee ID / Code</th>
+                <th className="p-3 font-extrabold">Gender</th>
+                <th className="p-3 font-extrabold">Mobile Number</th>
+                <th className="p-3 font-extrabold">Department</th>
+                <th className="p-3 font-extrabold">Organization</th>
+                {isUserAdmin && <th className="p-3 font-extrabold text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
               {filteredEmployees.length === 0 ? (
                 <tr>
-                  <td colSpan={isUserAdmin ? 7 : 6} className="p-8 text-center text-slate-400 font-medium">
+                  <td colSpan={isUserAdmin ? 7 : 6} className="p-6 text-center text-slate-450 font-medium">
                     No matching employees found in the directory.
                   </td>
                 </tr>
               ) : (
                 filteredEmployees.map((item, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/50 transition">
-                    <td className="p-4 font-bold text-slate-800">{item.name}</td>
-                    <td className="p-4 font-mono font-semibold text-slate-600">{item.id}</td>
-                    <td className="p-4 text-slate-600">{item.gender || '-'}</td>
-                    <td className="p-4 font-mono text-slate-650">{item.phone || '-'}</td>
-                    <td className="p-4 text-slate-700 font-medium">{item.department || '-'}</td>
-                    <td className="p-4 text-xs text-slate-500">{item.organization || '-'}</td>
+                    <td className="p-3 font-bold text-slate-800">{item.name}</td>
+                    <td className="p-3 font-mono font-semibold text-slate-500">{item.id}</td>
+                    <td className="p-3 text-slate-650">{item.gender || '-'}</td>
+                    <td className="p-3 font-mono text-slate-650">{item.phone || '-'}</td>
+                    <td className="p-3 text-slate-600 font-medium">{item.department || '-'}</td>
+                    <td className="p-3 text-[11px] text-slate-400">{item.organization || '-'}</td>
                     {isUserAdmin && (
-                      <td className="p-4 text-right">
+                      <td className="p-3 text-right">
                         <button
                           onClick={() => handleDeleteEmployee(item.id, item.name)}
-                          className="p-1.5 text-red-600 hover:text-red-800 transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
+                          className="p-1 text-red-650 hover:text-red-800 transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
                           title="Delete Employee"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={13} />
                         </button>
                       </td>
                     )}

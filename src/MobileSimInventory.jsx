@@ -69,32 +69,32 @@ export default function MobileSimInventory({
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-6 mt-10 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 mt-8 shadow-sm animate-fade-in">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-red-500"></span>
+          <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
             Mobile & SIM Inventory
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-[11px] text-slate-400 mt-0.5">
             Showing {filtered.length} of {mobileAssets.length} total mobile & SIM assets
           </p>
         </div>
 
         {/* Filter Toolbar */}
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search employee, brand, or number"
-            className="glass-input rounded-xl px-4 py-2 text-sm outline-none w-full md:w-60"
+            className="bg-white border border-slate-250/70 rounded-lg px-3 py-1.5 text-xs outline-none w-full md:w-56 focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
 
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="glass-input rounded-xl px-3 py-2 text-sm outline-none"
+            className="bg-white border border-slate-250/70 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-red-500 transition"
           >
             <option value="all">All Types</option>
             <option value="mobile">Mobiles Only</option>
@@ -104,7 +104,7 @@ export default function MobileSimInventory({
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="glass-input rounded-xl px-3 py-2 text-sm outline-none"
+            className="bg-white border border-slate-250/70 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-red-500 transition"
           >
             <option value="all">All Statuses</option>
             <option value="Available">Available</option>
@@ -114,79 +114,79 @@ export default function MobileSimInventory({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-100">
-        <table className="min-w-full divide-y divide-gray-100 text-sm">
-          <thead className="bg-black text-white">
+      <div className="overflow-x-auto rounded-xl border border-slate-150">
+        <table className="min-w-full divide-y divide-slate-150 text-[11px]">
+          <thead className="bg-slate-900 text-white">
             <tr>
-              <th className="px-4 py-3 text-left font-semibold">Sr</th>
-              <th className="px-4 py-3 text-left font-semibold">Asset Type</th>
-              <th className="px-4 py-3 text-left font-semibold">Employee</th>
-              <th className="px-4 py-3 text-left font-semibold">Department</th>
-              <th className="px-4 py-3 text-left font-semibold">Brand / Model</th>
-              <th className="px-4 py-3 text-left font-semibold">IMEI / SIM Num</th>
-              <th className="px-4 py-3 text-left font-semibold">Carrier / Sim IMEI</th>
-              <th className="px-4 py-3 text-left font-semibold">Status</th>
-              <th className="px-4 py-3 text-left font-semibold">Organization</th>
-              <th className="px-4 py-3 text-left font-semibold">Vendor</th>
-              {isUserAdmin && <th className="px-4 py-3 text-right font-semibold">Actions</th>}
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Sr</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Asset Type</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Employee</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Department</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Brand / Model</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">IMEI / SIM Num</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Carrier / Sim IMEI</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Status</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Organization</th>
+              <th className="px-3 py-2 text-left font-bold uppercase tracking-wider">Vendor</th>
+              {isUserAdmin && <th className="px-3 py-2 text-right font-bold uppercase tracking-wider">Actions</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 bg-white">
+          <tbody className="divide-y divide-slate-100 bg-white">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={isUserAdmin ? 11 : 10} className="px-4 py-10 text-center text-gray-500 font-medium bg-gray-50/50">
+                <td colSpan={isUserAdmin ? 11 : 10} className="px-3 py-8 text-center text-slate-400 font-medium bg-slate-50/50">
                   No matching mobile or SIM assets found.
                 </td>
               </tr>
             ) : (
               filtered.map((item, index) => (
-                <tr key={item.id || index} className="hover:bg-gray-50/50 transition">
-                  <td className="px-4 py-4 font-mono text-xs text-gray-400">{index + 1}</td>
-                  <td className="px-4 py-4 font-semibold text-gray-800">
+                <tr key={item.id || index} className="hover:bg-slate-50/50 transition">
+                  <td className="px-3 py-1.5 font-mono text-[10px] text-slate-400">{index + 1}</td>
+                  <td className="px-3 py-1.5 font-bold text-slate-800">
                     {item.assetType}
                   </td>
-                  <td className="px-4 py-4 text-gray-700">
+                  <td className="px-3 py-1.5 text-slate-700 font-medium">
                     {item.employee || '-'}
                   </td>
-                  <td className="px-4 py-4 text-gray-600">
+                  <td className="px-3 py-1.5 text-slate-600">
                     {item.department || '-'}
                   </td>
-                  <td className="px-4 py-4 text-gray-700">
+                  <td className="px-3 py-1.5 text-slate-700">
                     {item.assetType === 'Mobile' ? `${item.brand} ${item.model}` : '-'}
                   </td>
-                  <td className="px-4 py-4 font-mono text-gray-600">
+                  <td className="px-3 py-1.5 font-mono text-slate-600">
                     {item.assetType === 'Mobile' ? item.imei : item.simNumber}
                   </td>
-                  <td className="px-4 py-4 text-gray-600">
+                  <td className="px-3 py-1.5 text-slate-600">
                     {item.assetType === 'SIM Card' ? `${item.simCompany} (${item.imei})` : '-'}
                   </td>
-                  <td className="px-4 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  <td className="px-3 py-1.5">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       item.status === 'Available' 
-                        ? 'bg-green-100 text-green-800' 
+                        ? 'bg-green-50 text-green-700 border border-green-200' 
                         : item.status === 'Allocated' || item.status === 'Assigned'
-                          ? 'bg-blue-100 text-blue-800' 
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200' 
                           : item.status === 'Lost' || item.status === 'Stolen'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-red-50 text-red-700 border border-red-200'
+                            : 'bg-amber-50 text-amber-700 border border-amber-200'
                     }`}>
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-gray-500 text-xs">
+                  <td className="px-3 py-1.5 text-slate-500 font-medium">
                     {item.organizationName || '-'}
                   </td>
-                  <td className="px-4 py-4 text-gray-600 text-xs">
+                  <td className="px-3 py-1.5 text-slate-600">
                     {item.vendor || '-'}
                   </td>
                   {isUserAdmin && (
-                    <td className="px-4 py-4 text-right">
+                    <td className="px-3 py-1.5 text-right">
                       <button
                         onClick={() => handleDelete(item.assetCode)}
-                        className="text-red-600 hover:text-red-800 hover:scale-110 active:scale-95 transition duration-150 cursor-pointer"
+                        className="text-red-500 hover:text-red-700 hover:scale-110 active:scale-95 transition duration-150 cursor-pointer"
                         title="Delete Asset"
                       >
-                        <Trash2 size={15} />
+                        <Trash2 size={13} />
                       </button>
                     </td>
                   )}

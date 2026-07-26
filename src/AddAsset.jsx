@@ -371,15 +371,15 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
   }
 
   return (
-    <div className="glass-panel p-8 rounded-2xl animate-fade-in">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-red-500"></span>
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm animate-fade-in">
+      <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
         Add New Asset
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Asset Name *
           </label>
           <input
@@ -387,18 +387,18 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={assetName}
             onChange={(e) => setAssetName(e.target.value)}
             placeholder="Enter asset name"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Asset Type *
           </label>
           <select
             value={assetType}
             onChange={(e) => handleAssetTypeChange(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option value="">Select Asset Type</option>
             <option>Laptop</option>
@@ -420,7 +420,7 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Asset Code
           </label>
           <input
@@ -428,12 +428,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={assetCode}
             readOnly
             placeholder="Auto-generated"
-            className="w-full bg-gray-100/50 border border-gray-200 text-gray-500 rounded-xl px-4 py-3 outline-none cursor-not-allowed font-mono"
+            className="w-full bg-slate-50 border border-slate-200 text-slate-500 rounded-xl px-3 py-2 text-xs outline-none cursor-not-allowed font-mono"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Brand *
           </label>
           <input
@@ -441,12 +441,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
             placeholder="Dell / HP / Lenovo / Apple"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Serial Number *
           </label>
           <input
@@ -454,12 +454,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={serialNumber}
             onChange={(e) => setSerialNumber(e.target.value)}
             placeholder="Enter serial number"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Vendor Name
           </label>
           <input
@@ -467,12 +467,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={vendorName}
             onChange={(e) => setVendorName(e.target.value)}
             placeholder="Enter vendor name"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Invoice Number
           </label>
           <input
@@ -480,36 +480,36 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
             placeholder="Enter invoice number"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Purchase Date
           </label>
           <input
             type="date"
             value={purchaseDate}
             onChange={(e) => setPurchaseDate(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Invoice Date
           </label>
           <input
             type="date"
             value={invoiceDate}
             onChange={(e) => setInvoiceDate(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Amount (INR)
           </label>
           <input
@@ -517,12 +517,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Enter amount"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Quantity
           </label>
           <input
@@ -530,12 +530,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="Enter quantity"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             PO Number
           </label>
           <input
@@ -543,18 +543,18 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
             value={poNumber}
             onChange={(e) => setPoNumber(e.target.value)}
             placeholder="Enter PO number"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Organization Name
           </label>
           <select
             value={organizationName}
             onChange={(e) => setOrganizationName(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option value="">Select Organization</option>
             <option>On2Cook India Pvt. Ltd.</option>
@@ -563,12 +563,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Attach Invoice Image (Max 50KB)
           </label>
           <div className="flex items-center gap-3">
-            <label className="glass-input rounded-xl px-4 py-3 text-slate-500 cursor-pointer hover:bg-slate-100 flex items-center gap-2 text-xs font-semibold shrink-0">
-              <FileImage size={16} />
+            <label className="bg-white border border-slate-250/70 hover:border-slate-350 rounded-xl px-3 py-2 text-slate-500 cursor-pointer hover:bg-slate-50 flex items-center gap-2 text-xs font-semibold shrink-0 transition">
+              <FileImage size={14} />
               Choose File
               <input
                 type="file"
@@ -578,7 +578,7 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
               />
             </label>
             {isCompressing && (
-              <span className="text-[10px] text-red-500 font-bold animate-pulse">
+              <span className="text-[9px] text-red-500 font-bold animate-pulse">
                 Compressing to 50KB...
               </span>
             )}
@@ -587,12 +587,12 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
                 <img
                   src={invoiceImage}
                   alt="Invoice thumbnail"
-                  className="h-10 w-10 object-cover rounded-xl border border-slate-200"
+                  className="h-8 w-8 object-cover rounded-lg border border-slate-250"
                 />
                 <button
                   type="button"
                   onClick={() => setInvoiceImage('')}
-                  className="text-[10px] text-red-500 font-bold hover:underline"
+                  className="text-[9px] text-red-500 font-bold hover:underline"
                 >
                   Remove
                 </button>
@@ -605,76 +605,76 @@ export default function AddAsset({ assets, setAssets, showNotification }) {
       <button
         type="button"
         onClick={handleSave}
-        className="mt-8 bg-red-600 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 text-white px-8 py-3 rounded-xl font-medium transition duration-200 cursor-pointer"
+        className="mt-6 bg-red-655 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer"
       >
         Save Asset
       </button>
 
       {/* Bulk Upload panel - Admin Only */}
       {isAdmin && (
-        <div className="mt-12 pt-8 border-t border-slate-200">
-          <h3 className="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-            <FileSpreadsheet className="text-red-500" size={20} />
+        <div className="mt-8 pt-6 border-t border-slate-200">
+          <h3 className="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
+            <FileSpreadsheet className="text-red-500" size={16} />
             Bulk Import Assets via Spreadsheet
           </h3>
-          <p className="text-xs text-slate-500 mb-6">
+          <p className="text-[11px] text-slate-400 mb-4">
             Upload multiple hardware assets at once using our spreadsheet template. Duplicate asset codes will be skipped automatically.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start bg-slate-50/60 border border-slate-100 rounded-2xl p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start bg-slate-50/50 border border-slate-150 rounded-2xl p-4">
             {/* Step 1: Download template */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                <span className="h-5 w-5 rounded-full bg-red-100 text-red-600 text-[11px] font-bold flex items-center justify-center">1</span>
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="h-4.5 w-4.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold flex items-center justify-center">1</span>
                 Download Standard Template
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-slate-400 leading-relaxed">
                 Start by downloading our pre-formatted spreadsheet template. It contains the exact column structure and formatting needed for bulk sync.
               </p>
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm"
+                className="bg-white border border-slate-200 hover:border-slate-350 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl text-[10px] font-bold transition flex items-center gap-2 cursor-pointer shadow-sm"
               >
-                <Download size={14} />
+                <Download size={12} />
                 Download Excel Template
               </button>
             </div>
 
             {/* Step 2: Upload File */}
-            <form onSubmit={handleUploadExcel} className="space-y-4">
-              <h4 className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                <span className="h-5 w-5 rounded-full bg-red-100 text-red-600 text-[11px] font-bold flex items-center justify-center">2</span>
+            <form onSubmit={handleUploadExcel} className="space-y-3">
+              <h4 className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="h-4.5 w-4.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold flex items-center justify-center">2</span>
                 Upload Populated Spreadsheet
               </h4>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <input
                   type="file"
                   id="bulk-excel-input"
                   accept=".xlsx, .xls, .csv"
                   onChange={(e) => setExcelFile(e.target.files[0])}
-                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black file:cursor-pointer"
+                  className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black file:cursor-pointer"
                 />
-                <p className="text-[10px] text-slate-400">Accepted formats: .xlsx, .xls, .csv</p>
+                <p className="text-[9px] text-slate-400">Accepted formats: .xlsx, .xls, .csv</p>
               </div>
 
               <button
                 type="submit"
                 disabled={isUploading || !excelFile}
-                className={`w-full md:w-auto px-6 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+                className={`w-full md:w-auto px-4 py-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1.5 ${
                   isUploading || !excelFile
                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200/50'
-                    : 'bg-red-600 hover:bg-red-700 text-white cursor-pointer shadow-md shadow-red-500/10'
+                    : 'bg-red-600 hover:bg-red-700 text-white cursor-pointer shadow-sm'
                 }`}
               >
                 {isUploading ? (
                   <>
-                    <div className="h-3.5 w-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
                     Importing Records...
                   </>
                 ) : (
                   <>
-                    <Upload size={14} />
+                    <Upload size={12} />
                     Upload & Sync Assets
                   </>
                 )}

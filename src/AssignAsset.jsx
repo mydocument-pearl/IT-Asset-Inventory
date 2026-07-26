@@ -252,16 +252,16 @@ export default function AssignAsset({
   }
 
   return (
-    <div className="glass-panel rounded-2xl p-8 animate-fade-in">
-      <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-red-500"></span>
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm animate-fade-in">
+      <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
         Assign Asset
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Employee Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Employee Name *
           </label>
           <input
@@ -270,7 +270,7 @@ export default function AssignAsset({
             onChange={(e) => handleEmployeeNameChange(e.target.value)}
             placeholder="Enter employee name"
             list="employee-names-list"
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
           <datalist id="employee-names-list">
             {uniqueEmployees.map((emp, idx) => (
@@ -281,36 +281,36 @@ export default function AssignAsset({
 
         {/* Employee Phone */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Employee Phone Number *
           </label>
           <div className="relative">
-            <Smartphone className="absolute left-3.5 top-3.5 text-slate-400" size={16} />
+            <Smartphone className="absolute left-3 top-2.5 text-slate-400" size={14} />
             <input
               type="text"
               value={employeePhone}
               onChange={(e) => setEmployeePhone(e.target.value)}
               placeholder="e.g. 9876543210"
-              className="w-full glass-input rounded-xl pl-10 pr-4 py-3 outline-none font-mono"
+              className="w-full bg-white border border-slate-250/70 rounded-xl pl-9 pr-3 py-2 text-xs outline-none font-mono focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             />
           </div>
         </div>
 
         {/* Allocation Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Allocation Date *
           </label>
           <input
             type="date"
             value={allocationDate}
             onChange={(e) => setAllocationDate(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Organization Name
           </label>
           <select
@@ -327,7 +327,7 @@ export default function AssignAsset({
                 setEmployeePrefix('')
               }
             }}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option value="">Select</option>
             <option>On2Cook India Pvt. Ltd.</option>
@@ -337,11 +337,11 @@ export default function AssignAsset({
 
         {/* Employee ID */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Employee ID *
           </label>
           <div className="flex">
-            <div className="bg-gray-100/80 border border-gray-300 border-r-0 rounded-l-xl px-4 py-3 text-gray-500 font-semibold text-sm flex items-center justify-center min-w-[70px]">
+            <div className="bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl px-3 py-2 text-slate-500 font-bold text-xs flex items-center justify-center min-w-[60px]">
               {employeePrefix || 'ID'}
             </div>
             <input
@@ -349,20 +349,20 @@ export default function AssignAsset({
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               placeholder="Enter ID Number"
-              className="w-full border border-gray-300 rounded-r-xl px-4 py-3 outline-none focus:border-red-500"
+              className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
             />
           </div>
         </div>
 
         {/* Department */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Department
           </label>
           <select
             value={department}
             onChange={(e) => setDepartment(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none text-black"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option value="">Select Department</option>
             <option>Administration</option>
@@ -382,7 +382,7 @@ export default function AssignAsset({
 
         {/* Asset Type filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Asset Type
           </label>
           <select
@@ -393,7 +393,7 @@ export default function AssignAsset({
               setBrand('');
               setSerialNumber('');
             }}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none text-black"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none text-slate-800 focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option value="">All Types</option>
             <option>Laptop</option>
@@ -408,7 +408,7 @@ export default function AssignAsset({
 
         {/* Specific Asset Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Asset Selection *
           </label>
           <select
@@ -424,7 +424,7 @@ export default function AssignAsset({
                 setBrand(selectedItem.brand || '')
               }
             }}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option value="">Select Asset</option>
             {sortedFilteredAvailableAssets.map((item, index) => (
@@ -436,32 +436,32 @@ export default function AssignAsset({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Asset Code
           </label>
           <input
             type="text"
             value={assetCode}
             readOnly
-            className="w-full bg-gray-100/50 text-gray-500 border border-gray-200 rounded-xl px-4 py-3 outline-none font-mono"
+            className="w-full bg-slate-50 text-slate-500 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none font-mono"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Brand
           </label>
           <input
             type="text"
             value={brand}
             readOnly
-            className="w-full bg-gray-100/50 text-gray-500 border border-gray-200 rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-slate-50 text-slate-500 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none"
           />
         </div>
 
         {/* Serial Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Serial Number / IMEI
           </label>
           <input
@@ -469,19 +469,19 @@ export default function AssignAsset({
             value={serialNumber}
             readOnly
             placeholder="Auto-filled from asset"
-            className="w-full bg-gray-100/50 text-gray-500 border border-gray-200 rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-slate-50 text-slate-500 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none"
           />
         </div>
 
         {/* Status */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Allocation Status
           </label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+            className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
           >
             <option>Assigned</option>
             <option>Returned</option>
@@ -491,23 +491,23 @@ export default function AssignAsset({
       </div>
 
       {/* Remarks */}
-      <div className="mt-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="mt-4">
+        <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
           Remarks
         </label>
         <textarea
-          rows="4"
+          rows="3"
           value={remarks}
           onChange={(e) => setRemarks(e.target.value)}
           placeholder="Enter allocation remarks or policy notes..."
-          className="w-full glass-input rounded-xl px-4 py-3 outline-none"
+          className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
         ></textarea>
       </div>
 
       {/* Button */}
       <button
         onClick={handleStartAssign}
-        className="mt-8 bg-red-600 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 text-white px-8 py-3 rounded-xl font-semibold transition duration-200 cursor-pointer"
+        className="mt-6 bg-red-655 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer"
       >
         Assign Asset
       </button>
