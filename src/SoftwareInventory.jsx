@@ -27,7 +27,11 @@ export default function SoftwareInventory({ employees = [], showNotification, is
   const handleAddUser = (userToAdd) => {
     const clean = userToAdd.trim()
     if (clean && !assignedUsers.includes(clean)) {
-      setAssignedUsers([...assignedUsers, clean])
+      if (clean.includes('@') && clean.includes('.')) {
+        setAssignedUsers([...assignedUsers, clean])
+      } else {
+        showNotification('Please enter a valid email address.', 'error')
+      }
     }
     setUserInput('')
   }
@@ -50,7 +54,11 @@ export default function SoftwareInventory({ employees = [], showNotification, is
   const handleAddRenewUser = (userToAdd) => {
     const clean = userToAdd.trim()
     if (clean && !renewAssignedUsers.includes(clean)) {
-      setRenewAssignedUsers([...renewAssignedUsers, clean])
+      if (clean.includes('@') && clean.includes('.')) {
+        setRenewAssignedUsers([...renewAssignedUsers, clean])
+      } else {
+        showNotification('Please enter a valid email address.', 'error')
+      }
     }
     setRenewUserInput('')
   }
@@ -492,7 +500,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
 
               <div>
                 <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
-                  Assign Users (Select Multiple)
+                  Assign Users (Enter Email IDs)
                 </label>
                 <div className="flex gap-1.5">
                   <input
@@ -501,12 +509,16 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                     onChange={(e) => {
                       const val = e.target.value
                       setUserInput(val)
-                      const matchingEmp = employees.find(emp => emp.name.toLowerCase() === val.toLowerCase())
+                      const matchingEmp = employees.find(emp => {
+                        const email = emp.email || `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
+                        return email.toLowerCase() === val.toLowerCase();
+                      })
                       if (matchingEmp) {
-                        handleAddUser(matchingEmp.name)
+                        const email = matchingEmp.email || `${matchingEmp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
+                        handleAddUser(email)
                       }
                     }}
-                    placeholder="Search or enter user name"
+                    placeholder="Enter or select user email"
                     list="software-employees-list"
                     className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
                   />
@@ -519,9 +531,10 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                   </button>
                 </div>
                 <datalist id="software-employees-list">
-                  {employees.map((emp, idx) => (
-                    <option key={idx} value={emp.name} />
-                  ))}
+                  {employees.map((emp, idx) => {
+                    const email = emp.email || `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
+                    return <option key={idx} value={email} />;
+                  })}
                 </datalist>
 
                 {assignedUsers.length > 0 && (
@@ -685,7 +698,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
 
               <div>
                 <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
-                  Assign Users (Select Multiple)
+                  Assign Users (Enter Email IDs)
                 </label>
                 <div className="flex gap-1.5">
                   <input
@@ -694,12 +707,16 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                     onChange={(e) => {
                       const val = e.target.value
                       setRenewUserInput(val)
-                      const matchingEmp = employees.find(emp => emp.name.toLowerCase() === val.toLowerCase())
+                      const matchingEmp = employees.find(emp => {
+                        const email = emp.email || `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
+                        return email.toLowerCase() === val.toLowerCase();
+                      })
                       if (matchingEmp) {
-                        handleAddRenewUser(matchingEmp.name)
+                        const email = matchingEmp.email || `${matchingEmp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
+                        handleAddRenewUser(email)
                       }
                     }}
-                    placeholder="Search or enter user name"
+                    placeholder="Enter or select user email"
                     list="software-employees-list"
                     className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
                   />
