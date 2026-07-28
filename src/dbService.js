@@ -554,7 +554,12 @@ export const dbService = {
       const querySnapshot = await getDocs(collection(db, 'employees'));
       const fbEmployees = [];
       querySnapshot.forEach((doc) => {
-        fbEmployees.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        fbEmployees.push({
+          ...data,
+          uuid: data.uuid || doc.id,
+          docId: doc.id
+        });
       });
 
       localStorage.setItem('employees', JSON.stringify(fbEmployees));
@@ -567,8 +572,8 @@ export const dbService = {
 
   async saveBulkEmployees(newEmployees) {
     const local = JSON.parse(localStorage.getItem('employees')) || [];
-    // Filter out duplicates based on lowercased name + id combination
     const existingKeys = new Set(local.map(e => `${(e.name || '').trim().toLowerCase()}_${(e.id || '').trim().toLowerCase()}`));
+    
     const dedupedNew = newEmployees.filter(emp => {
       const key = `${(emp.name || '').trim().toLowerCase()}_${(emp.id || '').trim().toLowerCase()}`;
       if (!existingKeys.has(key)) {
@@ -576,7 +581,10 @@ export const dbService = {
         return true;
       }
       return false;
-    });
+    }).map(emp => ({
+      ...emp,
+      uuid: emp.uuid || `emp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+    }));
 
     const updated = [...local, ...dedupedNew];
     localStorage.setItem('employees', JSON.stringify(updated));
@@ -592,20 +600,29 @@ export const dbService = {
     return updated;
   },
 
-  async updateEmployee(oldId, updatedEmployee) {
+  async updateEmployee(uuid, docId, updatedEmployee) {
     const local = JSON.parse(localStorage.getItem('employees')) || [];
-    const updated = local.map(emp => emp.id === oldId ? updatedEmployee : emp);
+    const updated = local.map(emp => emp.uuid === uuid ? { ...updatedEmployee, uuid } : emp);
     localStorage.setItem('employees', JSON.stringify(updated));
 
     if (isFirebaseEnabled()) {
       try {
-        const q = query(collection(db, 'employees'), where('id', '==', oldId));
-        const querySnapshot = await getDocs(q);
-        const promises = [];
-        querySnapshot.forEach((document) => {
-          promises.push(updateDoc(doc(db, 'employees', document.id), updatedEmployee));
-        });
-        await Promise.all(promises);
+        let documentFound = false;
+        if (uuid) {
+          const q = query(collection(db, 'employees'), where('uuid', '==', uuid));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            documentFound = true;
+            const promises = [];
+            querySnapshot.forEach((document) => {
+              promises.push(updateDoc(doc(db, 'employees', document.id), { ...updatedEmployee, uuid }));
+            });
+            await Promise.all(promises);
+          }
+        }
+        if (!documentFound && docId) {
+          await updateDoc(doc(db, 'employees', docId), { ...updatedEmployee, uuid });
+        }
       } catch (error) {
         console.error("Firestore employee update failed:", error);
       }

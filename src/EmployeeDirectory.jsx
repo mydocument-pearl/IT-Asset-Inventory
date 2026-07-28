@@ -166,7 +166,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
     }
 
     try {
-      const updated = await dbService.updateEmployee(editingEmployee.id, employeePayload)
+      const updated = await dbService.updateEmployee(editingEmployee.uuid, editingEmployee.docId, employeePayload)
       setEmployees(updated)
       showNotification(`Employee ${editEmpName} updated successfully!`, 'success')
 
@@ -185,23 +185,32 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
     }
   }
 
-  const handleDeleteEmployee = async (empId, empName) => {
+  const handleDeleteEmployee = async (uuid, docId, empName, empId) => {
     if (!isUserAdmin) return
-    if (window.confirm(`Are you sure you want to delete employee ${empName} (${empId}) from directory?`)) {
+    const idLabel = empId && empId !== '-' ? ` (${empId})` : ''
+    if (window.confirm(`Are you sure you want to delete employee ${empName}${idLabel} from directory?`)) {
       try {
         const local = JSON.parse(localStorage.getItem('employees')) || []
-        const updated = local.filter(emp => emp.id !== empId)
+        const updated = local.filter(emp => emp.uuid !== uuid)
         localStorage.setItem('employees', JSON.stringify(updated))
 
         const connection = await dbService.checkConnection()
         if (connection) {
           try {
-            // Delete from Firestore
-            const q = query(collection(db, 'employees'), where('id', '==', empId))
-            const querySnapshot = await getDocs(q)
-            querySnapshot.forEach(async (document) => {
-              await deleteDoc(doc(db, 'employees', document.id))
-            })
+            let deletedFromFb = false;
+            if (uuid) {
+              const q = query(collection(db, 'employees'), where('uuid', '==', uuid))
+              const querySnapshot = await getDocs(q)
+              if (!querySnapshot.empty) {
+                deletedFromFb = true;
+                querySnapshot.forEach(async (document) => {
+                  await deleteDoc(doc(db, 'employees', document.id))
+                })
+              }
+            }
+            if (!deletedFromFb && docId) {
+              await deleteDoc(doc(db, 'employees', docId))
+            }
           } catch (fbErr) {
             console.error("Firestore employee delete failed:", fbErr)
           }
@@ -212,7 +221,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
         await dbService.saveActivityLog({
           member: `${currentUser.name} (${currentUser.role})`,
           action: 'Deleted Employee Record',
-          details: `Deleted employee record for ${empName} (ID: ${empId}).`
+          details: `Deleted employee record for ${empName} (ID: ${empId || '-'}).`
         })
       } catch (err) {
         console.error(err)
@@ -636,7 +645,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                           </button>
                           <button
-                            onClick={() => handleDeleteEmployee(item.id, item.name)}
+                            onClick={() => handleDeleteEmployee(item.uuid, item.docId, item.name, item.id)}
                             className="p-1 text-red-650 hover:text-red-800 hover:bg-red-50 rounded transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
                             title="Delete Employee"
                           >
