@@ -1157,10 +1157,6 @@ function App() {
 
                 {/* Section title */}
                 <div className="space-y-3">
-                  <h3 className="text-xs font-extrabold text-[#0f172a] uppercase tracking-wider font-sans">
-                    Key Metric Cards
-                  </h3>
-
                   {/* Grid of 4 Metric Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                     {/* Card 1: TOTAL ASSETS */}
