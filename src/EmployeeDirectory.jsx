@@ -6,6 +6,7 @@ import { db } from './firebase'
 import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore'
 
 export default function EmployeeDirectory({ employees = [], setEmployees, showNotification, currentUser }) {
+  // Add Form States
   const [empName, setEmpName] = useState('')
   const [org, setOrg] = useState('')
   const [empPrefix, setEmpPrefix] = useState('')
@@ -14,7 +15,18 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
   const [mobileNum, setMobileNum] = useState('')
   const [department, setDepartment] = useState('')
   const [email, setEmail] = useState('')
+
+  // Edit Form States & Modal Controller
   const [editingEmployee, setEditingEmployee] = useState(null)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editEmpName, setEditEmpName] = useState('')
+  const [editOrg, setEditOrg] = useState('')
+  const [editEmpPrefix, setEditEmpPrefix] = useState('')
+  const [editEmpIdCode, setEditEmpIdCode] = useState('')
+  const [editGender, setEditGender] = useState('')
+  const [editMobileNum, setEditMobileNum] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+  const [editDepartment, setEditDepartment] = useState('')
 
   const [excelFile, setExcelFile] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -44,6 +56,17 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
     }
   }
 
+  const handleEditOrgChange = (value) => {
+    setEditOrg(value)
+    if (value === 'On2Cook India Pvt. Ltd.') {
+      setEditEmpPrefix('O2C-')
+    } else if (value === 'InventIndia Innovations Pvt. Ltd.') {
+      setEditEmpPrefix('II-')
+    } else {
+      setEditEmpPrefix('')
+    }
+  }
+
   const handleSaveEmployee = async (e) => {
     e.preventDefault()
     if (!empName || !empIdCode || !org) {
@@ -63,36 +86,21 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
     }
 
     try {
-      let updated;
-      if (editingEmployee) {
-        // Edit Mode
-        updated = await dbService.updateEmployee(editingEmployee.id, employeePayload)
-        showNotification(`Employee ${empName} updated successfully!`, 'success')
-
-        await dbService.saveActivityLog({
-          member: `${currentUser.name} (${currentUser.role})`,
-          action: 'Updated Employee Details',
-          details: `Updated details for employee ${empName} (ID: ${fullId}).`
-        })
-      } else {
-        // Add Mode
-        const idExists = employees.some(emp => emp.id.toLowerCase() === fullId.toLowerCase())
-        if (idExists) {
-          showNotification(`Employee ID Code ${fullId} already exists!`, 'error')
-          return
-        }
-
-        updated = await dbService.saveBulkEmployees([employeePayload])
-        showNotification(`Employee ${empName} saved successfully!`, 'success')
-
-        await dbService.saveActivityLog({
-          member: `${currentUser.name} (${currentUser.role})`,
-          action: 'Added Employee Manually',
-          details: `Added worker ${empName} (ID: ${fullId}, Org: ${org}) to directory.`
-        })
+      const idExists = employees.some(emp => emp.id.toLowerCase() === fullId.toLowerCase())
+      if (idExists) {
+        showNotification(`Employee ID Code ${fullId} already exists!`, 'error')
+        return
       }
 
+      const updated = await dbService.saveBulkEmployees([employeePayload])
       setEmployees(updated)
+      showNotification(`Employee ${empName} saved successfully!`, 'success')
+
+      await dbService.saveActivityLog({
+        member: `${currentUser.name} (${currentUser.role})`,
+        action: 'Added Employee Manually',
+        details: `Added worker ${empName} (ID: ${fullId}, Org: ${org}) to directory.`
+      })
 
       // Reset
       setEmpName('')
@@ -103,7 +111,6 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       setMobileNum('')
       setEmail('')
       setDepartment('')
-      setEditingEmployee(null)
     } catch (err) {
       console.error(err)
       showNotification('Failed to save employee. Please try again.', 'error')
@@ -112,8 +119,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
 
   const handleStartEdit = (emp) => {
     setEditingEmployee(emp)
-    setEmpName(emp.name || '')
-    setOrg(emp.organization || '')
+    setEditEmpName(emp.name || '')
+    setEditOrg(emp.organization || '')
     
     // Parse prefix and id code
     let prefix = ''
@@ -126,12 +133,51 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       code = code.substring(3)
     }
     
-    setEmpPrefix(prefix)
-    setEmpIdCode(code)
-    setGender(emp.gender || '')
-    setMobileNum(emp.phone && emp.phone !== '-' ? emp.phone : '')
-    setEmail(emp.email && emp.email !== '-' ? emp.email : '')
-    setDepartment(emp.department || '')
+    setEditEmpPrefix(prefix)
+    setEditEmpIdCode(code)
+    setEditGender(emp.gender || '')
+    setEditMobileNum(emp.phone && emp.phone !== '-' ? emp.phone : '')
+    setEditEmail(emp.email && emp.email !== '-' ? emp.email : '')
+    setEditDepartment(emp.department || '')
+    setShowEditModal(true)
+  }
+
+  const handleUpdateEmployee = async (e) => {
+    e.preventDefault()
+    if (!editEmpName || !editEmpIdCode || !editOrg) {
+      showNotification('Please fill in Employee Name, Organization, and Employee ID Code.', 'error')
+      return
+    }
+
+    const fullId = `${editEmpPrefix}${editEmpIdCode}`
+    const employeePayload = {
+      name: editEmpName.trim(),
+      id: fullId.trim(),
+      phone: editMobileNum.trim() || '-',
+      email: editEmail.trim() || '-',
+      gender: editGender || '-',
+      department: editDepartment || '-',
+      organization: editOrg
+    }
+
+    try {
+      const updated = await dbService.updateEmployee(editingEmployee.id, employeePayload)
+      setEmployees(updated)
+      showNotification(`Employee ${editEmpName} updated successfully!`, 'success')
+
+      await dbService.saveActivityLog({
+        member: `${currentUser.name} (${currentUser.role})`,
+        action: 'Updated Employee Details',
+        details: `Updated details for employee ${editEmpName} (ID: ${fullId}).`
+      })
+
+      // Close modal
+      setEditingEmployee(null)
+      setShowEditModal(false)
+    } catch (err) {
+      console.error(err)
+      showNotification('Failed to update employee. Please try again.', 'error')
+    }
   }
 
   const handleDeleteEmployee = async (empId, empName) => {
@@ -302,7 +348,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
         <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-          {editingEmployee ? 'Edit Employee Details' : 'Register New Employee'}
+          Register New Employee
         </h2>
 
         <form onSubmit={handleSaveEmployee} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
@@ -348,10 +394,9 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                 type="text"
                 required
                 value={empIdCode}
-                disabled={!!editingEmployee}
                 onChange={(e) => setEmpIdCode(e.target.value)}
                 placeholder="e.g. 101"
-                className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition disabled:bg-slate-100 disabled:text-slate-400"
+                className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition"
               />
             </div>
           </div>
@@ -423,33 +468,14 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             </select>
           </div>
 
-          <div className="lg:col-span-3 mt-1 flex gap-3">
+          <div className="lg:col-span-3 mt-1">
             <button
               type="submit"
               className="bg-red-600 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer flex items-center gap-1.5"
             >
               <Plus size={14} />
-              {editingEmployee ? 'Update Employee' : 'Save Employee'}
+              Save Employee
             </button>
-            {editingEmployee && (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingEmployee(null)
-                  setEmpName('')
-                  setOrg('')
-                  setEmpPrefix('')
-                  setEmpIdCode('')
-                  setGender('')
-                  setMobileNum('')
-                  setEmail('')
-                  setDepartment('')
-                }}
-                className="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer"
-              >
-                Cancel Edit
-              </button>
-            )}
           </div>
         </form>
       </div>
@@ -608,6 +634,172 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
           </table>
         </div>
       </div>
+
+      {/* 4. Edit Employee Pop-up Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-xl w-full max-w-lg overflow-hidden animate-scale-up">
+            <div className="p-4 border-b border-slate-150 flex justify-between items-center bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                Edit Employee Details
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditModal(false)
+                  setEditingEmployee(null)
+                }}
+                className="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer transition"
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateEmployee} className="p-5 space-y-4">
+              <div className="space-y-1">
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                  Employee Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editEmpName}
+                  onChange={(e) => setEditEmpName(e.target.value)}
+                  placeholder="Enter employee name"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                  Organization Name *
+                </label>
+                <select
+                  value={editOrg}
+                  required
+                  onChange={(e) => handleEditOrgChange(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                >
+                  <option value="">Select Organization</option>
+                  <option>On2Cook India Pvt. Ltd.</option>
+                  <option>InventIndia Innovations Pvt. Ltd.</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                  Employee ID Code *
+                </label>
+                <div className="flex">
+                  <div className="bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl px-3 py-2 text-slate-500 font-bold text-xs flex items-center justify-center min-w-[60px]">
+                    {editEmpPrefix || 'ID'}
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={editEmpIdCode}
+                    disabled
+                    placeholder="e.g. 101"
+                    className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs bg-slate-50 text-slate-400 cursor-not-allowed outline-none"
+                  />
+                </div>
+                <p className="text-[9px] text-slate-400 mt-0.5">Employee ID Code cannot be modified after registration.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Gender
+                  </label>
+                  <select
+                    value={editGender}
+                    onChange={(e) => setEditGender(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                  >
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Department
+                  </label>
+                  <select
+                    value={editDepartment}
+                    onChange={(e) => setEditDepartment(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                  >
+                    <option value="">Select Department</option>
+                    <option>Administration</option>
+                    <option>Accounts</option>
+                    <option>HR</option>
+                    <option>IT</option>
+                    <option>Production</option>
+                    <option>Design</option>
+                    <option>R&D</option>
+                    <option>Purchase</option>
+                    <option>Sales</option>
+                    <option>Marketing</option>
+                    <option>Operations</option>
+                    <option>Management</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Mobile Number
+                  </label>
+                  <input
+                    type="text"
+                    value={editMobileNum}
+                    onChange={(e) => setEditMobileNum(e.target.value.replace(/[^0-9+]/g, ''))}
+                    placeholder="e.g. 9876543210"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none font-mono focus:border-red-500 transition"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    placeholder="e.g. user@company.com"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2.5 pt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false)
+                    setEditingEmployee(null)
+                  }}
+                  className="flex-1 border border-slate-200 hover:bg-slate-50 text-slate-700 py-2 rounded-xl text-xs font-bold transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm hover:shadow-md"
+                >
+                  Update Details
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
