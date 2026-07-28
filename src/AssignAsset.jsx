@@ -47,7 +47,7 @@ export default function AssignAsset({
   const uniqueEmployeesMap = new Map()
   
   // 1. Add imported employee directory
-  employees.forEach(emp => {
+  employees.filter(emp => emp.status !== 'Left Company').forEach(emp => {
     if (emp.name) {
       const nameNorm = emp.name.trim()
       const idNorm = (emp.id || '').trim()

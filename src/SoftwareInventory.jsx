@@ -509,7 +509,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                     onChange={(e) => {
                       const val = e.target.value
                       setUserInput(val)
-                      const matchingEmp = employees.find(emp => {
+                      const matchingEmp = employees.filter(emp => emp.status !== 'Left Company').find(emp => {
                         const email = emp.email || `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
                         return email.toLowerCase() === val.toLowerCase();
                       })
@@ -531,7 +531,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                   </button>
                 </div>
                 <datalist id="software-employees-list">
-                  {employees.map((emp, idx) => {
+                  {employees.filter(emp => emp.status !== 'Left Company').map((emp, idx) => {
                     const email = emp.email || `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
                     return <option key={idx} value={email} />;
                   })}
@@ -707,7 +707,7 @@ export default function SoftwareInventory({ employees = [], showNotification, is
                     onChange={(e) => {
                       const val = e.target.value
                       setRenewUserInput(val)
-                      const matchingEmp = employees.find(emp => {
+                      const matchingEmp = employees.filter(emp => emp.status !== 'Left Company').find(emp => {
                         const email = emp.email || `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`;
                         return email.toLowerCase() === val.toLowerCase();
                       })

@@ -27,6 +27,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
   const [editMobileNum, setEditMobileNum] = useState('')
   const [editEmail, setEditEmail] = useState('')
   const [editDepartment, setEditDepartment] = useState('')
+  const [editStatus, setEditStatus] = useState('Active')
 
   const [excelFile, setExcelFile] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -40,6 +41,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
            (emp.phone || '').toLowerCase().includes(query) ||
            (emp.email || '').toLowerCase().includes(query) ||
            (emp.department || '').toLowerCase().includes(query) ||
+           (emp.status || '').toLowerCase().includes(query) ||
            (emp.organization || '').toLowerCase().includes(query);
   });
 
@@ -82,7 +84,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       email: email.trim() || '-',
       gender: gender || '-',
       department: department || '-',
-      organization: org
+      organization: org,
+      status: 'Active'
     }
 
     try {
@@ -139,6 +142,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
     setEditMobileNum(emp.phone && emp.phone !== '-' ? emp.phone : '')
     setEditEmail(emp.email && emp.email !== '-' ? emp.email : '')
     setEditDepartment(emp.department || '')
+    setEditStatus(emp.status || 'Active')
     setShowEditModal(true)
   }
 
@@ -157,7 +161,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       email: editEmail.trim() || '-',
       gender: editGender || '-',
       department: editDepartment || '-',
-      organization: editOrg
+      organization: editOrg,
+      status: editStatus
     }
 
     try {
@@ -225,7 +230,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
         'Gender': 'Male',
         'Phone Number': '9876543210',
         'Department': 'Accounts',
-        'Organization Name': 'On2Cook India Pvt. Ltd.'
+        'Organization Name': 'On2Cook India Pvt. Ltd.',
+        'Status': 'Active'
       },
       {
         'Employee Name': 'Priya Mehta',
@@ -234,7 +240,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
         'Gender': 'Female',
         'Phone Number': '9123456780',
         'Department': 'HR',
-        'Organization Name': 'InventIndia Innovations Pvt. Ltd.'
+        'Organization Name': 'InventIndia Innovations Pvt. Ltd.',
+        'Status': 'Active'
       }
     ]
 
@@ -299,6 +306,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
           const phone = getVal(['Phone Number', 'Phone', 'Mobile'])
           const dept = getVal(['Department', 'Dept'])
           const orgName = getVal(['Organization Name', 'Organization', 'Company', 'Org'])
+          const empStatus = getVal(['Status', 'EmployeeStatus', 'State'])
 
           if (!name) continue
 
@@ -309,7 +317,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             gender: empGender || '-',
             phone: phone || '-',
             department: dept || '-',
-            organization: orgName || '-'
+            organization: orgName || '-',
+            status: empStatus || 'Active'
           })
         }
 
@@ -587,13 +596,14 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                 <th className="p-3 font-extrabold">Mobile Number</th>
                 <th className="p-3 font-extrabold">Department</th>
                 <th className="p-3 font-extrabold">Organization</th>
+                <th className="p-3 font-extrabold text-center">Status</th>
                 {isUserAdmin && <th className="p-3 font-extrabold text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
               {filteredEmployees.length === 0 ? (
                 <tr>
-                  <td colSpan={isUserAdmin ? 8 : 7} className="p-6 text-center text-slate-450 font-medium">
+                  <td colSpan={isUserAdmin ? 9 : 8} className="p-6 text-center text-slate-450 font-medium">
                     No matching employees found in the directory.
                   </td>
                 </tr>
@@ -607,6 +617,14 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                     <td className="p-3 font-mono text-slate-650">{item.phone || '-'}</td>
                     <td className="p-3 text-slate-600 font-medium">{item.department || '-'}</td>
                     <td className="p-3 text-[11px] text-slate-400">{item.organization || '-'}</td>
+                    <td className="p-3 text-center">
+                      <span className={item.status === 'Left Company' 
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200/50 rounded-full px-2 py-0.5 text-[9px] font-extrabold inline-block' 
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200/50 rounded-full px-2 py-0.5 text-[9px] font-extrabold inline-block'
+                      }>
+                        {item.status || 'Active'}
+                      </span>
+                    </td>
                     {isUserAdmin && (
                       <td className="p-3 text-right">
                         <div className="flex items-center justify-end gap-2.5">
@@ -707,7 +725,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                 <p className="text-[9px] text-slate-400 mt-0.5">Employee ID Code cannot be modified after registration.</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                     Gender
@@ -746,6 +764,20 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
                     <option>Marketing</option>
                     <option>Operations</option>
                     <option>Management</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Status
+                  </label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 transition"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Left Company">Left Company</option>
                   </select>
                 </div>
               </div>
