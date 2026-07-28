@@ -13,6 +13,8 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
   const [gender, setGender] = useState('')
   const [mobileNum, setMobileNum] = useState('')
   const [department, setDepartment] = useState('')
+  const [email, setEmail] = useState('')
+  const [editingEmployee, setEditingEmployee] = useState(null)
 
   const [excelFile, setExcelFile] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -24,6 +26,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
     return (emp.name || '').toLowerCase().includes(query) ||
            (emp.id || '').toLowerCase().includes(query) ||
            (emp.phone || '').toLowerCase().includes(query) ||
+           (emp.email || '').toLowerCase().includes(query) ||
            (emp.department || '').toLowerCase().includes(query) ||
            (emp.organization || '').toLowerCase().includes(query);
   });
@@ -53,21 +56,43 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       name: empName.trim(),
       id: fullId.trim(),
       phone: mobileNum.trim() || '-',
+      email: email.trim() || '-',
       gender: gender || '-',
       department: department || '-',
       organization: org
     }
 
     try {
-      const updated = await dbService.saveBulkEmployees([employeePayload])
-      setEmployees(updated)
-      showNotification(`Employee ${empName} saved successfully!`, 'success')
+      let updated;
+      if (editingEmployee) {
+        // Edit Mode
+        updated = await dbService.updateEmployee(editingEmployee.id, employeePayload)
+        showNotification(`Employee ${empName} updated successfully!`, 'success')
 
-      await dbService.saveActivityLog({
-        member: `${currentUser.name} (${currentUser.role})`,
-        action: 'Added Employee Manually',
-        details: `Added worker ${empName} (ID: ${fullId}, Org: ${org}) to directory.`
-      })
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Updated Employee Details',
+          details: `Updated details for employee ${empName} (ID: ${fullId}).`
+        })
+      } else {
+        // Add Mode
+        const idExists = employees.some(emp => emp.id.toLowerCase() === fullId.toLowerCase())
+        if (idExists) {
+          showNotification(`Employee ID Code ${fullId} already exists!`, 'error')
+          return
+        }
+
+        updated = await dbService.saveBulkEmployees([employeePayload])
+        showNotification(`Employee ${empName} saved successfully!`, 'success')
+
+        await dbService.saveActivityLog({
+          member: `${currentUser.name} (${currentUser.role})`,
+          action: 'Added Employee Manually',
+          details: `Added worker ${empName} (ID: ${fullId}, Org: ${org}) to directory.`
+        })
+      }
+
+      setEmployees(updated)
 
       // Reset
       setEmpName('')
@@ -76,11 +101,37 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       setEmpIdCode('')
       setGender('')
       setMobileNum('')
+      setEmail('')
       setDepartment('')
+      setEditingEmployee(null)
     } catch (err) {
       console.error(err)
       showNotification('Failed to save employee. Please try again.', 'error')
     }
+  }
+
+  const handleStartEdit = (emp) => {
+    setEditingEmployee(emp)
+    setEmpName(emp.name || '')
+    setOrg(emp.organization || '')
+    
+    // Parse prefix and id code
+    let prefix = ''
+    let code = emp.id || ''
+    if (code.startsWith('O2C-')) {
+      prefix = 'O2C-'
+      code = code.substring(4)
+    } else if (code.startsWith('II-')) {
+      prefix = 'II-'
+      code = code.substring(3)
+    }
+    
+    setEmpPrefix(prefix)
+    setEmpIdCode(code)
+    setGender(emp.gender || '')
+    setMobileNum(emp.phone && emp.phone !== '-' ? emp.phone : '')
+    setEmail(emp.email && emp.email !== '-' ? emp.email : '')
+    setDepartment(emp.department || '')
   }
 
   const handleDeleteEmployee = async (empId, empName) => {
@@ -124,6 +175,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       {
         'Employee Name': 'Rahul Sharma',
         'Employee ID': 'O2C-101',
+        'Email ID': 'rahul.sharma@company.com',
         'Gender': 'Male',
         'Phone Number': '9876543210',
         'Department': 'Accounts',
@@ -132,6 +184,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       {
         'Employee Name': 'Priya Mehta',
         'Employee ID': 'II-205',
+        'Email ID': 'priya.mehta@company.com',
         'Gender': 'Female',
         'Phone Number': '9123456780',
         'Department': 'HR',
@@ -195,6 +248,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
 
           const name = getVal(['Employee Name', 'Name', 'EmployeeName'])
           const id = getVal(['Employee ID', 'EmployeeCode', 'ID', 'Code'])
+          const empEmail = getVal(['Email ID', 'Email', 'EmailAddress', 'Mail'])
           const empGender = getVal(['Gender', 'Sex'])
           const phone = getVal(['Phone Number', 'Phone', 'Mobile'])
           const dept = getVal(['Department', 'Dept'])
@@ -205,6 +259,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
           newEmployees.push({
             name,
             id: id || '-',
+            email: empEmail || '-',
             gender: empGender || '-',
             phone: phone || '-',
             department: dept || '-',
@@ -247,7 +302,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
       <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
         <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-          Register New Employee
+          {editingEmployee ? 'Edit Employee Details' : 'Register New Employee'}
         </h2>
 
         <form onSubmit={handleSaveEmployee} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
@@ -257,6 +312,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             </label>
             <input
               type="text"
+              required
               value={empName}
               onChange={(e) => setEmpName(e.target.value)}
               placeholder="Enter employee name"
@@ -270,6 +326,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             </label>
             <select
               value={org}
+              required
               onChange={(e) => handleOrgChange(e.target.value)}
               className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
             >
@@ -289,10 +346,12 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
               </div>
               <input
                 type="text"
+                required
                 value={empIdCode}
+                disabled={!!editingEmployee}
                 onChange={(e) => setEmpIdCode(e.target.value)}
                 placeholder="e.g. 101"
-                className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition"
+                className="w-full border border-slate-200 rounded-r-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition disabled:bg-slate-100 disabled:text-slate-400"
               />
             </div>
           </div>
@@ -328,6 +387,19 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
 
           <div>
             <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e.g. rahul.sharma@company.com"
+              className="w-full bg-white border border-slate-250/70 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-500 focus:shadow-[0_0_8px_rgba(239,68,68,0.15)] transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
               Department
             </label>
             <select
@@ -351,14 +423,33 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             </select>
           </div>
 
-          <div className="lg:col-span-3 mt-1">
+          <div className="lg:col-span-3 mt-1 flex gap-3">
             <button
               type="submit"
               className="bg-red-600 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/10 text-white px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer flex items-center gap-1.5"
             >
               <Plus size={14} />
-              Save Employee
+              {editingEmployee ? 'Update Employee' : 'Save Employee'}
             </button>
+            {editingEmployee && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingEmployee(null)
+                  setEmpName('')
+                  setOrg('')
+                  setEmpPrefix('')
+                  setEmpIdCode('')
+                  setGender('')
+                  setMobileNum('')
+                  setEmail('')
+                  setDepartment('')
+                }}
+                className="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer"
+              >
+                Cancel Edit
+              </button>
+            )}
           </div>
         </form>
       </div>
@@ -465,6 +556,7 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
               <tr>
                 <th className="p-3 font-extrabold">Employee Name</th>
                 <th className="p-3 font-extrabold">Employee ID / Code</th>
+                <th className="p-3 font-extrabold">Email Address</th>
                 <th className="p-3 font-extrabold">Gender</th>
                 <th className="p-3 font-extrabold">Mobile Number</th>
                 <th className="p-3 font-extrabold">Department</th>
@@ -475,28 +567,38 @@ export default function EmployeeDirectory({ employees = [], setEmployees, showNo
             <tbody className="divide-y divide-slate-100 bg-white">
               {filteredEmployees.length === 0 ? (
                 <tr>
-                  <td colSpan={isUserAdmin ? 7 : 6} className="p-6 text-center text-slate-450 font-medium">
+                  <td colSpan={isUserAdmin ? 8 : 7} className="p-6 text-center text-slate-450 font-medium">
                     No matching employees found in the directory.
                   </td>
                 </tr>
               ) : (
                 filteredEmployees.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50 transition">
+                  <tr key={idx} className="hover:bg-slate-50/50 transition animate-fade-in">
                     <td className="p-3 font-bold text-slate-800">{item.name}</td>
                     <td className="p-3 font-mono font-semibold text-slate-500">{item.id}</td>
+                    <td className="p-3 font-mono text-slate-650">{item.email || '-'}</td>
                     <td className="p-3 text-slate-650">{item.gender || '-'}</td>
                     <td className="p-3 font-mono text-slate-650">{item.phone || '-'}</td>
                     <td className="p-3 text-slate-600 font-medium">{item.department || '-'}</td>
                     <td className="p-3 text-[11px] text-slate-400">{item.organization || '-'}</td>
                     {isUserAdmin && (
                       <td className="p-3 text-right">
-                        <button
-                          onClick={() => handleDeleteEmployee(item.id, item.name)}
-                          className="p-1 text-red-650 hover:text-red-800 transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
-                          title="Delete Employee"
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        <div className="flex items-center justify-end gap-2.5">
+                          <button
+                            onClick={() => handleStartEdit(item)}
+                            className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
+                            title="Edit Employee Details"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEmployee(item.id, item.name)}
+                            className="p-1 text-red-650 hover:text-red-800 hover:bg-red-50 rounded transition duration-150 cursor-pointer hover:scale-110 active:scale-95"
+                            title="Delete Employee"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>

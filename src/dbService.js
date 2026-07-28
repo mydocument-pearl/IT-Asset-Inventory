@@ -592,6 +592,27 @@ export const dbService = {
     return updated;
   },
 
+  async updateEmployee(oldId, updatedEmployee) {
+    const local = JSON.parse(localStorage.getItem('employees')) || [];
+    const updated = local.map(emp => emp.id === oldId ? updatedEmployee : emp);
+    localStorage.setItem('employees', JSON.stringify(updated));
+
+    if (isFirebaseEnabled()) {
+      try {
+        const q = query(collection(db, 'employees'), where('id', '==', oldId));
+        const querySnapshot = await getDocs(q);
+        const promises = [];
+        querySnapshot.forEach((document) => {
+          promises.push(updateDoc(doc(db, 'employees', document.id), updatedEmployee));
+        });
+        await Promise.all(promises);
+      } catch (error) {
+        console.error("Firestore employee update failed:", error);
+      }
+    }
+    return updated;
+  },
+
   async deleteAssetHistoryRecord(id, timestamp, assetCode) {
     const local = JSON.parse(localStorage.getItem('assetHistory')) || [];
     const updated = local.filter(item => {
